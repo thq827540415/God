@@ -1,5 +1,5 @@
 object TestMain {
   def main(args: Array[String]): Unit = {
-    print("hello world")
+    print("hello world!")
   }
 }
