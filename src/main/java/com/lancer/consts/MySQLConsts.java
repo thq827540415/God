@@ -6,7 +6,7 @@ package com.lancer.consts;
  * @Description
  */
 public class MySQLConsts {
-    public static final String MYSQL_URL = "jdbc:mysql://mysql:3306/test?useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true";
+    public static final String MYSQL_URL = "jdbc:mysql://bigdata03:3306/test?useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true";
     public static final String MYSQL_DRIVER = "com.mysql.cj.jdbc.Driver";
     public static final String MYSQL_USERNAME = "root";
     public static final String MYSQL_PASSWORD = "123456";

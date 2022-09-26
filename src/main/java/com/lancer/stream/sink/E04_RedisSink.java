@@ -48,7 +48,7 @@ public class E04_RedisSink {
         @Override
         public RedisCommandDescription getCommandDescription() {
             // additional key for Hash and Sorted set data type
-            return new RedisCommandDescription(RedisCommand.SET, null);
+            return new RedisCommandDescription(RedisCommand.SET);
         }
 
         @Override
