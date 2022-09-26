@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property>
+        <name>hbase.zookeeper.quorum</name>
+        <value>zk01:2181,zk02:2182,zk03:2183</value>
+    </property>
+</configuration>
