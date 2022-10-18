@@ -8,9 +8,9 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 /**
  * @Author lancer
  * @Date 2022/6/8 21:39
- * @Description max和maxBy的区别
+ * @Description max和maxBy的区别。同理min和minBy的区别
  */
-public class E04_MaxAndMaxByOpera {
+public class E02_MaxAndMaxByOpera {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
 
@@ -26,6 +26,6 @@ public class E04_MaxAndMaxByOpera {
                 .maxBy(2)
                 .print();
 
-        env.execute(E04_MaxAndMaxByOpera.class.getSimpleName());
+        env.execute(E02_MaxAndMaxByOpera.class.getSimpleName());
     }
 }

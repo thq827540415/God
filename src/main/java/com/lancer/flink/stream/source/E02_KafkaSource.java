@@ -37,6 +37,8 @@ public class E02_KafkaSource {
 
     /**
      * 采用Kafka SourceFunction的方式
+     *      目前这种方式无法保证Exactly Once，Flink的Source消费完数据后，将偏移量定期写入到kafka的__consumer_offsets中，
+     *      这种方式虽然可以记录偏移量，但是无法保证Exactly Once
      */
     private static FlinkKafkaConsumer<String> oldGetKafkaSource(Properties p) {
 
@@ -52,6 +54,7 @@ public class E02_KafkaSource {
                 // 从指定分区的偏移量处开始消费
                 .setStartFromSpecificOffsets(specificStartOffsets);
 
+        // 分配时间戳和水位线
         kafkaSource.assignTimestampsAndWatermarks(WatermarkStrategy.noWatermarks());
 
         return kafkaSource;
@@ -59,6 +62,7 @@ public class E02_KafkaSource {
 
     /**
      * 采用Kafka Source的方式
+     *      Flink会把kafka消费者的消费位移记录在算子状态中，这样就实现了消费offset状态的容错，从而可以支持端到端的Exactly Once
      */
     private static KafkaSource<String> newGetKafkaSource(Properties p) {
         // 定义消费的分区
@@ -69,11 +73,11 @@ public class E02_KafkaSource {
         ));
 
         return KafkaSource.<String>builder()
+                .setBootstrapServers("kafka01:9092,kafka02:9093,kafka03:9094")
                 .setTopics("test")
                 .setGroupId("test-group")
                 .setProperties(p)
                 .setPartitions(topicPartitions)
-                .setBootstrapServers("kafka01:9092,kafka02:9093,kafka03:9094")
                 .setStartingOffsets(OffsetsInitializer.latest())
                 // .setDeserializer(KafkaRecordDeserializationSchema.valueOnly(StringDeserializer.class))
                 .setValueOnlyDeserializer(new SimpleStringSchema())

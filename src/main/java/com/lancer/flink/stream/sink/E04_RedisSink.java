@@ -1,6 +1,7 @@
 package com.lancer.flink.stream.sink;
 
 import com.lancer.FlinkEnvUtils;
+import com.lancer.consts.RedisConsts;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -30,10 +31,9 @@ public class E04_RedisSink {
                 .returns(TypeInformation.of(new TypeHint<Tuple2<String, String>>() {
                 }));
 
-
         FlinkJedisPoolConfig redisConf = new FlinkJedisPoolConfig.Builder()
-                .setHost("redis")
-                .setPort(6379)
+                .setHost(RedisConsts.REDIS_HOST)
+                .setPort(RedisConsts.REDIS_PORT)
                 .setDatabase(0)
                 .build();
 
@@ -48,7 +48,8 @@ public class E04_RedisSink {
         @Override
         public RedisCommandDescription getCommandDescription() {
             // additional key for Hash and Sorted set data type
-            return new RedisCommandDescription(RedisCommand.SET);
+            // hset word key value
+            return new RedisCommandDescription(RedisCommand.HSET, "word");
         }
 
         @Override

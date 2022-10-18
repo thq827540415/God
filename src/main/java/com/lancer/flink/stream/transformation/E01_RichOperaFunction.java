@@ -22,8 +22,7 @@ public class E01_RichOperaFunction {
         SingleOutputStreamOperator<String> res = source
                 .map(new StringMapFunction()).setParallelism(2);
 
-        res
-                .print();
+        res.print();
 
         env.execute(E01_RichOperaFunction.class.getSimpleName());
     }

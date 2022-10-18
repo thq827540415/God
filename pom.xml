@@ -121,6 +121,7 @@
             <scope>${flink.scope}</scope>
         </dependency>
 
+        <!-- scala-library -->
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
@@ -128,6 +129,7 @@
             <scope>${flink.scope}</scope>
         </dependency>
 
+        <!-- flink-stream -->
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-clients_${scala.binary.version}</artifactId>
@@ -261,12 +263,14 @@
             <version>3.16.1</version>
         </dependency>-->
 
-        <!-- vertx -->
+        <!-- vertx-jdbc -->
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-jdbc-client</artifactId>
             <version>4.1.8</version>
         </dependency>
+
+        <!-- vertx-redis -->
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-redis-client</artifactId>

@@ -47,10 +47,9 @@ object BroadCastDSTest {
        * scala.collection.Map ==> java.util.Map
        * java.util.Properties  ==> scala.collection.mutable.Map[String, String]
        */
-      import scala.collection.JavaConversions._
-      val lst: util.List[(Int, Char)] = this.getRuntimeContext.getBroadcastVariable("genderInfo")
-      val broadcastInfoTmp: Seq[(Int, Char)] = lst
-      broadcastInfo = broadcastInfoTmp.toMap
+      import scala.collection.JavaConverters._
+      val broadcastInfoTmp: util.List[(Int, Char)] = this.getRuntimeContext.getBroadcastVariable("genderInfo")
+      broadcastInfo = broadcastInfoTmp.asScala.toMap
     }
 
     override def close(): Unit = super.close()

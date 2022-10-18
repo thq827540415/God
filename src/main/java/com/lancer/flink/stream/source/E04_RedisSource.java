@@ -1,5 +1,6 @@
 package com.lancer.flink.stream.source;
 
+import com.lancer.consts.RedisConsts;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -53,7 +54,7 @@ public class E04_RedisSource {
             redis = RedisAPI.api(client);
 
             // 使用jedis客户端
-            jedis = new Jedis("bigdata01", 6379);
+            jedis = new Jedis(RedisConsts.REDIS_HOST, RedisConsts.REDIS_PORT);
             jedis.select(0);
         }
 
