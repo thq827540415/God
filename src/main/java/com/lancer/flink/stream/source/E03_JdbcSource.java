@@ -2,6 +2,7 @@ package com.lancer.flink.stream.source;
 
 import com.lancer.consts.MySQLConsts;
 import com.lancer.FlinkEnvUtils;
+import com.lancer.consts.UsualConsts;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -30,16 +31,16 @@ public class E03_JdbcSource {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
 
-        DataStreamSource<String> source = env.socketTextStream("localhost", 9999);
+        DataStreamSource<String> source = env.socketTextStream(UsualConsts.NC_HOST, 9999);
 
         // 响应结果的顺序和请求的先后顺序不一致
-        AsyncDataStream.unorderedWait(
-                source,
-                new VertxJdbc(),
-                3000,
-                TimeUnit.MILLISECONDS,
-                10
-        )
+        AsyncDataStream
+                .unorderedWait(
+                        source,
+                        new VertxJdbc(),
+                        3000,
+                        TimeUnit.MILLISECONDS,
+                        10)
                 .filter(t -> StringUtils.isNotBlank(t.f0))
                 .print().setParallelism(1);
 

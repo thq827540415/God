@@ -16,7 +16,10 @@ public class E02_MaxAndMaxByOpera {
 
         env.setParallelism(1);
 
-        DataStreamSource<Tuple3<Long, String, Double>> source = env.fromElements(Tuple3.of(100L, "a.com", 20.1), Tuple3.of(100L, "b.com", 10.1), Tuple3.of(100L, "c.com", 30.1));
+        DataStreamSource<Tuple3<Long, String, Double>> source = env.fromElements(
+                Tuple3.of(100L, "a.com", 20.1),
+                Tuple3.of(100L, "b.com", 10.1),
+                Tuple3.of(100L, "c.com", 30.1));
 
         source
                 .keyBy(value -> value.f0)

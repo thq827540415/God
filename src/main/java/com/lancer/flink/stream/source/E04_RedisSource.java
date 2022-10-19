@@ -1,6 +1,7 @@
 package com.lancer.flink.stream.source;
 
 import com.lancer.consts.RedisConsts;
+import com.lancer.consts.UsualConsts;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -25,7 +26,7 @@ public class E04_RedisSource {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());
 
-        DataStreamSource<String> source = env.socketTextStream("localhost", 9999);
+        DataStreamSource<String> source = env.socketTextStream(UsualConsts.NC_HOST, 9999);
 
         AsyncDataStream.unorderedWait(
                 source,

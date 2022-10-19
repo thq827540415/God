@@ -1,6 +1,7 @@
 package com.lancer.flink.stream.transformation;
 
 import com.lancer.FlinkEnvUtils;
+import com.lancer.consts.UsualConsts;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.common.functions.RuntimeContext;
 import org.apache.flink.configuration.Configuration;
@@ -17,7 +18,7 @@ public class E01_RichOperaFunction {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
 
-        DataStreamSource<String> source = env.socketTextStream("localhost", 9999);
+        DataStreamSource<String> source = env.socketTextStream(UsualConsts.NC_HOST, 9999);
 
         SingleOutputStreamOperator<String> res = source
                 .map(new StringMapFunction()).setParallelism(2);

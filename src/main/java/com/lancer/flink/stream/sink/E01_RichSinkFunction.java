@@ -1,6 +1,7 @@
 package com.lancer.flink.stream.sink;
 
 import com.lancer.FlinkEnvUtils;
+import com.lancer.consts.UsualConsts;
 import org.apache.flink.api.common.functions.util.PrintSinkOutputWriter;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
@@ -17,7 +18,7 @@ public class E01_RichSinkFunction {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
 
-        DataStreamSource<String> source = env.socketTextStream("localhost", 9999);
+        DataStreamSource<String> source = env.socketTextStream(UsualConsts.NC_HOST, 9999);
 
         source.addSink(new Print());
 

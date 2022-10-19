@@ -2,17 +2,17 @@ package com.lancer.flink.stream.sink;
 
 import com.lancer.consts.MySQLConsts;
 import com.lancer.FlinkEnvUtils;
+import com.mysql.cj.jdbc.MysqlXADataSource;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.apache.flink.connector.jdbc.JdbcConnectionOptions;
-import org.apache.flink.connector.jdbc.JdbcExecutionOptions;
-import org.apache.flink.connector.jdbc.JdbcSink;
-import org.apache.flink.connector.jdbc.JdbcStatementBuilder;
+import org.apache.flink.connector.jdbc.*;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.SinkFunction;
+import org.apache.flink.util.function.SerializableSupplier;
 
+import javax.sql.XADataSource;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -28,23 +28,23 @@ public class E03_JdbcSink {
         env
                 .fromElements(
                         new Person("zs", 18),
-                        new Person("ls", 15)
-                )
-                .addSink(getJdbcSink());
+                        new Person("ls", 15))
+                // .addSink(getJdbcSink());
+                .addSink(getJdbcExactlyOnceSink());
 
         env.execute(E03_JdbcSink.class.getSimpleName());
     }
 
-    @Data
     @ToString
     @NoArgsConstructor
     @AllArgsConstructor
-    private static class Person {
-        private String name;
-        private int age;
+    public static class Person {
+        public String name;
+        public int age;
     }
 
     /**
+     * 不保证Exactly_Once
      * 底层采用传统的JDBC方式写入数据executeBatch()
      */
     private static SinkFunction<Person> getJdbcSink() {
@@ -55,8 +55,8 @@ public class E03_JdbcSink {
                 new JdbcStatementBuilder<Person>() {
                     @Override
                     public void accept(PreparedStatement preparedStatement, Person person) throws SQLException {
-                        preparedStatement.setString(1, person.getName());
-                        preparedStatement.setInt(2, person.getAge());
+                        preparedStatement.setString(1, person.name);
+                        preparedStatement.setInt(2, person.age);
                     }
                 },
                 // JDBC execution options
@@ -70,11 +70,51 @@ public class E03_JdbcSink {
                         .build(),
                 // JDBC connection parameters
                 new JdbcConnectionOptions.JdbcConnectionOptionsBuilder()
-                        .withUrl(MySQLConsts.MYSQL_URL)
                         .withDriverName(MySQLConsts.MYSQL_DRIVER)
+                        .withUrl(MySQLConsts.MYSQL_URL)
                         .withUsername(MySQLConsts.MYSQL_USERNAME)
                         .withPassword(MySQLConsts.MYSQL_PASSWORD)
                         .build()
+        );
+    }
+
+    /**
+     * 保证Exactly_Once
+     */
+    private static SinkFunction<Person> getJdbcExactlyOnceSink() {
+        return JdbcSink.exactlyOnceSink(
+                "insert into person(name, age) values(?, ?)",
+                new JdbcStatementBuilder<Person>() {
+                    @Override
+                    public void accept(PreparedStatement preparedStatement, Person person) throws SQLException {
+                        preparedStatement.setString(1, person.name);
+                        preparedStatement.setInt(2, person.age);
+                    }
+                },
+                JdbcExecutionOptions.builder()
+                        // optional: default = 0, meaning no time-based execution is done
+                        .withBatchSize(1000)
+                        // optional: default = 5000 values
+                        .withBatchIntervalMs(200)
+                        // optional: default = 3
+                        .withMaxRetries(5)
+                        .build(),
+                JdbcExactlyOnceOptions.builder()
+                        // MySQL only allow a single XA transaction per connection
+                        // MySQL不支持同一个连接上存在并行的多个事务
+                        .withTransactionPerConnection(true)
+                        .build(),
+                new SerializableSupplier<XADataSource>() {
+                    @Override
+                    public XADataSource get() {
+                        // XADataSource是支持分布式事务的连接
+                        MysqlXADataSource ds = new MysqlXADataSource();
+                        ds.setUrl(MySQLConsts.MYSQL_URL);
+                        ds.setUser(MySQLConsts.MYSQL_USERNAME);
+                        ds.setPassword(MySQLConsts.MYSQL_PASSWORD);
+                        return ds;
+                    }
+                }
         );
     }
 }

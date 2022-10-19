@@ -1,6 +1,7 @@
 package com.lancer.flink.stream.transformation;
 
 import com.lancer.FlinkEnvUtils;
+import com.lancer.consts.UsualConsts;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.flink.streaming.api.datastream.ConnectedStreams;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
@@ -12,22 +13,22 @@ import org.apache.flink.util.Collector;
 /**
  * @Author lancer
  * @Date 2022/6/7 18:26
- * @Description 使用connect算子将任意两流进行连接，可以连接广播流
+ * @Description 使用connect算子将任意两流进行连接，可以连接广播流；两条流共享state
  */
-public class E03_ConnectedStream {
+public class E04_ConnectedStream {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
 
-        DataStreamSource<String> s1 = env.socketTextStream("localhost", 9998);
+        DataStreamSource<String> s1 = env.socketTextStream(UsualConsts.NC_HOST, 9998);
 
-        SingleOutputStreamOperator<Integer> s2 = env.socketTextStream("localhost", 9999)
+        SingleOutputStreamOperator<Integer> s2 = env.socketTextStream(UsualConsts.NC_HOST, 9999)
                 .filter(NumberUtils::isNumber)
                 .map(Integer::parseInt);
 
 
         ConnectedStreams<String, Integer> connectedStreams = s1.connect(s2);
 
-        // 同理COMpaFunction：ConnectedStreams -> DataStream
+        // 同理CoMpaFunction：ConnectedStreams -> DataStream
         SingleOutputStreamOperator<String> res = connectedStreams.flatMap(new CoFlatMapFunction<String, Integer, String>() {
             @Override
             public void flatMap1(String value, Collector<String> out) throws Exception {
@@ -42,6 +43,6 @@ public class E03_ConnectedStream {
 
         res.print();
 
-        env.execute(E03_ConnectedStream.class.getSimpleName());
+        env.execute(E04_ConnectedStream.class.getSimpleName());
     }
 }

@@ -2,6 +2,7 @@ package com.lancer.flink.stream.sink;
 
 import com.lancer.FlinkEnvUtils;
 import com.lancer.consts.RedisConsts;
+import com.lancer.consts.UsualConsts;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -23,7 +24,7 @@ public class E04_RedisSink {
         StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
 
         SingleOutputStreamOperator<Tuple2<String, String>> line2Tuple = env
-                .socketTextStream("localhost", 9999)
+                .socketTextStream(UsualConsts.NC_HOST, 9999)
                 .map(line -> {
                     String[] split = line.split(",");
                     return Tuple2.of(split[0], split[1]);

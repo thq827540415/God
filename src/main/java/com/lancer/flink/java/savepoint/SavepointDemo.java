@@ -22,7 +22,7 @@ import java.util.Properties;
 
 /**
  * 在命令行中提交job时，可以指定一个savepoint或checkpoint的目录，使用-s指定目录
- * 停止时，建议使用flink stop -p <savepointDir> jobID，去停止job，并指定savepoint的目录，老版的flink cancel命令将会被Deprecated
+ * 停止时，建议使用flink stop -p <savepointDir> jobID，去停止job，并指定savepoint的目录，老版的flink cancel命令 will be Deprecated
  * checkpoint和savepoint的区别：
  *      checkpoint是flink job定期将状态保存起来的对应的一个目录
  *      savepoint是stop任务时，人为指定的一个保存状态数据的目录，实质上HDFS中是将checkpoint中保存下来的那个chkxx的目录移动到指定的位置

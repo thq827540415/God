@@ -14,6 +14,10 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
  */
 public class FlinkEnvUtils {
 
+    static {
+        System.setProperty("HADOOP_USER_NAME", "root");
+    }
+
     /**
      * 生成DataStream环境
      */

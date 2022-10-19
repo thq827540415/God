@@ -1,6 +1,7 @@
 package com.lancer.flink.stream.sink;
 
 import com.lancer.FlinkEnvUtils;
+import com.lancer.consts.UsualConsts;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.connector.base.DeliveryGuarantee;
 import org.apache.flink.connector.kafka.sink.KafkaRecordSerializationSchema;
@@ -26,7 +27,7 @@ public class E02_KafkaSink {
         Properties p = new Properties();
         p.load(E02_KafkaSink.class.getClassLoader().getResourceAsStream("producer.properties"));
 
-        DataStreamSource<String> source = env.socketTextStream("localhost", 9999);
+        DataStreamSource<String> source = env.socketTextStream(UsualConsts.NC_HOST, 9999);
 
         source.addSink(oldGetKafkaSink(p));
         // source.sinkTo(newGetKafkaSink(p));
