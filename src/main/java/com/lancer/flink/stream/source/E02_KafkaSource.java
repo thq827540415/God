@@ -28,7 +28,10 @@ public class E02_KafkaSource {
         p.load(E02_KafkaSource.class.getClassLoader().getResourceAsStream("consumer.properties"));
 
         DataStreamSource<String> kafkaSource = env.addSource(oldGetKafkaSource(p));
-        // DataStreamSource<String> kafkaSource = env.fromSource(newGetKafkaSource(p), WatermarkStrategy.noWatermarks(), "Kafka Source");
+        /*DataStreamSource<String> kafkaSource = env.fromSource(
+                newGetKafkaSource(p),
+                WatermarkStrategy.noWatermarks(),
+                "Kafka Source");*/
 
         kafkaSource.print();
 

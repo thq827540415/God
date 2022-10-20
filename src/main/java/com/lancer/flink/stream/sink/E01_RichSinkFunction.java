@@ -30,8 +30,8 @@ public class E01_RichSinkFunction {
 
         @Override
         public void open(Configuration parameters) throws Exception {
-            StreamingRuntimeContext context = (StreamingRuntimeContext) getRuntimeContext();
-            writer.open(context.getIndexOfThisSubtask(), context.getNumberOfParallelSubtasks());
+            // StreamingRuntimeContext context = (StreamingRuntimeContext) getRuntimeContext();
+            writer.open(getRuntimeContext().getIndexOfThisSubtask(), getRuntimeContext().getNumberOfParallelSubtasks());
         }
 
         @Override

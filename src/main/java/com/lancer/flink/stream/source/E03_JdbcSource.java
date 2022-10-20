@@ -79,28 +79,29 @@ public class E03_JdbcSource {
             pool
                     .preparedQuery("select * from person where name = ?")
                     .execute(Tuple.of(s))
-                    .onFailure(new Handler<Throwable>() {
-                        @Override
-                        public void handle(Throwable throwable) {
-                            // 执行失败打日志
-                            System.out.println("failure");
-                        }
-                    })
-                    .onSuccess(new Handler<RowSet<Row>>() {
-                        @Override
-                        public void handle(RowSet<Row> rows) {
-                            if (rows.size() != 0) {
-                                for (Row row : rows) {
-                                    String name = row.getString(0);
-                                    Integer age = row.getInteger("age");
-                                    resultFuture.complete(Collections.singletonList(Tuple2.of(name, age)));
+                    .onFailure(
+                            new Handler<Throwable>() {
+                                @Override
+                                public void handle(Throwable throwable) {
+                                    // 执行失败打日志
+                                    System.out.println("failure");
                                 }
-                            } else {
-                                resultFuture.complete(Collections.singletonList(Tuple2.of("", -1)));
-                            }
-                        }
-                    })
-            ;
+                            })
+                    .onSuccess(
+                            new Handler<RowSet<Row>>() {
+                                @Override
+                                public void handle(RowSet<Row> rows) {
+                                    if (rows.size() != 0) {
+                                        for (Row row : rows) {
+                                            String name = row.getString(0);
+                                            Integer age = row.getInteger("age");
+                                            resultFuture.complete(Collections.singletonList(Tuple2.of(name, age)));
+                                        }
+                                    } else {
+                                        resultFuture.complete(Collections.singletonList(Tuple2.of("", -1)));
+                                    }
+                                }
+                            });
         }
     }
 

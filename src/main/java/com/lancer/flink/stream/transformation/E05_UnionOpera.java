@@ -25,7 +25,8 @@ public class E05_UnionOpera {
         DataStream<String> unionStream = s1.union(s2);
 
         // 在合并的那条流上操作
-        unionStream.map(p -> p).print();
+        unionStream.map(p -> p)
+                .print();
 
         env.execute(E05_UnionOpera.class.getSimpleName());
     }

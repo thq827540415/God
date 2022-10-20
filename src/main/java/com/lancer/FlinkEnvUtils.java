@@ -42,7 +42,9 @@ public class FlinkEnvUtils {
     /**
      * 基于流环境和配置，生成Table环境
      */
-    public static StreamTableEnvironment getTableEnv(StreamExecutionEnvironment env, EnvironmentSettings settings) {
+    public static StreamTableEnvironment getTableEnv(
+            StreamExecutionEnvironment env,
+            EnvironmentSettings settings) {
         return StreamTableEnvironment.create(env, settings);
     }
 

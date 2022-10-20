@@ -29,17 +29,19 @@ public class E04_ConnectedStream {
         ConnectedStreams<String, Integer> connectedStreams = s1.connect(s2);
 
         // 同理CoMpaFunction：ConnectedStreams -> DataStream
-        SingleOutputStreamOperator<String> res = connectedStreams.flatMap(new CoFlatMapFunction<String, Integer, String>() {
-            @Override
-            public void flatMap1(String value, Collector<String> out) throws Exception {
-                out.collect(value.toUpperCase());
-            }
+        SingleOutputStreamOperator<String> res = connectedStreams
+                .flatMap(
+                        new CoFlatMapFunction<String, Integer, String>() {
+                            @Override
+                            public void flatMap1(String value, Collector<String> out) throws Exception {
+                                out.collect(value.toUpperCase());
+                            }
 
-            @Override
-            public void flatMap2(Integer value, Collector<String> out) throws Exception {
-                out.collect(String.valueOf(value * 10));
-            }
-        });
+                            @Override
+                            public void flatMap2(Integer value, Collector<String> out) throws Exception {
+                                out.collect(String.valueOf(value * 10));
+                            }
+                        });
 
         res.print();
 

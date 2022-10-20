@@ -25,12 +25,14 @@ public class E04_RedisSink {
 
         SingleOutputStreamOperator<Tuple2<String, String>> line2Tuple = env
                 .socketTextStream(UsualConsts.NC_HOST, 9999)
-                .map(line -> {
-                    String[] split = line.split(",");
-                    return Tuple2.of(split[0], split[1]);
-                })
-                .returns(TypeInformation.of(new TypeHint<Tuple2<String, String>>() {
-                }));
+                .map(
+                        line -> {
+                            String[] split = line.split(",");
+                            return Tuple2.of(split[0], split[1]);
+                        })
+                .returns(
+                        TypeInformation.of(new TypeHint<Tuple2<String, String>>() {
+                        }));
 
         FlinkJedisPoolConfig redisConf = new FlinkJedisPoolConfig.Builder()
                 .setHost(RedisConsts.REDIS_HOST)
@@ -49,7 +51,7 @@ public class E04_RedisSink {
         @Override
         public RedisCommandDescription getCommandDescription() {
             // additional key for Hash and Sorted set data type
-            // hset word key value
+            // cmd: hset word key value
             return new RedisCommandDescription(RedisCommand.HSET, "word");
         }
 

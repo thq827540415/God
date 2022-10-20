@@ -28,13 +28,14 @@ public class E04_RedisSource {
 
         DataStreamSource<String> source = env.socketTextStream(UsualConsts.NC_HOST, 9999);
 
-        AsyncDataStream.unorderedWait(
-                source,
-                new VertxRedis(),
-                3000,
-                TimeUnit.MILLISECONDS,
-                20
-        ).print().setParallelism(1);
+        AsyncDataStream
+                .unorderedWait(
+                        source,
+                        new VertxRedis(),
+                        3000,
+                        TimeUnit.MILLISECONDS,
+                        20)
+                .print().setParallelism(1);
 
         env.execute(E04_RedisSource.class.getSimpleName());
     }
@@ -66,15 +67,17 @@ public class E04_RedisSource {
 
         @Override
         public void asyncInvoke(String s, ResultFuture<String> resultFuture) throws Exception {
-            redis.get(s, new Handler<AsyncResult<Response>>() {
-                @Override
-                public void handle(AsyncResult<Response> responseAsyncResult) {
-                    if (responseAsyncResult.succeeded()) {
-                        Response result = responseAsyncResult.result();
-                        resultFuture.complete(Collections.singletonList(result.toString()));
-                    }
-                }
-            });
+            redis.get(
+                    s,
+                    new Handler<AsyncResult<Response>>() {
+                        @Override
+                        public void handle(AsyncResult<Response> responseAsyncResult) {
+                            if (responseAsyncResult.succeeded()) {
+                                Response result = responseAsyncResult.result();
+                                resultFuture.complete(Collections.singletonList(result.toString()));
+                            }
+                        }
+                    });
 
 /*
             CompletableFuture.<String>supplyAsync(new Supplier<String>() {

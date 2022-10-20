@@ -32,26 +32,32 @@ public class E03_SideOutputStream {
 
         SingleOutputStreamOperator<Tuple2<String, Integer>> outputStream = source
                 // 3. 将获取到的数据过滤并解析成User对象 ==> sz,12    ls,25
-                .flatMap((FlatMapFunction<String, Tuple2<String, Integer>>) (line, out) -> {
-                    if (Objects.nonNull(line)) {
-                        String[] split = line.split(",");
-                        int age = Integer.parseInt(split[1]);
-                        if (split.length == 2 && age >= 0 && age <= 100) {
-                            out.collect(Tuple2.of(split[0], age));
-                        }
-                    }
-                }, Types.TUPLE(Types.STRING, Types.INT))
+                .flatMap(
+                        (FlatMapFunction<String, Tuple2<String, Integer>>) (line, out) -> {
+                            if (Objects.nonNull(line)) {
+                                String[] split = line.split(",");
+                                int age = Integer.parseInt(split[1]);
+                                if (split.length == 2 && age >= 0 && age <= 100) {
+                                    out.collect(Tuple2.of(split[0], age));
+                                }
+                            }
+                        }, Types.TUPLE(Types.STRING, Types.INT))
                 // 4. 将18岁以上的放入侧流中
-                .process(new ProcessFunction<Tuple2<String, Integer>, Tuple2<String, Integer>>() {
-                    @Override
-                    public void processElement(Tuple2<String, Integer> user, ProcessFunction<Tuple2<String, Integer>, Tuple2<String, Integer>>.Context ctx, Collector<Tuple2<String, Integer>> out) {
-                        if (user.f1 >= 18) {
-                            ctx.output(outputTag, user.toString());
-                        } else {
-                            out.collect(user);
-                        }
-                    }
-                });
+                .process(
+                        new ProcessFunction<Tuple2<String, Integer>, Tuple2<String, Integer>>() {
+                            @Override
+                            public void processElement(
+                                    Tuple2<String, Integer> user,
+                                    ProcessFunction<Tuple2<String, Integer>, Tuple2<String, Integer>>
+                                            .Context ctx,
+                                    Collector<Tuple2<String, Integer>> out) {
+                                if (user.f1 >= 18) {
+                                    ctx.output(outputTag, user.toString());
+                                } else {
+                                    out.collect(user);
+                                }
+                            }
+                        });
 
         // 5. 输出不满18的用户的信息
         outputStream.print();
