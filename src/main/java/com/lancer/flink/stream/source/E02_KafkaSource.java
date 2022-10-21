@@ -21,7 +21,6 @@ import java.util.*;
  */
 public class E02_KafkaSource {
     public static void main(String[] args) throws Exception {
-
         StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
 
         Properties p = new Properties();

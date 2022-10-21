@@ -60,9 +60,6 @@ public class MyAtLeastOnceSourceDemo {
         /**
          * 在初始化subtask的时候，会调用一次该方法，该方法是为了从stateBackend恢复状态数据
          * 比open方法先执行
-         *
-         * @param context
-         * @throws Exception
          */
         @Override
         public void initializeState(FunctionInitializationContext context) throws Exception {
@@ -79,9 +76,6 @@ public class MyAtLeastOnceSourceDemo {
 
         /**
          * 在每一次checkpoint的时候，该Task的每个subtask都会调用一次该方法(开新线程)
-         *
-         * @param context
-         * @throws Exception
          */
         @Override
         public void snapshotState(FunctionSnapshotContext context) throws Exception {

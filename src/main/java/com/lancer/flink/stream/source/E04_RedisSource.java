@@ -1,5 +1,6 @@
 package com.lancer.flink.stream.source;
 
+import com.lancer.FlinkEnvUtils;
 import com.lancer.consts.RedisConsts;
 import com.lancer.consts.UsualConsts;
 import io.vertx.core.AsyncResult;
@@ -24,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class E04_RedisSource {
     public static void main(String[] args) throws Exception {
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());
+        StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
 
         DataStreamSource<String> source = env.socketTextStream(UsualConsts.NC_HOST, 9999);
 

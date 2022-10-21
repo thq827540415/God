@@ -24,6 +24,7 @@ import java.util.Properties;
 public class E02_KafkaSink {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
+
         Properties p = new Properties();
         p.load(E02_KafkaSink.class.getClassLoader().getResourceAsStream("producer.properties"));
 

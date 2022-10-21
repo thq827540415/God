@@ -1,5 +1,6 @@
 package com.lancer.flink.stream;
 
+import com.lancer.FlinkEnvUtils;
 import com.lancer.consts.UsualConsts;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -8,9 +9,12 @@ import org.apache.flink.api.common.ExecutionMode;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.common.functions.RichReduceFunction;
+import org.apache.flink.api.common.functions.Partitioner;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.api.common.time.Time;
+import org.apache.flink.api.common.typeinfo.TypeHint;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
@@ -26,11 +30,10 @@ import org.apache.flink.util.Collector;
 @Slf4j
 public class StreamingWordCount {
     public static void main(String[] args) throws Exception {
-        // StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
-
-        Configuration config = new Configuration();
-        config.setInteger("rest.bind-port", 8888);
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(config);
+        // todo 获取执行环境
+        Configuration conf = new Configuration();
+        conf.setInteger("rest.bind-port", 8888);
+        StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv(conf);
 
 
         // todo 执行环境配置
@@ -53,7 +56,8 @@ public class StreamingWordCount {
         // DELETE_ON_CANCELLATION只有在job is cancelled才会删除
         // kill job == job is failed
         // NO_EXTERNALIZED_CHECKPOINTS暂时未知。。。
-        env.getCheckpointConfig().setExternalizedCheckpointCleanup(CheckpointConfig.ExternalizedCheckpointCleanup.DELETE_ON_CANCELLATION);
+        env.getCheckpointConfig().setExternalizedCheckpointCleanup(
+                CheckpointConfig.ExternalizedCheckpointCleanup.DELETE_ON_CANCELLATION);
 
 
         // todo 开始checkpoint后，设置重启策略
@@ -67,8 +71,12 @@ public class StreamingWordCount {
         // env.setRestartStrategy(RestartStrategies.failureRateRestart(3, Time.seconds(60), Time.seconds(5)));
 
 
-        // todo 设置状态后端
+        // todo 设置state backend
         // 1. 使用MemoryStateBackend == HashMapStateBackend + JobManagerCheckpointStorage --> 默认
+        // HashMapStateBackend:
+        //                     对于KeyedState来说，在内存中是使用CopyOnWriteStateMap来保存状态的，实际是单链表
+        //                        一个subtask对应一个CopyOnWriteStateMap<LinkedList<key -> KeyedState<>>>
+        //                     对于OperatorState来说，是使用Map来保存状态的Map<StateName, ListState<>>
         env.setStateBackend(new HashMapStateBackend());
         env.getCheckpointConfig().setCheckpointStorage(new JobManagerCheckpointStorage());
 
@@ -78,6 +86,7 @@ public class StreamingWordCount {
         // env.getCheckpointConfig().setCheckpointStorage(UsualConsts.HDFS_URL + "/flink/checkpoint");
 
         // 3. 使用RocksDBStateBackend == EmbeddedRocksDBStateBackend + FileSystemCheckpointStorage
+        // HashMapStateBackend和EmbeddedRocksDBStateBackend快照文件的格式是统一的
         // env.setStateBackend(new EmbeddedRocksDBStateBackend());
         // env.getCheckpointConfig().setCheckpointStorage(UsualConsts.HDFS_URL + "/flink/checkpoint");
 
@@ -87,43 +96,59 @@ public class StreamingWordCount {
 
 
         // todo Transformation
-        SingleOutputStreamOperator<Tuple2<String, Integer>> result = source
-                .flatMap(new FlatMapFunction<String, String>() {
-                    @Override
-                    public void flatMap(String s, Collector<String> collector) throws Exception {
-                        String[] words = s.split("\\s+");
-                        for (String word : words) {
-                            collector.collect(word.toLowerCase().trim());
-                        }
-                    }
-                })
-                .filter(new FilterFunction<String>() {
-                    @Override
-                    public boolean filter(String s) throws Exception {
-                        if ("error".equals(s)) {
-                            // test restart strategy
-                            throw new RuntimeException();
-                        }
-                        return StringUtils.isNotEmpty(s);
-                    }
-                }).startNewChain() // 将该算子前面的chain断开
-                .map(new MapFunction<String, Tuple2<String, Integer>>() {
-                    @Override
-                    public Tuple2<String, Integer> map(String word) throws Exception {
-                        return new Tuple2<>(word, 1);
-                    }
-                })
-                .keyBy(new KeySelector<Tuple2<String, Integer>, String>() {
-                    @Override
-                    public String getKey(Tuple2<String, Integer> stringIntegerTuple2) throws Exception {
-                        return stringIntegerTuple2.f0;
-                    }
-                })
-                .sum(1).disableChaining(); // 将该算子后面的chain断开
+        SingleOutputStreamOperator<Tuple2<String, Integer>> result =
+                source
+                        .flatMap(
+                                new FlatMapFunction<String, String>() {
+                                    @Override
+                                    public void flatMap(String s, Collector<String> collector) throws Exception {
+                                        String[] words = s.split("\\s+");
+                                        for (String word : words) {
+                                            collector.collect(word.toLowerCase().trim());
+                                        }
+                                    }
+                                }, Types.STRING)
+                        .filter(
+                                new FilterFunction<String>() {
+                                    @Override
+                                    public boolean filter(String s) throws Exception {
+                                        if ("error".equals(s)) {
+                                            // test restart strategy
+                                            throw new RuntimeException();
+                                        }
+                                        return StringUtils.isNotEmpty(s);
+                                    }
+                                }).startNewChain() // 将该算子前面的chain断开
+                        .map(
+                                new MapFunction<String, Tuple2<String, Integer>>() {
+                                    @Override
+                                    public Tuple2<String, Integer> map(String word) throws Exception {
+                                        return new Tuple2<>(word, 1);
+                                    }
+                                }, new TypeHint<Tuple2<String, Integer>>(){}.getTypeInfo())
+                        .keyBy(
+                                new KeySelector<Tuple2<String, Integer>, String>() {
+                                    @Override
+                                    public String getKey(Tuple2<String, Integer> stringIntegerTuple2) {
+                                        return stringIntegerTuple2.f0;
+                                    }
+                                }, TypeInformation.of(String.class))
+                        .sum(1).disableChaining(); // 将该算子后面的chain断开
 
 
         // todo sink
-        result.print();
+        result
+                .map(value -> value, Types.TUPLE(Types.STRING, Types.INT))
+                // global：上游的数据只分发给下游的第一个分区
+                // broadcast：上游的数据广播给下游的每个分区
+                // forward：上下游并发度必须一样，数据一对一发送
+                // shuffle：随机均匀分配，网络开销大
+                // rebalance：轮询发送，网络开销大
+                // recale：TM本地轮询发送，网络开销小
+                // keyBy：hash发送，每个key发送到对应的分区
+                // partitionCustom：custom，每个key发送到对应的分区
+                .forward()
+                .print().setParallelism(1);
 
         env.execute("WordCount");
     }

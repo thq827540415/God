@@ -14,9 +14,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
  */
 public class E05_UnionOpera {
     public static void main(String[] args) throws Exception {
-        // StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
-
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());
+        StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
 
         DataStreamSource<String> s1 = env.socketTextStream(UsualConsts.NC_HOST, 9998);
         DataStreamSource<String> s2 = env.socketTextStream(UsualConsts.NC_HOST, 9999);

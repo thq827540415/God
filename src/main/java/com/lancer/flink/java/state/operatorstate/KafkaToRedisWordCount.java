@@ -20,10 +20,10 @@ import java.util.Properties;
 
 /**
  * 保证数据一致性
- * 1.开启checkpoint（偏移量，中间累加的结果保存到StateBackend中）
- * 2.kafka记录偏移量（OperatorState）
- * 3.keyBy后要将聚合的结果保存到KeyedState中（ValueState）
- * 4.最终的结果写入redis中（覆盖）
+ *      1.开启checkpoint（偏移量，中间累加的结果保存到StateBackend中）
+ *      2.kafka记录偏移量（OperatorState）
+ *      3.keyBy后要将聚合的结果保存到KeyedState中（ValueState）
+ *      4.最终的结果写入redis中（覆盖）
  */
 public class KafkaToRedisWordCount {
     public static void main(String[] args) throws Exception {
@@ -40,7 +40,8 @@ public class KafkaToRedisWordCount {
 
         /* 老版本 */
         /*FlinkKafkaConsumer<String> kafkaConsumer = new FlinkKafkaConsumer<>("stateTest", new SimpleStringSchema(), p);
-        kafkaConsumer.setCommitOffsetsOnCheckpoints(false); // 等价于commit.offsets.on.checkpoint=false, 不将偏移量写出kafka特殊的topic中
+        // 等价于commit.offsets.on.checkpoint=false, 不将偏移量写出kafka特殊的topic(__consumer_offset)中
+        kafkaConsumer.setCommitOffsetsOnCheckpoints(false);
         DataStreamSource<String> source = env.addSource(kafkaConsumer);*/
 
         /* 新版本 */
@@ -69,7 +70,6 @@ public class KafkaToRedisWordCount {
 
         /**
          * 以何种方式写入到redis
-         * @return
          */
         @Override
         public RedisCommandDescription getCommandDescription() {

@@ -19,6 +19,7 @@ import org.apache.flink.runtime.state.FunctionInitializationContext;
 import org.apache.flink.runtime.state.FunctionSnapshotContext;
 import org.apache.flink.streaming.api.checkpoint.CheckpointedFunction;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
@@ -38,33 +39,78 @@ import java.util.Objects;
  * 4. ReducingState
  * 5. AggregatingState
  */
+@Slf4j
 public class E06_KeyedState {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
-        env.setParallelism(2);
 
         DataStreamSource<String> source = env.socketTextStream(UsualConsts.NC_HOST, 9999);
 
         // doListState(source);
         // doValueState(source);
-        doMapState(source);
+        // doMapState(source);
 
         env.execute(E06_KeyedState.class.getSimpleName());
     }
-
 
     /**
      * WordCount
      */
     private static void doValueState(DataStreamSource<String> source) {
-        source
-                .map(
-                        line -> {
-                            String[] split = line.split("\\s+");
-                            return Tuple2.of(split[0], Integer.parseInt(split[1]));
-                        }, new TypeHint<Tuple2<String, Integer>>() {
-                        }.getTypeInfo())
-                .keyBy(t -> t.f0)
+        /**
+         * KeyedState通过open方法获取状态和initializeState方法获取状态一样, 后者先执行，同时可以在open中设置ttl
+         */
+        class MyKeyedProcessFunction
+                extends KeyedProcessFunction<String, Tuple2<String, Integer>, Tuple2<String, Integer>>
+                implements CheckpointedFunction {
+
+            private transient ValueState<Integer> valueState;
+
+            @Override
+            public void snapshotState(FunctionSnapshotContext context) throws Exception {
+
+            }
+
+            @Override
+            public void initializeState(FunctionInitializationContext context) throws Exception {
+                ValueStateDescriptor<Integer> valueStateDescriptor = new ValueStateDescriptor<>(
+                        "value state descriptor",
+                        new TypeHint<Integer>() {
+                        }.getTypeInfo());
+                valueState = context.getKeyedStateStore().getState(valueStateDescriptor);
+            }
+
+            @Override
+            public void processElement(Tuple2<String, Integer> value,
+                                       Context ctx,
+                                       Collector<Tuple2<String, Integer>> out) throws Exception {
+                Integer currentValue = valueState.value();
+                if (!Objects.isNull(currentValue)) {
+                    value.f1 += currentValue;
+                }
+                valueState.update(value.f1);
+                out.collect(value);
+            }
+        }
+
+        // todo 获取keyedStream
+        KeyedStream<Tuple2<String, Integer>, String> middleStream =
+                source
+                        .map(
+                                line -> {
+                                    String[] split = line.split("\\s+");
+                                    return Tuple2.of(split[0], Integer.parseInt(split[1]));
+                                }, new TypeHint<Tuple2<String, Integer>>() {
+                                }.getTypeInfo())
+                        .keyBy(t -> t.f0);
+
+        // todo 使用CheckpointedFunction
+        /*middleStream
+                .process(new MyKeyedProcessFunction())
+                .print();*/
+
+        // todo 使用open
+        middleStream
                 .process(
                         // StreamGroupedReduceOperator类中类似
                         new KeyedProcessFunction<String, Tuple2<String, Integer>, Tuple2<String, Integer>>() {
@@ -78,22 +124,50 @@ public class E06_KeyedState {
                             public void open(Configuration parameters) throws Exception {
                                 // 设置单个状态的超时时间，（只有keyed state才能设置超时时间）
                                 StateTtlConfig ttlConfig = StateTtlConfig.newBuilder(Time.seconds(60))
-                                        // 默认存活时间更新类型
-                                        // .setUpdateType(StateTtlConfig.UpdateType.OnCreateAndWrite)
-                                        // 关闭TTL，状态永不过期
+                                        // 覆盖builder中传入的时间
+                                        .setTtl(Time.seconds(120))
+
+                                        // 默认使用的是eventTime
+                                        // .useProcessingTime()
+
+
+                                        // 1. 默认重置ttl策略
+                                        // .updateTtlOnCreateAndWrite()
+                                        // 2. 关闭ttl，状态永不过期
                                         // .setUpdateType(StateTtlConfig.UpdateType.Disabled)
-                                        .setUpdateType(StateTtlConfig.UpdateType.OnReadAndWrite)
-                                        // 数据只要超时就不能使用了
-                                        .setStateVisibility(StateTtlConfig.StateVisibility.NeverReturnExpired)
-                                        // 数据只要还没被cleanUp（开个线程），就还可以使用
-                                        // .setStateVisibility(StateTtlConfig.StateVisibility.ReturnExpiredIfNotCleanedUp)
+                                        // 3. 数据只要被Read或者Write，则重置ttl
+                                        // .updateTtlOnReadAndWrite()
+
+
+                                        // 1. 数据只要超时就不能使用了
+                                        // .neverReturnExpired()
+                                        // 2. 数据只要过期还没被cleanUp（开个线程），就还可以使用
+                                        // .returnExpiredIfNotCleanedUp()
+
+
+                                        // 1. 增量清理，为true时每一条状态数据被访问，则会检查1000条数据是否过期
+                                        //    只用于HashMapStateBackend
+                                        .cleanupIncrementally(1000, true)
+                                        // 2. 全量清理，checkpoint的时候，只保存未过期的状态数据，但是并不会清理算子本地的状态数据
+                                        // .cleanupFullSnapshot()
+                                        // 3. 在rocksdb的compact机制中添加过期数据过滤器，以在compact过程中清理过期的状态数据
+                                        //    只用于EmbeddedRocksDBStateBackend
+                                        // .cleanupInRocksdbCompactFilter(1000)
+
+
+                                        // 禁用默认后台清理策略
+                                        // 如果StateBackend支持garbage collected in the background，则会周期性后台清理
+                                        .disableCleanupInBackground()
                                         .build();
+
+                                // 获取永不过期的ttl
+                                // StateTtlConfig disabled = StateTtlConfig.DISABLED;
 
                                 ValueStateDescriptor<Integer> valueStateDescriptor = new ValueStateDescriptor<>(
                                         "value state descriptor",
                                         new TypeHint<Integer>() {
                                         }.getTypeInfo());
-                                // 开启TTL
+                                // 开启ttl
                                 valueStateDescriptor.enableTimeToLive(ttlConfig);
 
                                 // 初始化或者是恢复状态，底层调用的是keyedStateBackend.getPartitionedState(...)
@@ -210,8 +284,8 @@ public class E06_KeyedState {
     private static void doMapState(DataStreamSource<String> source) {
         source
                 .map(
-                        value -> {
-                            String[] split = value.split("\\s+");
+                        line -> {
+                            String[] split = line.split("\\s+");
                             return Tuple2.of(split[0] + "," + split[1], Integer.parseInt(split[2]));
                         }, TypeInformation.of(new TypeHint<Tuple2<String, Integer>>() {
                         }))
