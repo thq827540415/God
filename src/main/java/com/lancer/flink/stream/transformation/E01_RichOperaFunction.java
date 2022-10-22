@@ -20,8 +20,7 @@ public class E01_RichOperaFunction {
 
         DataStreamSource<String> source = env.socketTextStream(UsualConsts.NC_HOST, 9999);
 
-        SingleOutputStreamOperator<String> res = source
-                .map(new StringMapFunction()).setParallelism(2);
+        SingleOutputStreamOperator<String> res = source.map(new StringMapFunction());
 
         res.print();
 
@@ -44,7 +43,7 @@ public class E01_RichOperaFunction {
         }
 
         /**
-         * 初始化操作，每个并行度都要执行
+         * 初始化操作，每个subtask都要执行
          */
         @Override
         public void open(Configuration parameters) throws Exception {
@@ -52,7 +51,7 @@ public class E01_RichOperaFunction {
         }
 
         /**
-         * 关闭操作，每个并行度都要执行
+         * 关闭操作，每个subtask都要执行
          */
         @Override
         public void close() throws Exception {

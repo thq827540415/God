@@ -49,6 +49,7 @@ public class E07_OperatorState {
         DataStreamSource<String> source1 = env.socketTextStream(UsualConsts.NC_HOST, 9998);
         DataStreamSource<String> source2 = env.socketTextStream(UsualConsts.NC_HOST, 9999);
 
+        doListStateOfOperatorStateSink(source1);
         // doBroadcastWithMapState(source1, source2);
         // doBroadcastWithBroadcastState(source1, source2);
 

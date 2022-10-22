@@ -18,7 +18,9 @@ import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.contrib.streaming.state.RocksDBStateBackend;
 import org.apache.flink.runtime.state.hashmap.HashMapStateBackend;
+import org.apache.flink.runtime.state.memory.MemoryStateBackend;
 import org.apache.flink.runtime.state.storage.JobManagerCheckpointStorage;
 import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
@@ -26,6 +28,8 @@ import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
+
+import java.util.Arrays;
 
 @Slf4j
 public class StreamingWordCount {
@@ -73,10 +77,9 @@ public class StreamingWordCount {
 
         // todo 设置state backend
         // 1. 使用MemoryStateBackend == HashMapStateBackend + JobManagerCheckpointStorage --> 默认
-        // HashMapStateBackend:
-        //                     对于KeyedState来说，在内存中是使用CopyOnWriteStateMap来保存状态的，实际是单链表
-        //                        一个subtask对应一个CopyOnWriteStateMap<LinkedList<key -> KeyedState<>>>
-        //                     对于OperatorState来说，是使用Map来保存状态的Map<StateName, ListState<>>
+        // 使用createKeyedStateBackend创建AbstractKeyedStateBackend(HeapKeyedStateBackend)
+        // 使用createOperatorStateBackend创建OperatorStateBackend
+        // 在new StreamTask的时候创建状态后端
         env.setStateBackend(new HashMapStateBackend());
         env.getCheckpointConfig().setCheckpointStorage(new JobManagerCheckpointStorage());
 
@@ -99,40 +102,28 @@ public class StreamingWordCount {
         SingleOutputStreamOperator<Tuple2<String, Integer>> result =
                 source
                         .flatMap(
-                                new FlatMapFunction<String, String>() {
-                                    @Override
-                                    public void flatMap(String s, Collector<String> collector) throws Exception {
-                                        String[] words = s.split("\\s+");
-                                        for (String word : words) {
-                                            collector.collect(word.toLowerCase().trim());
-                                        }
-                                    }
+                                (s, collector) -> {
+                                    Arrays.stream(s.split("\\s+"))
+                                            .forEach(word -> collector.collect(word.toLowerCase().trim()));
                                 }, Types.STRING)
                         .filter(
-                                new FilterFunction<String>() {
-                                    @Override
-                                    public boolean filter(String s) throws Exception {
-                                        if ("error".equals(s)) {
-                                            // test restart strategy
-                                            throw new RuntimeException();
-                                        }
-                                        return StringUtils.isNotEmpty(s);
+                                s -> {
+                                    if ("error".equals(s)) {
+                                        // test restart strategy
+                                        throw new RuntimeException();
                                     }
+                                    return StringUtils.isNotEmpty(s);
                                 }).startNewChain() // 将该算子前面的chain断开
                         .map(
-                                new MapFunction<String, Tuple2<String, Integer>>() {
-                                    @Override
-                                    public Tuple2<String, Integer> map(String word) throws Exception {
-                                        return new Tuple2<>(word, 1);
-                                    }
-                                }, new TypeHint<Tuple2<String, Integer>>(){}.getTypeInfo())
-                        .keyBy(
-                                new KeySelector<Tuple2<String, Integer>, String>() {
-                                    @Override
-                                    public String getKey(Tuple2<String, Integer> stringIntegerTuple2) {
-                                        return stringIntegerTuple2.f0;
-                                    }
-                                }, TypeInformation.of(String.class))
+                                word -> new Tuple2<>(word, 1),
+                                new TypeHint<Tuple2<String, Integer>>() {
+                                }.getTypeInfo())
+                        // 分配数据的流程如下： maxParallelism == the number of key groups
+                        //      KeyGroupStreamPartitioner#selectChannel ->
+                        //          KeyGroupRangeAssignment#computeOperatorIndexForKeyGroup
+                        //              KeyGroupRangeAssignment#assignToKeyGroup ->
+                        // 先计算key所属的key group，再计算对应key group对应的subtask，最终返回subtask index
+                        .keyBy(t -> t.f0, TypeInformation.of(String.class))
                         .sum(1).disableChaining(); // 将该算子后面的chain断开
 
 
@@ -144,11 +135,11 @@ public class StreamingWordCount {
                 // forward：上下游并发度必须一样，数据一对一发送
                 // shuffle：随机均匀分配，网络开销大
                 // rebalance：轮询发送，网络开销大
-                // recale：TM本地轮询发送，网络开销小
-                // keyBy：hash发送，每个key发送到对应的分区
+                // rescale：TM本地轮询发送，网络开销小
+                // keyBy：hash发送，每个key发送到对应的分区 key -> key group -> subtask
                 // partitionCustom：custom，每个key发送到对应的分区
                 .forward()
-                .print().setParallelism(1);
+                .print();
 
         env.execute("WordCount");
     }

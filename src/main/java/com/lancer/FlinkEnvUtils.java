@@ -26,10 +26,13 @@ public class FlinkEnvUtils {
         if (UsualConsts.WITH_WEB_UI) {
             return StreamExecutionEnvironment
                     .createLocalEnvironmentWithWebUI(new Configuration())
-                    .setParallelism(UsualConsts.GLOBAL_PARALLELISM);
+                    .setParallelism(UsualConsts.GLOBAL_OPERATOR_PARALLELISM)
+                    .setMaxParallelism(UsualConsts.GLOBAL_MAX_PARALLELISM);
         }
         return StreamExecutionEnvironment
-                .getExecutionEnvironment(new Configuration()).setParallelism(UsualConsts.GLOBAL_PARALLELISM);
+                .getExecutionEnvironment(new Configuration())
+                .setParallelism(UsualConsts.GLOBAL_OPERATOR_PARALLELISM)
+                .setMaxParallelism(UsualConsts.GLOBAL_MAX_PARALLELISM);
     }
 
     /**
@@ -38,10 +41,14 @@ public class FlinkEnvUtils {
     public static StreamExecutionEnvironment getDSEnv(Configuration conf) {
         if (UsualConsts.WITH_WEB_UI) {
             return StreamExecutionEnvironment
-                    .createLocalEnvironmentWithWebUI(conf).setParallelism(UsualConsts.GLOBAL_PARALLELISM);
+                    .createLocalEnvironmentWithWebUI(conf)
+                    .setParallelism(UsualConsts.GLOBAL_OPERATOR_PARALLELISM)
+                    .setMaxParallelism(UsualConsts.GLOBAL_MAX_PARALLELISM);
         }
         return StreamExecutionEnvironment
-                .getExecutionEnvironment(conf).setParallelism(UsualConsts.GLOBAL_PARALLELISM);
+                .getExecutionEnvironment(conf)
+                .setParallelism(UsualConsts.GLOBAL_OPERATOR_PARALLELISM)
+                .setMaxParallelism(UsualConsts.GLOBAL_MAX_PARALLELISM);
     }
 
     /**

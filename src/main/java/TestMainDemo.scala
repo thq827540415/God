@@ -1,7 +1,4 @@
-import org.apache.flink.api.common.functions.RichMapFunction
-import org.apache.flink.configuration.Configuration
-import org.apache.flink.streaming.api.functions.sink.{RichSinkFunction, SinkFunction}
-import org.apache.flink.streaming.api.scala._
+import org.apache.flink.util.MathUtils
 
 /**
  * @Author lancer
@@ -10,36 +7,13 @@ import org.apache.flink.streaming.api.scala._
  */
 object TestMainDemo {
   def main(args: Array[String]): Unit = {
-    val env = StreamExecutionEnvironment.getExecutionEnvironment
+    // -372811216
+    println(MathUtils.bitMix("abc".hashCode ^ "ns".hashCode))
+    println(MathUtils.bitMix("abc".hashCode ^ "ns".hashCode))
+    println(MathUtils.bitMix("abc".hashCode ^ "ns".hashCode))
 
-    env.setParallelism(4)
+    // 总能保证范围在127以内
+    print(-372811216 & 127)
 
-    env.socketTextStream("bigdata01", 9999)
-      .flatMap(_.split(" "))
-      .map(new RichMapFunction[String, (String, Int)] {
-
-        var subtask: Int = _
-
-        override def open(parameters: Configuration): Unit = {
-          subtask = getRuntimeContext.getIndexOfThisSubtask
-        }
-
-        override def map(value: String): (String, Int) = {
-          (value, subtask)
-        }
-      })
-      .rescale
-      .addSink(new RichSinkFunction[(String, Int)] {
-        var subtask: Int = _
-
-        override def open(parameters: Configuration): Unit = {
-          subtask = getRuntimeContext.getIndexOfThisSubtask
-        }
-
-        override def invoke(value: (String, Int), context: SinkFunction.Context): Unit = {
-          println(s"$value =====>  $subtask")
-        }
-      }).setParallelism(3)
-    env.execute(TestMainDemo.getClass.getSimpleName)
   }
 }
