@@ -5,25 +5,17 @@ import com.lancer.consts.UsualConsts;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.flink.api.common.functions.util.PrintSinkOutputWriter;
 import org.apache.flink.api.common.state.*;
 import org.apache.flink.api.common.time.Time;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeinfo.Types;
-import org.apache.flink.api.common.typeutils.base.IntSerializer;
-import org.apache.flink.api.common.typeutils.base.StringSerializer;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.configuration.Configuration;
-import org.apache.flink.runtime.state.FunctionInitializationContext;
-import org.apache.flink.runtime.state.FunctionSnapshotContext;
-import org.apache.flink.streaming.api.checkpoint.CheckpointedFunction;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
-import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
-import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.apache.flink.util.Collector;
 
 import java.util.*;
@@ -76,11 +68,11 @@ import java.util.*;
  * KeyedStream中为每个key分配一个独立的状态
  * <p>
  * KeyedState:<p>
- * 1. ValueState：用于保存一个值. eg: ValueState< Map< String, Int>> <==> MapState< String, Int><p>
- * 2. ListState：用于保存一个列表<p>
- * 3. MapState：用于保存一个Map<p>
- * 4. ReducingState<p>
- * 5. AggregatingState
+ *      1. ValueState：用于保存一个值. eg: ValueState< Map< String, Int>> <==> MapState< String, Int><p>
+ *      2. ListState：用于保存一个列表<p>
+ *      3. MapState：用于保存一个Map<p>
+ *      4. ReducingState<p>
+ *      5. AggregatingState
  */
 @Slf4j
 public class E06_KeyedState {
@@ -184,10 +176,10 @@ public class E06_KeyedState {
 
     /**
      * 将用户最近5次行为保存下来
-     * uid100 view
-     * uid102 addCart
-     * uid100 view
-     * uid100 pay
+     *      uid100 view
+     *      uid102 addCart
+     *      uid100 view
+     *      uid100 pay
      */
     private static void doListState(DataStreamSource<String> source) {
         source
@@ -228,7 +220,7 @@ public class E06_KeyedState {
                                 }
                                 list.add(value.f1);
                                 listState.update(list);
-                                out.collect(Tuple2.of(value.f0, (List<String>) list));
+                                out.collect(Tuple2.of(value.f0, list));
                             }
                         })
                 .print();
@@ -236,10 +228,10 @@ public class E06_KeyedState {
 
     /**
      * 求每个市的总金额
-     * 辽宁省 大连市 1000
-     * 河北省 廊坊市 2000
-     * 河北省 廊坊市 2000
-     * 辽宁省 沈阳市 1000
+     *      辽宁省 大连市 1000
+     *      河北省 廊坊市 2000
+     *      河北省 廊坊市 2000
+     *      辽宁省 沈阳市 1000
      */
     private static void doMapState(DataStreamSource<String> source) {
         source
