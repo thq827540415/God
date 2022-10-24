@@ -50,6 +50,7 @@ public class E03_JdbcSink {
     private static SinkFunction<Person> getJdbcSink() {
         return JdbcSink.sink(
                 // 指定需要执行的语句 -- insert or update
+                // 为保证幂等性，需要创建主键表，再insert into person values(?, ?) duplicated key update name = ?, age = ?
                 "insert into person(name, age) values(?, ?)",
                 // 使用preparedStatement设定参数
                 new JdbcStatementBuilder<Person>() {
@@ -80,6 +81,7 @@ public class E03_JdbcSink {
 
     /**
      * 保证Exactly_Once
+     *      因为XADataSource是支持分布式事务的接口
      */
     private static SinkFunction<Person> getJdbcExactlyOnceSink() {
         return JdbcSink.exactlyOnceSink(

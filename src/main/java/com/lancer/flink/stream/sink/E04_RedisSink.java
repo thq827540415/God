@@ -14,6 +14,8 @@ import org.apache.flink.streaming.connectors.redis.common.mapper.RedisCommand;
 import org.apache.flink.streaming.connectors.redis.common.mapper.RedisCommandDescription;
 import org.apache.flink.streaming.connectors.redis.common.mapper.RedisMapper;
 
+import java.util.Optional;
+
 /**
  * @Author lancer
  * @Date 2022/6/16 00:16
@@ -51,7 +53,7 @@ public class E04_RedisSink {
         @Override
         public RedisCommandDescription getCommandDescription() {
             // additional key for Hash and Sorted set data type
-            // cmd: hset word key value
+            // cmd: hset additionalKey key value
             return new RedisCommandDescription(RedisCommand.HSET, "word");
         }
 
@@ -63,6 +65,24 @@ public class E04_RedisSink {
         @Override
         public String getValueFromData(Tuple2<String, String> data) {
             return data.f1;
+        }
+
+
+        /**
+         * key想要的是学生的name，field是相应的科目，而value是这个科目对应的成绩。
+         * 此时就需要动态修改additionalKey
+         */
+        @Override
+        public Optional<String> getAdditionalKey(Tuple2<String, String> data) {
+            return RedisMapper.super.getAdditionalKey(data);
+        }
+
+        /**
+         * 根据具体数据，这是不同的TTL
+         */
+        @Override
+        public Optional<Integer> getAdditionalTTL(Tuple2<String, String> data) {
+            return RedisMapper.super.getAdditionalTTL(data);
         }
     }
 }
