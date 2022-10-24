@@ -13,5 +13,9 @@ flink内部算子状态：checkpoint -> 基于chandy-lamport分布式快照算�
     做checkpoint时，JM会向Source的每个subtask发送checkpointid，source接收到ck请求后，通过广播的方式，将barrier发送到下游，同时本地做一次ck，
                 当ck完成后，会给JM发送ack，当JM接收到每个节点的ack后，会给每个节点callback，告知该次ck已完成
 
-Sink端：幂等写入、两阶段提交事务写入、WAL预写日志、HDFS文件
+Sink端：幂等写入、2PC事务提交、2PC预写日志提交、HDFS文件
 
+     flink正常写in-gress文件，当发起chckpoint的时候in-gress文件改成pending，
+    当checkpoint完成时pending改成finish. 如果checkpoint成功后还没来得及改就挂掉文件依然是pending, 
+    当flink任务从checkpoint起来后会得到状态，将pending文件改成finsh，将in-gress文件给清理掉(2.7版本以后支持) 
+    这样就保证了一致性
