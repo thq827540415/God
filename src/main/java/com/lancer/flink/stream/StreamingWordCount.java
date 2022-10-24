@@ -21,6 +21,7 @@ import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
+import java.time.Duration;
 import java.util.Arrays;
 
 @Slf4j
@@ -43,17 +44,32 @@ public class StreamingWordCount {
 
 
         // todo 配置checkpoint
-        // 1. 开启checkpoint，CheckpointingMode.EXACTLY_ONCE --> 默认
-        env.enableCheckpointing(Time.seconds(2).toMilliseconds(), CheckpointingMode.EXACTLY_ONCE);
+        // 1. 开启checkpoint，指定两次checkpoint的间隔时间，CheckpointingMode.EXACTLY_ONCE --> 默认
+        // 指定checkpoint的对齐方式，默认为对齐；AT_LEAST_ONCE为非对齐
+        env.enableCheckpointing(2000, CheckpointingMode.EXACTLY_ONCE);
         // env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
-        // env.getCheckpointConfig().setCheckpointInterval(2000);
+        // env.getCheckpointConfig().setCheckpointInterval(Time.seconds(2).toMilliseconds());
 
-        // 2. cancel job后，是否删除外部的chk-x文件夹 --> 默认删除
+        // 2. 允许checkpoint失败最大的次数
+        env.getCheckpointConfig().setTolerableCheckpointFailureNumber(0);
+
+        // 3. 设置checkpoint对齐的超时时间
+        env.getCheckpointConfig().setAlignedCheckpointTimeout(Duration.ofMillis(500));
+
+        // 4. 如果检查点5s还没创建完毕，则认为该次checkpoint失败
+        env.getCheckpointConfig().setCheckpointTimeout(5000);
+
+        // 5. cancel job后，是否删除外部的chk-x文件夹 --> 默认删除
         // DELETE_ON_CANCELLATION只有在job is cancelled才会删除
         // kill job == job is failed
         // NO_EXTERNALIZED_CHECKPOINTS暂时未知。。。
         env.getCheckpointConfig().setExternalizedCheckpointCleanup(
                 CheckpointConfig.ExternalizedCheckpointCleanup.DELETE_ON_CANCELLATION);
+
+        // 6. 最大并行的checkpoint数量
+        env.getCheckpointConfig().setMaxConcurrentCheckpoints(3);
+        // 7. 创建检查点完成后（并不是创建检查点的周期），创建下一个检查点最少需要暂停的时间
+        env.getCheckpointConfig().setMinPauseBetweenCheckpoints(3000);
 
 
         // todo 开始checkpoint后，设置重启策略

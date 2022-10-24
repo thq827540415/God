@@ -74,12 +74,18 @@ public class E02_KafkaSource {
                 new TopicPartition("test", 2)
         ));
 
+        Map<TopicPartition, Long> specificStartOffsets = new HashMap<>();
+        specificStartOffsets.put(new TopicPartition("test", 0), 1L);
+        specificStartOffsets.put(new TopicPartition("test", 1), 2L);
+        specificStartOffsets.put(new TopicPartition("test", 2), 3L);
+
         return KafkaSource.<String>builder()
                 .setBootstrapServers("kafka01:9092,kafka02:9093,kafka03:9094")
                 .setTopics("test")
                 .setGroupId("test-group")
                 .setProperties(p)
                 .setPartitions(topicPartitions)
+                // .setStartingOffsets(OffsetsInitializer.offsets(specificStartOffsets))
                 .setStartingOffsets(OffsetsInitializer.latest())
                 // .setDeserializer(KafkaRecordDeserializationSchema.valueOnly(StringDeserializer.class))
                 .setValueOnlyDeserializer(new SimpleStringSchema())
