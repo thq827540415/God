@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.common.ExecutionConfig;
 import org.apache.flink.api.common.ExecutionMode;
+import org.apache.flink.api.common.operators.SlotSharingGroup;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.api.common.time.Time;
 import org.apache.flink.api.common.typeinfo.TypeHint;
@@ -13,6 +14,7 @@ import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.configuration.MemorySize;
 import org.apache.flink.runtime.state.hashmap.HashMapStateBackend;
 import org.apache.flink.runtime.state.storage.JobManagerCheckpointStorage;
 import org.apache.flink.streaming.api.CheckpointingMode;
@@ -67,7 +69,8 @@ public class StreamingWordCount {
                 CheckpointConfig.ExternalizedCheckpointCleanup.DELETE_ON_CANCELLATION);
 
         // 6. 最大并行的checkpoint数量
-        env.getCheckpointConfig().setMaxConcurrentCheckpoints(3);
+        env.getCheckpointConfig().setMaxConcurrentCheckpoints(2);
+
         // 7. 创建检查点完成后（并不是创建检查点的周期），创建下一个检查点最少需要暂停的时间
         env.getCheckpointConfig().setMinPauseBetweenCheckpoints(3000);
 
@@ -145,9 +148,14 @@ public class StreamingWordCount {
                 // rebalance：轮询发送，网络开销大
                 // rescale：TM本地轮询发送，网络开销小
                 // keyBy：hash发送，每个key发送到对应的分区 key -> key group -> subtask
-                // partitionCustom：custom，每个key发送到对应的分区
+                // partitionCustom：custom，每个key发送到对应的KeyGroup
                 .forward()
-                .print();
+                // 新开一个名为test的slot共享组，只有提交到集群上才有用，否则资源分配不到位，会导致subtask无法启动
+                // slot的个数与cores的数量相等最好
+                // slot = 每个slot共享组中，最大的并行度之和
+                // 若下游算子没有指定slot共享组，则会继承上游的slot共享组，默认的slot共享组名为default
+                .print()// .slotSharingGroup(SlotSharingGroup.newBuilder("test").build())
+        ;
 
         env.execute("WordCount");
     }
