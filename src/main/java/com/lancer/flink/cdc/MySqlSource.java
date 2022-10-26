@@ -2,7 +2,6 @@ package com.lancer.flink.cdc;
 
 import com.alibaba.fastjson.JSONObject;
 import com.lancer.flink.stream.sink.E02_KafkaSink;
-import com.ververica.cdc.connectors.mysql.MySqlSource;
 import com.ververica.cdc.connectors.mysql.table.StartupOptions;
 import com.ververica.cdc.debezium.DebeziumDeserializationSchema;
 import com.ververica.cdc.debezium.DebeziumSourceFunction;
@@ -29,13 +28,13 @@ import java.util.Properties;
  * @Date 2022/4/18 20:08
  * @Description
  */
-public class MySqlSourceExample {
+public class MySqlSource {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());
 
         // env.enableCheckpointing(3000);
 
-        DebeziumSourceFunction<String> source = MySqlSource.<String>builder()
+        DebeziumSourceFunction<String> source = com.ververica.cdc.connectors.mysql.MySqlSource.<String>builder()
                 .hostname("mysql")
                 .port(3306)
                 .databaseList("project01")

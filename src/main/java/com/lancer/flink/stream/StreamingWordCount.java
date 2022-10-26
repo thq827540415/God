@@ -72,6 +72,7 @@ public class StreamingWordCount {
         env.getCheckpointConfig().setMaxConcurrentCheckpoints(2);
 
         // 7. 创建检查点完成后（并不是创建检查点的周期），创建下一个检查点最少需要暂停的时间
+        // ck达到最大并行时，若之前的ck任务还未完成，则下一次的ck操作将会排队，占用系统的额外资源，此时就需要合理配置以下参数
         env.getCheckpointConfig().setMinPauseBetweenCheckpoints(3000);
 
 

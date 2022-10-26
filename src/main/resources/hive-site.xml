@@ -2,6 +2,6 @@
 <configuration>
     <property>
         <name>hive.metastore.uris</name>
-        <value>thrift://metastore:9083</value>
+        <value>thrift://bigdata03:9083</value>
     </property>
 </configuration>

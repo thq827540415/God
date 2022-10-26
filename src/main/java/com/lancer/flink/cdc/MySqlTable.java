@@ -12,7 +12,7 @@ import org.apache.flink.types.Row;
  * @Date 2022/4/18 23:01
  * @Description
  */
-public class MySqlTableExample {
+public class MySqlTable {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
