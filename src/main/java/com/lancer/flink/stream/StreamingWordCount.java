@@ -106,6 +106,11 @@ public class StreamingWordCount {
         // env.getCheckpointConfig().setCheckpointStorage(UsualConsts.HDFS_URL + "/flink/checkpoint");
 
 
+        // todo watermark
+        // 设置Watermark发送的周期
+        env.getConfig().setAutoWatermarkInterval(500);
+
+
         // todo Source
         DataStreamSource<String> source = env.socketTextStream(UsualConsts.NC_HOST, 9999);
 
@@ -135,6 +140,8 @@ public class StreamingWordCount {
                         //          KeyGroupRangeAssignment#computeOperatorIndexForKeyGroup
                         //              KeyGroupRangeAssignment#assignToKeyGroup ->
                         // 先计算key所属的key group，再计算对应key group对应的subtask，最终返回subtask index
+                        .keyBy(t -> t.f0, TypeInformation.of(String.class))
+                        // 当有多个keyBy时，最后一个的keyBy的的KeySelector会替换之前的
                         .keyBy(t -> t.f0, TypeInformation.of(String.class))
                         .sum(1).disableChaining(); // 将该算子后面的chain断开
 

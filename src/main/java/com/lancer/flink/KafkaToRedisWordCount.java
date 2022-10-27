@@ -1,4 +1,4 @@
-package com.lancer.flink.java.state.operatorstate;
+package com.lancer.flink;
 
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;

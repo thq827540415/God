@@ -69,7 +69,6 @@ public class CompleteEventTimeProcessFunctionDemo {
                         for (int i = 0; i < Math.min(list.size(), 3); i++) {
                             out.collect(Tuple2.of(ctx.getCurrentKey(), list.get(i)));
                         }*/
-
                         List<Integer> list1 = (ArrayList<Integer>) listState.get();
                         list1.sort((a,  b) -> b - a);
                         for (int i = 0; i < Math.min(list1.size(), 3); i++) {

@@ -1,6 +1,8 @@
 package com.lancer.flink.java.window;
 
 import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
+import org.apache.flink.api.common.eventtime.TimestampAssigner;
+import org.apache.flink.api.common.eventtime.TimestampAssignerSupplier;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.typeinfo.Types;
@@ -33,34 +35,46 @@ public class WindowApplyDemo {
         DataStreamSource<String> source = env.socketTextStream("localhost", 9999);
 
         // 1000,spark,2
-        SingleOutputStreamOperator<String> lineWithWaterMark = source.assignTimestampsAndWatermarks(
-                WatermarkStrategy.
-                        <String>forBoundedOutOfOrderness(Duration.ofSeconds(0))
-                        .withTimestampAssigner(new SerializableTimestampAssigner<String>() {
-                            @Override
-                            public long extractTimestamp(String element, long recordTimestamp) {
-                                return Long.parseLong(element.split(",")[0].trim());
-                            }
-                        }));
+        SingleOutputStreamOperator<String> lineWithWaterMark =
+                source
+                        .assignTimestampsAndWatermarks(
+                                WatermarkStrategy.
+                                        <String>forBoundedOutOfOrderness(Duration.ofSeconds(0))
+                                        .withTimestampAssigner(new SerializableTimestampAssigner<String>() {
+                                            @Override
+                                            public long extractTimestamp(String element, long recordTimestamp) {
+                                                return Long.parseLong(element.split(",")[0].trim());
+                                            }
+                                        }));
 
         lineWithWaterMark
-                // .map(value -> Tuple2.of(value.split(",")[0], Integer.parseInt(value.split(",")[1])), Types.TUPLE(Types.STRING, Types.INT))
-                .map(value -> Tuple2.of(value.split(",")[1].trim(), Integer.parseInt(value.split(",")[2])), Types.TUPLE(Types.STRING, Types.INT))
+                .map(value ->
+                        Tuple2.of(value.split(",")[1].trim(),
+                        Integer.parseInt(value.split(",")[2])), Types.TUPLE(Types.STRING, Types.INT))
                 .keyBy(value -> value.f0)
                 .window(TumblingEventTimeWindows.of(Time.seconds(5)))
-                .process(new ProcessWindowFunction<Tuple2<String, Integer>, Tuple2<String, Integer>, String, TimeWindow>() {
-                    @Override
-                    public void process(String s, ProcessWindowFunction<Tuple2<String, Integer>, Tuple2<String, Integer>, String, TimeWindow>.Context context, Iterable<Tuple2<String, Integer>> input, Collector<Tuple2<String, Integer>> out) throws Exception {
-                        System.out.println("key：" + s + "，window：" + context.window());
+                .process(
+                        new ProcessWindowFunction<Tuple2<String, Integer>, Tuple2<String, Integer>, String, TimeWindow>() {
 
-                        int total = 0;
-                        for (Tuple2<String, Integer> tp : input) {
-                            total += tp.f1;
-                        }
-                        // 输出
-                        out.collect(Tuple2.of(s + " == " + context.currentWatermark(), total));
-                    }
-                })
+                            @Override
+                            public void open(Configuration parameters) throws Exception {
+                            }
+
+                            @Override
+                            public void process(String s,
+                                                Context context,
+                                                Iterable<Tuple2<String, Integer>> input,
+                                                Collector<Tuple2<String, Integer>> out) throws Exception {
+                                System.out.println("key：" + s + "，window：" + context.window());
+
+                                int total = 0;
+                                for (Tuple2<String, Integer> tp : input) {
+                                    total += tp.f1;
+                                }
+                                // 输出
+                                out.collect(Tuple2.of(s + " == " + context.currentWatermark(), total));
+                            }
+                        })
                 /**
                  * 当窗口触发后，每一个组（key相同）都会调用一次, 全量计算
                  * @param s 分组的key

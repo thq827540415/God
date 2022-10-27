@@ -1,4 +1,4 @@
-package com.lancer.flink.java.state.operatorstate;
+package com.lancer.flink;
 
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.state.ListState;
@@ -10,6 +10,7 @@ import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.source.RichParallelSourceFunction;
+import org.apache.logging.log4j.util.Strings;
 
 import java.io.RandomAccessFile;
 
@@ -37,7 +38,6 @@ public class MyAtLeastOnceSourceDemo {
                     }
                 });
 
-        // MyAtLeastOnceSource是在JM中new的，路径path如果用transient修饰，那么将不会被序列化发送到TM中
         DataStreamSource<String> source = env.addSource(new MyAtLeastOnceSource("./Flink-DataStream/in"));
 
         source.union(socketSource).print();
@@ -51,6 +51,9 @@ public class MyAtLeastOnceSourceDemo {
         private transient ListState<Long> listState;
         private Long offset = 0L;
 
+        /**
+         * 路径path如果用transient修饰，那么将不会被序列化发送到TM中
+         */
         private final String path;
 
         public MyAtLeastOnceSource(String path) {
@@ -93,7 +96,7 @@ public class MyAtLeastOnceSourceDemo {
             // 监听文件是否有新内容写入
             while (running) {
                 String line = accessFile.readLine();
-                if (line != null && !line.trim().equals("")) {
+                if (Strings.isNotBlank(line)) {
                     synchronized (ctx.getCheckpointLock()) { // flink帮我们实现的锁，当进行checkpoint的时候，如果这个锁由修改offset的线程占有，那么就会等到修改完offset，才进行checkpoint
                         ctx.collect(getRuntimeContext().getIndexOfThisSubtask() + ".txt --> " + line);
                         // 更新偏移量
@@ -103,6 +106,7 @@ public class MyAtLeastOnceSourceDemo {
                     Thread.sleep(500);
                 }
             }
+            accessFile.close();
         }
 
         @Override

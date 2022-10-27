@@ -199,12 +199,11 @@ public class E07_OperatorState {
                 List<Integer> integers = (List<Integer>) listState.get();
                 if (integers.size() == 0) {
                     integers = new ArrayList<>();
-                    integers.add(0, value.f1);
                 } else {
                     Integer currentValue = integers.get(0);
                     value.f1 += currentValue;
-                    integers.add(0, value.f1);
                 }
+                integers.add(0, value.f1);
                 listState.update(integers);
                 writer.write(value);
             }

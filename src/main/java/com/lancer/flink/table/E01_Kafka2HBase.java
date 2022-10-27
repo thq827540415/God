@@ -32,6 +32,7 @@ import org.apache.hadoop.yarn.webapp.hamlet.Hamlet;
 import java.util.*;
 
 import static org.apache.flink.table.api.Expressions.$;
+import static org.apache.flink.table.api.Expressions.e;
 
 public class E01_Kafka2HBase {
     public static void main(String[] args) throws Exception {
@@ -111,10 +112,54 @@ public class E01_Kafka2HBase {
             }
         }
 
-        /*env
+        class OperatorStateByMap extends RichMapFunction<String, String>
+            implements CheckpointedFunction {
+
+            private transient ListState<Map<String, Integer>> listState;
+            @Override
+            public String map(String value) throws Exception {
+                List<Map<String, Integer>> list = Lists.newArrayList(listState.get());
+                if (list.size() == 0) {
+                    list.add(0, new HashMap<>());
+                }
+                Map<String, Integer> stringIntegerMap = list.get(0);
+                stringIntegerMap.put(value, stringIntegerMap.getOrDefault(value, 0) + 1);
+                listState.update(list);
+
+
+                List<Map.Entry<String, Integer>> entries = new ArrayList<>(stringIntegerMap.entrySet());
+                entries.sort((o1, o2) -> o2.getValue() - o1.getValue());
+
+                StringBuilder sb = new StringBuilder();
+                int size = Math.min(3, entries.size());
+                for (int i = 0; i < size; i++) {
+                    if (i != size - 1) {
+                        sb.append(entries.get(i)).append(",");
+                    } else {
+                        sb.append(entries.get(i));
+                    }
+                }
+                return sb.toString();
+            }
+
+            @Override
+            public void snapshotState(FunctionSnapshotContext context) throws Exception {
+            }
+
+            @Override
+            public void initializeState(FunctionInitializationContext context) throws Exception {
+                ListStateDescriptor<Map<String, Integer>> test =
+                        new ListStateDescriptor<>("test", new TypeHint<Map<String, Integer>>() {
+                        }.getTypeInfo());
+                listState = context.getOperatorStateStore().getListState(test);
+            }
+        }
+
+        env
                 .socketTextStream("localhost", 9999)
-                .broadcast()
-                .map(new Demo())// .setParallelism(1)
+                // .broadcast()
+                .map(new OperatorStateByMap()).setParallelism(1).print();
+        /*
                 .addSink(
                         new RedisSink<>(
                                 new FlinkJedisPoolConfig.Builder()
@@ -138,9 +183,9 @@ public class E01_Kafka2HBase {
                                         return s;
                                     }
                                 }));*/
-        // env.execute();
+        env.execute();
 
-        env
+        /*env
                 .socketTextStream("localhost", 9999)
                 .keyBy(line -> 0)
                 .process(
@@ -191,6 +236,6 @@ public class E01_Kafka2HBase {
                 ).setParallelism(1)
                 .print();
 
-        env.execute();
+        env.execute();*/
     }
 }
