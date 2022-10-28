@@ -1,3 +1,4 @@
+import org.apache.flink.api.common.eventtime.{SerializableTimestampAssigner, WatermarkStrategy}
 import org.apache.flink.api.common.functions.RichMapFunction
 import org.apache.flink.api.common.state.{ListState, ListStateDescriptor}
 import org.apache.flink.api.common.typeinfo.TypeHint
@@ -58,8 +59,12 @@ object TestMainDemo {
 
     env
       .socketTextStream("localhost", 9999)
-      .map(new Demo).setParallelism(1)
-      .print()
+      .assignTimestampsAndWatermarks(WatermarkStrategy.forMonotonousTimestamps().withTimestampAssigner(new SerializableTimestampAssigner[String] {
+        override def extractTimestamp(element: String, recordTimestamp: Long): Long = {
+          element.toLong
+        }
+      })).print()
+    // .map(new Demo).setParallelism(1)
 
     env.execute()
 
