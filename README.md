@@ -18,11 +18,12 @@ flink内部算子状态：checkpoint -> 基于chandy-lamport分布式快照算�
             当sink算子接收到barrier-n后，有两种情况：
                 （1）flink内部state的EOS，sink对自己的state进行快照，然后给CheckpointCoordinator发送ack，当CheckpointCoordinator
             接收到每个节点的ack后，会给每个节点notify，告知该次checkpoint已完成
-                （2）end-to-end flink EOS，在sink往外输出之前，则会先开启事务，然后将收到的数据输出到外部系统，当barrier-n到达时，
+                （2）end-to-end flink EOS，在sink往外输出之前，则会在外部数据库先开启事务，然后将收到的数据输出到外部系统，当barrier-n到达时，
             sink对自己的state进行快照，然后给CheckpointCoordinator发送ack，再预提交事务（pre-commit），并不是开启事务，
-            而是把该次事务信息（事务ID、事务状态标志-pending）保存在外部系统或sink状态中，接着CheckpointCoordinator接收到每个算子的ack后，
-            会notify每个算子确认本次的checkpoint完成，sink会将该事务进行提交（commit），同时开启下一次事务，提交完成后，会将事务状态标志改成已完成或删除。
-            若中途发送故障，则下次任务失败重试时，sink会先检查状态中是否包含了peding状态的事务，若存在，则会先将该peding状态的事务进行提交（commit）。
+            而是把该次事务信息（事务ID、事务状态标志-pending）保存在外部系统或sink状态中，向CheckpointCoordinator发送ack，同时开启下一次事务，
+            接着CheckpointCoordinator接收到每个算子的ack后，会notify每个算子确认本次的checkpoint完成，sink会将该事务进行提交（commit），
+            提交完成后，会将事务状态标志改成已完成或删除。
+            若中途发送故障，则下次任务失败重试时，sink会先检查状态中是否包含了pending状态的事务，若存在，则会先将该pending状态的事务进行提交（commit）。
     
 
 Sink端：幂等写入、2PC事务提交、2PC预写日志提交、HDFS文件
@@ -47,13 +48,14 @@ Sink端：幂等写入、2PC事务提交、2PC预写日志提交、HDFS文件
                 但是该条数据没有事务结束的标记，在后续的Kafka消费者中，通过设置事务的隔离级别ReadCommited，将读取到的没有事务结束标记的消息给过滤掉，
                 从而实现了end-to-end Flink EOS
 
-    （4）2PC预写日志提交
-            当外部系统不支持事务或者幂等性。等CheckpointCoordinator的notify来了，再把存在自己state中的结果数据发送到外部存储系统
+    （4）2PC预写日志提交，极端情况下，可能会导致at least once
+            当外部系统不支持事务或者幂等性。将数据全部写到Sink的算子状态中，该状态做快照，然后发送ack，等CheckpointCoordinator的notify来了，
+                再把存在自己state中的结果数据发送到外部存储系统
 
 
 
 
 Flink SQL客户端集成Hive
-create catalog hive_catalog with ('type' = 'hive', 'hive-conf-dir' = '/opt/hive-2.3.6/conf');
+create catalog hive_catalog with ('type' = 'hive', 'hive-conf-dir' = '/opt/hive-3.1.2/conf');
 use catalog hive_catalog;
 load module hive;
