@@ -1,4 +1,3 @@
-import org.apache.flink.api.common.eventtime.{SerializableTimestampAssigner, WatermarkStrategy}
 import org.apache.flink.api.common.functions.RichMapFunction
 import org.apache.flink.api.common.state.{ListState, ListStateDescriptor}
 import org.apache.flink.api.common.typeinfo.TypeHint
@@ -7,6 +6,7 @@ import org.apache.flink.streaming.api.checkpoint.CheckpointedFunction
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.apache.flink.util.MathUtils
 
+import java.sql.DriverManager
 import scala.collection.mutable
 import scala.collection.mutable.{ListBuffer, Seq}
 
@@ -57,7 +57,7 @@ object TestMainDemo {
 
     import org.apache.flink.api.scala._
 
-    env
+    /*env
       .socketTextStream("localhost", 9999)
       .assignTimestampsAndWatermarks(WatermarkStrategy.forMonotonousTimestamps().withTimestampAssigner(new SerializableTimestampAssigner[String] {
         override def extractTimestamp(element: String, recordTimestamp: Long): Long = {
@@ -66,7 +66,27 @@ object TestMainDemo {
       })).print()
     // .map(new Demo).setParallelism(1)
 
-    env.execute()
+    env.execute()*/
+
+
+    Class.forName("ru.yandex.clickhouse.ClickHouseDriver")
+    println(DriverManager.getConnection("jdbc:clickhouse://localhost:8123/default", "default", ""))
+
+
+    val sql =
+      """
+        |create table person(
+        |   name string,
+        |   age string
+        |) with (
+        |   'connector' = 'jdbc',
+        |   'driver' = 'ru.yandex.clickhouse.ClickHouseDriver',
+        |   'url' = 'jdbc:clickhouse://localhost:8123/default',
+        |   'username' = 'default',
+        |   'password' = '',
+        |   'table-name' = 'person'
+        |)
+        |""".stripMargin
 
   }
 }

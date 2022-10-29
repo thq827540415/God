@@ -47,28 +47,18 @@ public class CompleteEventTimeProcessFunctionDemo {
                 // 实现类似滚动窗口功能，实现增量聚合,在EventTime只能够实现一个定时器，一个定时器触发
                 .process(new KeyedProcessFunction<String, Tuple2<String, Integer>, Tuple2<String, Integer>>() {
 
-                    // private transient ValueState<List<Integer>> valueState;
                     private transient ListState<Integer> listState;
 
                     @Override
                     public void open(Configuration parameters) throws Exception {
                         ListStateDescriptor<Integer> listStateDescriptor = new ListStateDescriptor<>("list-test", Integer.class);
                         listState = getRuntimeContext().getListState(listStateDescriptor);
-
-                        /*ValueStateDescriptor<List<Integer>> valueStateDescriptor = new ValueStateDescriptor<>("count-test", TypeInformation.of(new TypeHint<List<Integer>>() {
-                        }));
-                        valueState = getRuntimeContext().getState(valueStateDescriptor);*/
                     }
 
                     // 当processElement方法中注册的定时器触发后，会调用该方法
                     @Override
                     public void onTimer(long timestamp, OnTimerContext ctx, Collector<Tuple2<String, Integer>> out) throws Exception {
 
-                        /*List<Integer> list = valueState.value();
-                        list.sort((a, b) -> b - a);
-                        for (int i = 0; i < Math.min(list.size(), 3); i++) {
-                            out.collect(Tuple2.of(ctx.getCurrentKey(), list.get(i)));
-                        }*/
                         List<Integer> list1 = (ArrayList<Integer>) listState.get();
                         list1.sort((a,  b) -> b - a);
                         for (int i = 0; i < Math.min(list1.size(), 3); i++) {
@@ -89,14 +79,6 @@ public class CompleteEventTimeProcessFunctionDemo {
                         }
                         // 先放入ListState中
                         listState.add(value.f1);
-
-                        // 放入ValueState中
-                        /*List<Integer> list = valueState.value();
-                        if (list == null) {
-                            list = new ArrayList<>();
-                        }
-                        list.add(value.f1);
-                        listState.update(list);*/
                     }
                 })
                 .print();

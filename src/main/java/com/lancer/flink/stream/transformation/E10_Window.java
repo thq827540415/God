@@ -8,6 +8,8 @@ import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.EventTimeSessionWindows;
+import org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 
@@ -123,9 +125,12 @@ public class E10_Window {
                 // 4999 <= 4999 -> 故当watermark即后者到达4999的时候，触发计算，即当数据中的EventTime到达5000时计算
                 // 若加上允许延迟时间，实质上就是降低Watermark，让窗口晚点触发
                 // 窗口触发后，数据会一直保存在状态中，但是不会再计算
+                // .window(EventTimeSessionWindows.withGap())
+                // .window(SlidingEventTimeWindows.of(Time.seconds(5), Time.seconds(3)))
                 .window(TumblingEventTimeWindows.of(Time.seconds(5)))
                 // 迟到数据，即窗口触发后，才过来的数据，而Watermark是用于处理乱序数据
-                // 当数据迟到时，会先计算该数据所在的窗口是否已经过去了，若是，则该数据不会放入State中
+                // 当数据迟到时，会先计算该数据所在的窗口是否已经过去了(window.maxTimestamp + allowedLateness <= watermark)，
+                // 若是，则该数据不会放入State中，即窗口触发后，allowedLateness时间内还能再次触发窗口
                 // 此时，当数据的时间 <= currentWatermark + allowedLateness，则会对该条记录进行处理
                 // 若定义了测流标签，则该迟到数据会放入测流中
                 // 若没定义测流，则将通过一个SimpleCounter，将其通过名为numLateRecordsDropped的度量metric显示出来
