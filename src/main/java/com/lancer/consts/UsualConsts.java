@@ -8,7 +8,7 @@ public class UsualConsts {
     /**
      * 设置全局算子的默认并行度 <= maxParallelism
      */
-    public static final Integer GLOBAL_OPERATOR_PARALLELISM = 2;
+    public static final Integer GLOBAL_OPERATOR_PARALLELISM = 1;
 
     /**
      * 单个算子的最大并行度
@@ -16,7 +16,7 @@ public class UsualConsts {
      * <p>
      * KeyGroupRangeAssignment#computeDefaultMaxParallelism(int) -> default value：127 ~ 32768
      */
-    public static final Integer GLOBAL_MAX_PARALLELISM = 12;
+    public static final Integer GLOBAL_MAX_PARALLELISM = 4;
 
     public static final Boolean WITH_WEB_UI = true;
 }

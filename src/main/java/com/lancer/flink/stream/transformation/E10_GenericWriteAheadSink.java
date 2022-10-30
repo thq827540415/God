@@ -8,7 +8,7 @@ import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 /**
  * WAL并不能百分百提供Exactly-Once
  */
-public class E08_GenericWriteAheadSink {
+public class E10_GenericWriteAheadSink {
 
     /**
      * 由于没有实现SinkFunction接口，因此无法使用DataStream.addSink，得使用DataStream.transform()

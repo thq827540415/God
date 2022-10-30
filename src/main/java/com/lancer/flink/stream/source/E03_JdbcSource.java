@@ -1,5 +1,7 @@
 package com.lancer.flink.stream.source;
 
+import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.druid.pool.DruidPooledConnection;
 import com.lancer.consts.MySQLConsts;
 import com.lancer.FlinkEnvUtils;
 import com.lancer.consts.UsualConsts;
@@ -18,9 +20,16 @@ import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.async.ResultFuture;
 import org.apache.flink.streaming.api.functions.async.RichAsyncFunction;
+import org.apache.hadoop.yarn.webapp.hamlet.Hamlet;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collections;
-import java.util.concurrent.TimeUnit;
+import java.util.Objects;
+import java.util.concurrent.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * @Author lancer
@@ -40,6 +49,7 @@ public class E03_JdbcSource {
                         new VertxJdbc(),
                         3000,
                         TimeUnit.MILLISECONDS,
+                        // 异步请求队列最大的数量，不传入该参数，默认值为100
                         10)
                 .filter(t -> StringUtils.isNotBlank(t.f0))
                 .print().setParallelism(1);
@@ -48,7 +58,7 @@ public class E03_JdbcSource {
     }
 
     /**
-     * 采用异步框架读取数据，还可以采用线程池 + 连接池
+     * 采用异步框架读取数据
      */
     private static class VertxJdbc extends RichAsyncFunction<String, Tuple2<String, Integer>> {
 
@@ -102,6 +112,81 @@ public class E03_JdbcSource {
                                     }
                                 }
                             });
+        }
+    }
+
+
+    /**
+     * 采用线程池 + 连接池
+     */
+    private static class DataSourceJdbc extends RichAsyncFunction<String, Tuple2<String, String>> {
+
+        private transient DruidDataSource ds;
+        private transient ExecutorService executorService;
+
+        @Override
+        public void open(Configuration parameters) throws Exception {
+            executorService = Executors.newFixedThreadPool(10);
+
+            ds = new DruidDataSource();
+            ds.setDriverClassName(MySQLConsts.MYSQL_DRIVER);
+            ds.setUrl(MySQLConsts.MYSQL_URL);
+            ds.setUsername(MySQLConsts.MYSQL_USERNAME);
+            ds.setPassword(MySQLConsts.MYSQL_PASSWORD);
+            ds.setMaxActive(10);
+        }
+
+        @Override
+        public void asyncInvoke(String input, ResultFuture<Tuple2<String, String>> resultFuture) throws Exception {
+            Future<String> future = executorService.submit(
+                    () -> {
+                        String sql = "select name, age from person where name = ?";
+                        try {
+                            DruidPooledConnection conn = ds.getConnection();
+                            PreparedStatement ps = conn.prepareStatement(sql);
+
+                            ps.setString(1, input);
+                            ResultSet rs = ps.executeQuery();
+                            String age = "";
+                            while (rs.next()) {
+                                age = rs.getString("age");
+                            }
+                            rs.close();
+                            ps.close();
+                            conn.close();
+                            return age;
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+            );
+
+            CompletableFuture
+                    .supplyAsync(
+                            new Supplier<String>() {
+                                @Override
+                                public String get() {
+                                    try {
+                                        return future.get();
+                                    } catch (InterruptedException | ExecutionException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }
+                            })
+                    .thenAccept(
+                            new Consumer<String>() {
+                                @Override
+                                public void accept(String s) {
+                                    resultFuture.complete(Collections.singleton(Tuple2.of(input, s)));
+                                }
+                            });
+        }
+
+
+        @Override
+        public void close() throws Exception {
+            ds.close();
+            executorService.shutdown();
         }
     }
 

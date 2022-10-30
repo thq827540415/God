@@ -8,8 +8,6 @@ import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.EventTimeSessionWindows;
-import org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 
@@ -36,7 +34,7 @@ import java.time.Duration;
  * （2）DeltaEvictor
  * （3）TimeEvictor
  */
-public class E10_Window {
+public class E08_Window {
 
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
@@ -45,7 +43,7 @@ public class E10_Window {
 
         doTimeWindow(source);
 
-        env.execute(E10_Window.class.getSimpleName());
+        env.execute(E08_Window.class.getSimpleName());
     }
 
 
@@ -101,7 +99,8 @@ public class E10_Window {
                         // eventtime.Watermark只是用来判断是否需要发送wm，watermark.Watermark才是真正发送的数据，继承StreamElement
                         // 选择输入的Watermark中比较小的那个，将其与当前Watermark进行对比，如果大则通过processWatermark发送到下游，
                         // 从而保证了全局Watermark的最小性
-                        WatermarkStrategy.<String>forBoundedOutOfOrderness(Duration.ofSeconds(0))
+                        WatermarkStrategy
+                                .<String>forBoundedOutOfOrderness(Duration.ofSeconds(0))
                                 .withTimestampAssigner(new SerializableTimestampAssigner<String>() {
                                     @Override
                                     public long extractTimestamp(String element, long recordTimestamp) {

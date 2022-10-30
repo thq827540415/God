@@ -6,7 +6,7 @@ import org.apache.flink.streaming.api.checkpoint.CheckpointedFunction
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.apache.flink.util.MathUtils
 
-import java.sql.DriverManager
+import java.sql.{DriverManager, Timestamp}
 import scala.collection.mutable
 import scala.collection.mutable.{ListBuffer, Seq}
 
@@ -23,7 +23,7 @@ object TestMainDemo {
     println(MathUtils.bitMix("abc".hashCode ^ "ns".hashCode))
 
     // 总能保证范围在127以内
-    print(-372811216 & 127)
+    println(-372811216 & 127)
 
     class Demo extends RichMapFunction[String, String] with CheckpointedFunction {
       private var state: ListState[mutable.Map[String, Int]] = _
@@ -69,24 +69,10 @@ object TestMainDemo {
     env.execute()*/
 
 
-    Class.forName("ru.yandex.clickhouse.ClickHouseDriver")
-    println(DriverManager.getConnection("jdbc:clickhouse://localhost:8123/default", "default", ""))
+    // Class.forName("ru.yandex.clickhouse.ClickHouseDriver")
+    // println(DriverManager.getConnection("jdbc:clickhouse://localhost:8123/default", "default", ""))
 
-
-    val sql =
-      """
-        |create table person(
-        |   name string,
-        |   age string
-        |) with (
-        |   'connector' = 'jdbc',
-        |   'driver' = 'ru.yandex.clickhouse.ClickHouseDriver',
-        |   'url' = 'jdbc:clickhouse://localhost:8123/default',
-        |   'username' = 'default',
-        |   'password' = '',
-        |   'table-name' = 'person'
-        |)
-        |""".stripMargin
+    println(Timestamp.valueOf("2022-10-26 11:57:05.111").getTime)
 
   }
 }

@@ -246,7 +246,7 @@
         <!-- flink hbase connector -->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-hbase-1.4_${scala.binary.version}</artifactId>
+            <artifactId>flink-connector-hbase-2.2_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
             <scope>${flink.scope}</scope>
         </dependency>
@@ -276,12 +276,12 @@
         </dependency>
 
         <!-- http client -->
-        <dependency>
+        <!--<dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.13</version>
             <scope>provided</scope>
-        </dependency>
+        </dependency>-->
 
         <!-- http async client -->
         <dependency>
@@ -296,7 +296,6 @@
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>1.2.75</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
