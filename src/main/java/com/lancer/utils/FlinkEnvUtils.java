@@ -1,4 +1,4 @@
-package com.lancer;
+package com.lancer.utils;
 
 import com.lancer.consts.UsualConsts;
 import org.apache.flink.configuration.Configuration;

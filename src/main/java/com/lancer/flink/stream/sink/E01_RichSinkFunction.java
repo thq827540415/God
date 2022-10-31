@@ -1,13 +1,12 @@
 package com.lancer.flink.stream.sink;
 
-import com.lancer.FlinkEnvUtils;
+import com.lancer.utils.FlinkEnvUtils;
 import com.lancer.consts.UsualConsts;
 import org.apache.flink.api.common.functions.util.PrintSinkOutputWriter;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
-import org.apache.flink.streaming.api.operators.StreamingRuntimeContext;
 
 /**
  * @Author lancer

@@ -1,6 +1,6 @@
 package com.lancer.flink.table;
 
-import com.lancer.FlinkEnvUtils;
+import com.lancer.utils.FlinkEnvUtils;
 import com.lancer.consts.UsualConsts;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

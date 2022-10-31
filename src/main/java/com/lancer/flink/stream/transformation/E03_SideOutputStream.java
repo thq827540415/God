@@ -1,6 +1,6 @@
 package com.lancer.flink.stream.transformation;
 
-import com.lancer.FlinkEnvUtils;
+import com.lancer.utils.FlinkEnvUtils;
 import com.lancer.consts.UsualConsts;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.typeinfo.Types;

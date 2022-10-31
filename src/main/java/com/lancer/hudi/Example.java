@@ -1,6 +1,6 @@
 package com.lancer.hudi;
 
-import com.alibaba.fastjson.JSON;
+import com.lancer.utils.JsonUtils;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -29,26 +29,26 @@ import java.sql.Timestamp;
 
 /**
  * 需要额外导入的依赖
- *          自动生成构造，toString等
- *          <dependency>
- *              <groupId>org.projectlombok</groupId>
- *              <artifactId>lombok</artifactId>
- *              <version>1.18.22</version>
- *              <optional>true</optional>
- *          </dependency>
- *          解析JSON
- *          <dependency>
- *             <groupId>com.alibaba</groupId>
- *             <artifactId>fastjson</artifactId>
- *             <version>1.2.75</version>
- *         </dependency>
- *          使用java
- *          <dependency>
- *             <groupId>org.apache.flink</groupId>
- *             <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
- *             <version>${flink.version}</version>
- *             <scope>${flink.scope}</scope>
- *         </dependency>
+ * 自动生成构造，toString等
+ * <dependency>
+ * <groupId>org.projectlombok</groupId>
+ * <artifactId>lombok</artifactId>
+ * <version>1.18.22</version>
+ * <optional>true</optional>
+ * </dependency>
+ * 解析JSON
+ * <dependency>
+ * <groupId>com.alibaba</groupId>
+ * <artifactId>fastjson</artifactId>
+ * <version>1.2.75</version>
+ * </dependency>
+ * 使用java
+ * <dependency>
+ * <groupId>org.apache.flink</groupId>
+ * <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
+ * <version>${flink.version}</version>
+ * <scope>${flink.scope}</scope>
+ * </dependency>
  */
 public class Example {
 
@@ -210,12 +210,12 @@ public class Example {
                                 .withTimestampAssigner(new SerializableTimestampAssigner<String>() {
                                     @Override
                                     public long extractTimestamp(String element, long recordTimestamp) {
-                                        OrderMain orderMain = JSON.parseObject(element, OrderMain.class);
+                                        OrderMain orderMain = JsonUtils.parseObject(element, OrderMain.class);
                                         return orderMain.modifiedTime.getTime();
                                     }
                                 }),
                         "kafka1")
-                .map(line -> JSON.parseObject(line, OrderMain.class))
+                .map(line -> JsonUtils.parseObject(line, OrderMain.class))
                 .returns(Types.POJO(OrderMain.class));
 
         SingleOutputStreamOperator<OrderDetail> orderDetailDataStream = env
@@ -226,12 +226,12 @@ public class Example {
                                 .withTimestampAssigner(new SerializableTimestampAssigner<String>() {
                                     @Override
                                     public long extractTimestamp(String element, long recordTimestamp) {
-                                        OrderDetail orderDetail1 = JSON.parseObject(element, OrderDetail.class);
+                                        OrderDetail orderDetail1 = JsonUtils.parseObject(element, OrderDetail.class);
                                         return orderDetail1.modifiedTime.getTime();
                                     }
                                 }),
                         "kafka2")
-                .map(line -> JSON.parseObject(line, OrderDetail.class))
+                .map(line -> JsonUtils.parseObject(line, OrderDetail.class))
                 .returns(Types.POJO(OrderDetail.class));
 
         doTask(orderMainDataStream, orderDetailDataStream);
@@ -267,7 +267,7 @@ public class Example {
      */
     private static void withTableApi(StreamTableEnvironment tableEnv) {
         Table result = tableEnv.sqlQuery(
-                        "select cast(R.order_sn as bigint) as sn,\n" +
+                "select cast(R.order_sn as bigint) as sn,\n" +
                         "       R.order_money as order_price, \n" +
                         "       sum(product_cnt) as order_detail_count\n" +
                         "from (\n" +

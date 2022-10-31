@@ -1,6 +1,6 @@
 package com.lancer.flink.stream.source;
 
-import com.lancer.FlinkEnvUtils;
+import com.lancer.utils.FlinkEnvUtils;
 import com.lancer.consts.RedisConsts;
 import com.lancer.consts.UsualConsts;
 import io.vertx.core.AsyncResult;
