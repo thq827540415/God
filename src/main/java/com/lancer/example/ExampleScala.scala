@@ -10,8 +10,9 @@ import org.apache.flink.api.scala._
 import org.apache.flink.api.scala.typeutils.Types
 import org.apache.flink.configuration.Configuration
 import org.apache.flink.connector.kafka.source.KafkaSource
+import org.apache.flink.streaming.api.functions.KeyedProcessFunction
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
-import org.apache.flink.streaming.api.scala.function.ProcessWindowFunction
+import org.apache.flink.streaming.api.scala.function.{ProcessWindowFunction, WindowFunction}
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows
 import org.apache.flink.streaming.api.windowing.time.Time
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow
@@ -45,7 +46,7 @@ object ExampleScala {
 
     val tableEnv = StreamTableEnvironment.create(env)
 
-    doTask02(env)
+    doTask01(env)
 
     env.execute(ExampleScala.getClass.getSimpleName)
   }
@@ -54,9 +55,9 @@ object ExampleScala {
    *
    * ProduceRecord
    */
-  def doTask02(env: StreamExecutionEnvironment) = {
+  def doTask01(env: StreamExecutionEnvironment) = {
 
-    env
+    /*env
       .fromSource(getKafkaSource("ProduceRecord"),
         WatermarkStrategy
           .forMonotonousTimestamps()
@@ -87,25 +88,33 @@ object ExampleScala {
           out.collect((key, i.toString))
         }
       })
-      .addSink(getRedisSink())
+      .addSink(getRedisSink())*/
   }
 
-  def getKafkaSource(topic: String): KafkaSource[Product] = {
-    KafkaSource.builder[Product]()
+  case class ChangeRecord(changedId: String, changeMachineId: String, changeMachineRecordId: String,
+                          changeRecordState: String, changeStartTime: Timestamp, changeEndTime: Timestamp,
+                          changeRecordData: String, changeHandleState: String)
+
+  def doTask02(env: StreamExecutionEnvironment) = {
+
+  }
+
+  def getKafkaSource(topic: String): KafkaSource[ChangeRecord] = {
+    KafkaSource.builder[ChangeRecord]()
       .setBootstrapServers(Consts.BOOTSTRAP_SERVER)
       .setTopics(topic)
       .setGroupId("test-group")
       .setProperty("auto.offset.reset", "latest")
-      .setValueOnlyDeserializer(new DeserializationSchema[Product] {
-        override def deserialize(message: Array[Byte]): Product = {
+      .setValueOnlyDeserializer(new DeserializationSchema[ChangeRecord] {
+        override def deserialize(message: Array[Byte]): ChangeRecord = {
           import com.alibaba.fastjson.JSON
-          // JSON.parseObject(message, classOf[Product])
-          JsonUtils.parseObject(new String(message), classOf[Product])
+          JSON.parseObject(message, classOf[ChangeRecord])
+          // JsonUtils.parseObject(new String(message), classOf[ChangeRecord])
         }
 
-        override def isEndOfStream(nextElement: Product): Boolean = false
+        override def isEndOfStream(nextElement: ChangeRecord): Boolean = false
 
-        override def getProducedType: TypeInformation[Product] = Types.POJO(classOf[Product])
+        override def getProducedType: TypeInformation[ChangeRecord] = Types.POJO(classOf[ChangeRecord])
       })
       .build()
   }

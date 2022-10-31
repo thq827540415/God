@@ -1,7 +1,9 @@
 package com.lancer.flink.cdc;
 
 import com.alibaba.fastjson.JSONObject;
+import com.lancer.consts.MySQLConsts;
 import com.lancer.flink.stream.sink.E02_KafkaSink;
+import com.lancer.utils.FlinkEnvUtils;
 import com.ververica.cdc.connectors.mysql.table.StartupOptions;
 import com.ververica.cdc.debezium.DebeziumDeserializationSchema;
 import com.ververica.cdc.debezium.DebeziumSourceFunction;
@@ -30,17 +32,17 @@ import java.util.Properties;
  */
 public class MySqlSource {
     public static void main(String[] args) throws Exception {
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());
+        StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
 
         // env.enableCheckpointing(3000);
 
         DebeziumSourceFunction<String> source = com.ververica.cdc.connectors.mysql.MySqlSource.<String>builder()
-                .hostname("mysql")
-                .port(3306)
+                .hostname(MySQLConsts.MYSQL_HOST)
+                .port(MySQLConsts.MYSQL_PORT)
                 .databaseList("project01")
                 .tableList("project01.cdc_test")
-                .username("root")
-                .password("123456")
+                .username(MySQLConsts.MYSQL_USERNAME)
+                .password(MySQLConsts.MYSQL_PASSWORD)
                 .deserializer(new CustomDeserializationSchema())
                 .startupOptions(StartupOptions.initial())
                 .build();
@@ -70,6 +72,10 @@ public class MySqlSource {
     private static class CustomDeserializationSchema implements DebeziumDeserializationSchema<String> {
         @Override
         public void deserialize(SourceRecord sourceRecord, Collector<String> collector) throws Exception {
+
+
+
+
             JSONObject result = new JSONObject();
 
             // 获取库名+表名

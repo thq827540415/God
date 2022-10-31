@@ -3,6 +3,7 @@ package com.lancer.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class JsonUtils {
     private static final ObjectMapper om = new ObjectMapper();
@@ -27,5 +28,8 @@ public class JsonUtils {
      */
     public static <T> T toJson() {
         return null;
+    }
+
+    public static void getJsonObject() {
     }
 }
