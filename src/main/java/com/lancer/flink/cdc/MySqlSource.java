@@ -1,16 +1,16 @@
 package com.lancer.flink.cdc;
 
-import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.lancer.consts.MySQLConsts;
 import com.lancer.flink.stream.sink.E02_KafkaSink;
 import com.lancer.utils.FlinkEnvUtils;
+import com.lancer.utils.JsonUtils;
 import com.ververica.cdc.connectors.mysql.table.StartupOptions;
 import com.ververica.cdc.debezium.DebeziumDeserializationSchema;
 import com.ververica.cdc.debezium.DebeziumSourceFunction;
 import io.debezium.data.Envelope;
 import org.apache.flink.api.common.typeinfo.BasicTypeInfo;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
-import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.apache.flink.streaming.connectors.kafka.KafkaSerializationSchema;
@@ -21,7 +21,6 @@ import org.apache.kafka.connect.data.Struct;
 import org.apache.kafka.connect.source.SourceRecord;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -73,41 +72,35 @@ public class MySqlSource {
         @Override
         public void deserialize(SourceRecord sourceRecord, Collector<String> collector) throws Exception {
 
-
-
-
-            JSONObject result = new JSONObject();
+            ObjectNode result = JsonUtils.getObjectNode();
 
             // 获取库名+表名
             String[] tblAndDbName = sourceRecord.topic().split("\\.");
-            result.put("db", tblAndDbName[1]);
-            result.put("tbl", tblAndDbName[2]);
+            result
+                    .put("db", tblAndDbName[1])
+                    .put("tbl", tblAndDbName[2]);
 
             // 获取before数据
-            JSONObject beforeJson = new JSONObject();
+            ObjectNode beforeJson = result.putObject("before");
             Struct before = ((Struct) sourceRecord.value()).getStruct("before");
-            if (!Objects.isNull(before)) {
-                List<Field> fields = before.schema().fields();
-                for (Field field : fields) {
-                    beforeJson.put(field.name(), before.get(field));
+            if (Objects.nonNull(before)) {
+                for (Field field : before.schema().fields()) {
+                    beforeJson.put(field.name(), (String) before.get(field));
                 }
             }
-            result.put("before", beforeJson);
 
             // 获取after数据
-            JSONObject afterJson = new JSONObject();
+            ObjectNode afterJson = result.with("after");
             Struct after = ((Struct) sourceRecord.value()).getStruct("after");
-            if (!Objects.isNull(after)) {
-                List<Field> fields = after.schema().fields();
-                for (Field field : fields) {
-                    afterJson.put(field.name(), after.get(field));
+            if (Objects.nonNull(after)) {
+                for (Field field : after.schema().fields()) {
+                    afterJson.put(field.name(), (String) after.get(field));
                 }
             }
-            result.put("after", afterJson);
 
             // 获取操作类型
             Envelope.Operation operation = Envelope.operationFor(sourceRecord);
-            result.put("op", operation);
+            result.put("op", operation.code());
 
             collector.collect(result.toString());
         }

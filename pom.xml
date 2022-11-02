@@ -291,17 +291,10 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- fastjson -->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.75</version>
-        </dependency>
-
         <!-- jackson -->
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
             <version>2.13.3</version>
         </dependency>
 
@@ -427,6 +420,10 @@
                                 </filter>
                             </filters>
                             <transformers>
+                                <!--多个依赖构件中的META-INF/services/org.apache.table.factories.Factory文件不能合并-->
+                                <!--<transformers>
+                                    <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                </transformers>-->
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass/>
