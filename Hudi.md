@@ -33,12 +33,13 @@ hudi是用来管理数据的，给数据存储提供了一种组织方式。hive
         （4）文件组织结构
             i. 每个表对应DFS上的一个目录
             ii. 每个表目录下，有一个.hoodie文件夹，用于存储Timeline的元数据信息，其中数据的命名规则为time.action.state（其中completed状态的结尾为空）
-            iii. 每个表目录对应多个分区目录，每个分区通过一个分区路径（partition path）来唯一标识。每个分区目录下，有该分区的元数据信息，对应文件夹为.hoodie_partition_metadata
+            iii. 每个表目录对应多个分区目录，每个分区通过一个分区路径（partition path）来唯一标识。每个分区目录下，有该分区的元数据信息，对应文件为.hoodie_partition_metadata，
+                其中保存的就是索引（如record key + partition path就是一个索引）。
             iv. 每个分区目录下，通过file group的方式来组织，每个file group对应一个唯一的fileid。
             v. 每个file group中包含多个file slice，每个file slice包含一个base file（.parquet），这个文件是在commit/compaction操作的时候生成的，
                 同时还生成了几个deltaLog file（*.log*），日志文件中包含了从该base file生成以后执行的insert/update操作
     3. Index
-        （1）在每个parquet文件的末尾做索引
+        （1）在每个parquet文件的末尾做索引（如bloom index）
         （5）Hudi会通过record key与partition path组成HoodieKey，通过将HoodieKey映射到前面提到的fileid，具体其实是映射到file group/fileid，这就是hudi的索引。
             一旦record的第一个版本被写入文件中，对应的HoodieKey就不会再改变了。
         （6）Hudi的base file在根目录中的.hoodie_partition_metadata去记录了record key组成的bloomfilter，用于在file based index的实现中实现高效率的key contains检测，
@@ -53,8 +54,38 @@ hudi是用来管理数据的，给数据存储提供了一种组织方式。hive
         （2）通过参数hoodie.compact.inline来开启是否一个事务完成后，执行compact操作，默认为false。
         （3）通过参数hoodie.compact.inline.max.delta.commits来设置多少次commit后，进行compaction，默认是5次。
         （4）以上两个参数都是针对每个file slice而言
+        （5）每个file group都对应一个增量日志文件（deltaLog file）
+
+三、Query Type
+    1. Snapshot Query
+        （1）读取所有partition下每个file group最新的file slice中的文件，COW表读取base file，MOR表读取base file + deltaLog file，也就是说这种
+        查询模式是将当前时刻所有数据都读取出来，如果有更新数据，读取的也是更新后的数据。
+    2. Incremental Query
+        （1）无论是那种表，Incremental可以查询指定时间戳后的增量数据，需要由用户指定一个时间戳
+    3. Read Optimized Query
+        （1）这种模式只能查询base file中的最新数据，对于COW表来说，读取数据与Snapshot一样，对于MOR表来时，读取数据指挥只会读取到base file数据
+
+
+
 
 Huid的读写API通过Timeline接口，可以方便的在commits上进行条件筛选，对history和on-going的commit应用各种策略，快速筛选出需要操作的目标commit。
+
+
+
+upsert写：
+一、数据来时，根据record key + partition path，在该表对应的.hoodie文件加中，找到HoodieKey(record key + partition path)与fileid的映射关系，
+    若没有找到，则会在record对应的partition中新建一个base file。
+    若找到了对应的file group，则根据最新的file slice中的parquet文件的footer中的布隆过滤器进行判断。
+        若不存在，则新建一个file group。
+        若存在， 则进行base file全局扫描：
+            对于MOR，存在就是update deltaLog file，不存在就是new file group.
+            对于COW
+
+
+
+
+
+
 
 
 

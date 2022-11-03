@@ -267,7 +267,7 @@ public class Example {
      */
     private static void withTableApi(StreamTableEnvironment tableEnv) {
         Table result = tableEnv.sqlQuery(
-                "select cast(R.order_sn as bigint) as sn,\n" +
+                        "select cast(R.order_sn as bigint) as sn,\n" +
                         "       R.order_money as order_price, \n" +
                         "       sum(product_cnt) as order_detail_count\n" +
                         "from (\n" +

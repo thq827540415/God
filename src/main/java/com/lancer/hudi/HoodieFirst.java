@@ -1,12 +1,14 @@
 package com.lancer.hudi;
 
 import com.lancer.utils.FlinkEnvUtils;
+import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
 public class HoodieFirst {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
+
 
         // 专门用于RocksDS
         // PredefinedOptions.SPINNING_DISK_OPTIMIZED_HIGH_MEM

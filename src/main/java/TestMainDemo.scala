@@ -1,6 +1,7 @@
 import org.apache.flink.api.common.functions.RichMapFunction
-import org.apache.flink.api.common.state.{ListState, ListStateDescriptor}
+import org.apache.flink.api.common.state.{ListState, ListStateDescriptor, ValueStateDescriptor}
 import org.apache.flink.api.common.typeinfo.TypeHint
+import org.apache.flink.api.scala.scalaNothingTypeInfo
 import org.apache.flink.runtime.state.{FunctionInitializationContext, FunctionSnapshotContext}
 import org.apache.flink.streaming.api.checkpoint.CheckpointedFunction
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment

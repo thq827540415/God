@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -77,6 +78,14 @@ public class JsonUtils {
     public static <T> T parseObject(String record, Class<T> clazz) {
         try {
             return om.readValue(record, clazz);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static JsonNode parseObject(String record) {
+        try {
+            return om.readTree(record);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
