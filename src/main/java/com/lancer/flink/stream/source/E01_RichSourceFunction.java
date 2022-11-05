@@ -1,6 +1,6 @@
 package com.lancer.flink.stream.source;
 
-import com.lancer.utils.FlinkEnvUtils;
+import com.lancer.util.FlinkEnvUtils;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.source.RichParallelSourceFunction;

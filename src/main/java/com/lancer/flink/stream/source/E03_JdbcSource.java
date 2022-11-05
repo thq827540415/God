@@ -3,7 +3,7 @@ package com.lancer.flink.stream.source;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
 import com.lancer.consts.MySQLConsts;
-import com.lancer.utils.FlinkEnvUtils;
+import com.lancer.util.FlinkEnvUtils;
 import com.lancer.consts.UsualConsts;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;

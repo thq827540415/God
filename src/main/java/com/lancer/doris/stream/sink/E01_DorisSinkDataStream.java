@@ -1,6 +1,6 @@
 package com.lancer.doris.stream.sink;
 
-import com.lancer.utils.FlinkEnvUtils;
+import com.lancer.util.FlinkEnvUtils;
 import com.lancer.consts.DorisConsts;
 import org.apache.doris.flink.cfg.DorisExecutionOptions;
 import org.apache.doris.flink.cfg.DorisOptions;

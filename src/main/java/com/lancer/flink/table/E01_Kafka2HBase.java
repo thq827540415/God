@@ -1,7 +1,7 @@
 package com.lancer.flink.table;
 
 import com.google.common.collect.Lists;
-import com.lancer.utils.FlinkEnvUtils;
+import com.lancer.util.FlinkEnvUtils;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.common.state.*;
 import org.apache.flink.api.common.typeinfo.TypeHint;

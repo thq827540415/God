@@ -1,6 +1,6 @@
 package com.lancer.flink.stream.transformation;
 
-import com.lancer.utils.FlinkEnvUtils;
+import com.lancer.util.FlinkEnvUtils;
 import com.lancer.consts.UsualConsts;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;

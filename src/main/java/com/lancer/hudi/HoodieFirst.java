@@ -1,7 +1,6 @@
 package com.lancer.hudi;
 
-import com.lancer.utils.FlinkEnvUtils;
-import org.apache.flink.streaming.api.TimeCharacteristic;
+import com.lancer.util.FlinkEnvUtils;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 

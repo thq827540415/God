@@ -1,6 +1,6 @@
 package com.lancer.flink.stream;
 
-import com.lancer.utils.FlinkEnvUtils;
+import com.lancer.util.FlinkEnvUtils;
 import com.lancer.consts.UsualConsts;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

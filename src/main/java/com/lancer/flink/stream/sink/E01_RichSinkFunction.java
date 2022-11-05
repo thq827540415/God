@@ -1,6 +1,6 @@
 package com.lancer.flink.stream.sink;
 
-import com.lancer.utils.FlinkEnvUtils;
+import com.lancer.util.FlinkEnvUtils;
 import com.lancer.consts.UsualConsts;
 import org.apache.flink.api.common.functions.util.PrintSinkOutputWriter;
 import org.apache.flink.configuration.Configuration;

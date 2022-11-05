@@ -1,4 +1,4 @@
-package com.lancer.utils;
+package com.lancer.util;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -13,9 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class JsonUtils {
     private static final ObjectMapper om = new ObjectMapper();

@@ -1,6 +1,6 @@
 package com.lancer.example;
 
-import com.lancer.utils.JsonUtils;
+import com.lancer.util.JsonUtils;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;

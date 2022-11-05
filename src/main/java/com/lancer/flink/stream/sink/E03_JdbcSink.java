@@ -1,7 +1,7 @@
 package com.lancer.flink.stream.sink;
 
 import com.lancer.consts.MySQLConsts;
-import com.lancer.utils.FlinkEnvUtils;
+import com.lancer.util.FlinkEnvUtils;
 import com.mysql.cj.jdbc.MysqlXADataSource;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
