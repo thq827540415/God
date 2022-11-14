@@ -1,0 +1,28 @@
+############################################## common ###################################################
+# 以下4条必须配置，QuickstartUtils.getQuickstartWriteConfigs
+# 默认并行度1500
+hoodie.insert.shuffle.parallelism = 2
+hoodie.upsert.shuffle.parallelism = 2
+hoodie.bulkinsert.shuffle.parallelism = 2
+hoodie.delete.shuffle.parallelism = 2
+# 指定record key
+hoodie.datasource.write.recordkey.field = id
+# 指定partition path，若不指定分区，则默认只有一个分区default
+hoodie.datasource.write.partitionpath.field = data_dt
+# 指定表名，只是用于存在HMS中
+hoodie.table.name = test
+# hoodie.datasource.write.table.name = test, 没有什么用
+
+# 指定表的类型为MergeOnRead，必须大写, 默认为COPY_ON_WRITE
+hoodie.datasource.write.table.type = MERGE_ON_READ
+
+# 指定操作类型为upsert，默认为upsert
+hoodie.datasource.write.operation = upsert
+
+# 主键相同，留哪一条; 按照时间大的留谁
+hoodie.datasource.write.precombine.field = data_dt
+
+############################################## COPY_ON_WRITE ###################################################
+
+
+############################################## MERGE_ON_READ ###################################################

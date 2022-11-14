@@ -1,0 +1,38 @@
+package protobuf;
+// 指定在当前目录下生成的包名
+option java_package = "protobuf";
+// 指定主类名
+option java_outer_classname = "AddressBookProtos";
+// 基础定义
+// Prefer optional fields than required
+message Person {
+    // 字段index最小值为1
+    required string name = 1;
+    required int32 id = 2;
+    // optional 表示字段可选
+    optional string email = 3;
+    enum PhoneType {
+        // 枚举类型的最小值0
+        MOBILE = 0;
+        HOME = 1;
+        WORK = 2;
+    }
+    // 在Person中定义内部类
+    message PhoneNumber {
+        required string number = 1;
+        optional PhoneType type = 2 [default = HOME];
+    }
+    // defined a List
+    repeated PhoneNumber phone = 4;
+}
+
+message AddressBook {
+    repeated Person person = 1;
+    // 指定拓展中的float只能为100 to 199
+    extensions 100 to 199;
+}
+
+// 为message AddressBook的拓展
+extend AddressBook {
+    optional float price = 100;
+}
