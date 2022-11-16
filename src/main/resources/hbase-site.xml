@@ -2,6 +2,6 @@
 <configuration>
     <property>
         <name>hbase.zookeeper.quorum</name>
-        <value>zk01:2181,zk02:2182,zk03:2183</value>
+        <value>bigdata01,bigdata02,bigdata03</value>
     </property>
 </configuration>

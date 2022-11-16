@@ -15,11 +15,14 @@
 
         <scala.binary.version>2.12</scala.binary.version>
         <scala.version>2.12.10</scala.version>
-        <hadoop.version>2.9.2</hadoop.version>
+        <mysql.version>5.1.47</mysql.version>
+        <hadoop.version>2.7.3</hadoop.version>
+        <protobuf.version>2.5.0</protobuf.version>
         <zookeeper.version>3.5.7</zookeeper.version>
-        <hbase.version>2.2.4</hbase.version>
+        <hbase.version>1.4.9</hbase.version>
         <phoenix.version>5.1.2</phoenix.version>
         <hive.version>3.1.2</hive.version>
+        <kafka.version>2.4.1</kafka.version>
         <spark.version>3.1.2</spark.version>
         <hudi.version>0.12.0</hudi.version>
         <iceberg.version>0.14.1</iceberg.version>
@@ -27,10 +30,17 @@
         <flink.version>1.14.3</flink.version>
 
 
+        <log.scope>compile</log.scope>
         <scala.scope>compile</scala.scope>
-        <hadoop.scope>compile</hadoop.scope>
-        <zookeeper.scope>provided</zookeeper.scope>
-        <hbase.scope>provided</hbase.scope>
+        <jedis.scope>provided</jedis.scope>
+        <hadoop.scope>provided</hadoop.scope>
+        <protobuf.scope>compile</protobuf.scope>
+        <parquet.avro.scope>provided</parquet.avro.scope>
+        <zookeeper.scope>compile</zookeeper.scope>
+        <curator.scope>provided</curator.scope>
+        <hbase.scope>compile</hbase.scope>
+        <kafka.scope>provided</kafka.scope>
+        <phoenix.scope>provided</phoenix.scope>
         <spark.scope>provided</spark.scope>
         <hudi.spark.scope>provided</hudi.spark.scope>
         <hudi.flink.scope>provided</hudi.flink.scope>
@@ -39,8 +49,8 @@
         <doris.spark.scope>provided</doris.spark.scope>
         <doris.flink.scope>provided</doris.flink.scope>
         <vertx.scope>provided</vertx.scope>
-        <flink.scope>compile</flink.scope>
-        <flink.ext.scope>compile</flink.ext.scope>
+        <flink.scope>provided</flink.scope>
+        <flink.ext.scope>provided</flink.ext.scope>
     </properties>
 
     <repositories>
@@ -75,31 +85,25 @@
     </pluginRepositories>
 
     <dependencies>
-        <!-- Slf4j + log4j2 -->
+        <!-- Slf4j + log4j -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.25</version>
-            <scope>${flink.scope}</scope>
+            <scope>${log.scope}</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>2.17.1</version>
-            <scope>${flink.scope}</scope>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.25</version>
+            <scope>${log.scope}</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.17.1</version>
-            <scope>${flink.scope}</scope>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+            <scope>${log.scope}</scope>
         </dependency>
-        <!-- logback -->
-        <!--<dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.2.11</version>
-        </dependency>-->
 
         <!-- scala-library -->
         <dependency>
@@ -122,6 +126,7 @@
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
             <version>3.3.0</version>
+            <scope>${jedis.scope}</scope>
         </dependency>
 
         <!-- http client -->
@@ -182,7 +187,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.47</version>
+            <version>${mysql.version}</version>
             <scope>runtime</scope>
         </dependency>
 
@@ -190,15 +195,16 @@
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>2.5.0</version>
-            <scope>provided</scope>
+            <version>${protobuf.version}</version>
+            <scope>${protobuf.scope}</scope>
         </dependency>
 
-        <!-- avro -->
+        <!-- parquet&avro -->
         <dependency>
             <groupId>org.apache.parquet</groupId>
             <artifactId>parquet-avro</artifactId>
             <version>1.12.2</version>
+            <scope>${parquet.avro.scope}</scope>
         </dependency>
 
         <!-- junit -->
@@ -208,6 +214,123 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+
+
+        <!-- todo ==================================== hadoop ==================================== -->
+        <!-- hadoop client -->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-client</artifactId>
+            <version>${hadoop.version}</version>
+            <scope>${hadoop.scope}</scope>
+        </dependency>
+
+        <!-- todo ==================================== hbase ==================================== -->
+        <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase-client</artifactId>
+            <version>${hbase.version}</version>
+            <scope>${hbase.scope}</scope>
+        </dependency>
+        <!-- phoenix -->
+        <dependency>
+            <groupId>org.apache.phoenix</groupId>
+            <artifactId>phoenix-core</artifactId>
+            <version>${phoenix.version}</version>
+            <scope>${phoenix.scope}</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.glassfish</groupId>
+                    <artifactId>javax.el</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+
+        <!-- todo ==================================== zookeeper ==================================== -->
+        <dependency>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
+            <version>${zookeeper.version}</version>
+            <scope>${zookeeper.scope}</scope>
+        </dependency>
+        <!-- recipes + framework + client -->
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-recipes</artifactId>
+            <version>4.3.0</version>
+            <scope>${curator.scope}</scope>
+        </dependency>
+
+        <!-- todo ==================================== kafka ==================================== -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>${kafka.version}</version>
+            <scope>${kafka.scope}</scope>
+        </dependency>
+
+
+        <!-- todo ==================================== spark ==================================== -->
+        <!-- hudi -->
+        <dependency>
+            <groupId>org.apache.hudi</groupId>
+            <artifactId>hudi-spark3.1-bundle_${scala.binary.version}</artifactId>
+            <version>${hudi.version}</version>
+            <scope>${hudi.spark.scope}</scope>
+        </dependency>
+
+        <!-- iceberg -->
+        <dependency>
+            <groupId>org.apache.iceberg</groupId>
+            <artifactId>iceberg-spark-runtime-3.1_${scala.binary.version}</artifactId>
+            <version>${iceberg.version}</version>
+            <scope>${iceberg.spark.scope}</scope>
+        </dependency>
+
+        <!-- doris -->
+        <dependency>
+            <groupId>org.apache.doris</groupId>
+            <artifactId>spark-doris-connector-3.1_${scala.binary.version}</artifactId>
+            <version>${doris.version}</version>
+            <scope>${doris.spark.scope}</scope>
+        </dependency>
+
+        <!-- spark SQL -->
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_${scala.binary.version}</artifactId>
+            <version>${spark.version}</version>
+            <scope>${spark.scope}</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-hive_${scala.binary.version}</artifactId>
+            <version>${spark.version}</version>
+            <scope>${spark.scope}</scope>
+        </dependency>
+
+        <!-- Spark Streaming -->
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming_${scala.binary.version}</artifactId>
+            <version>${spark.version}</version>
+            <scope>${spark.scope}</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming-kafka-0-10_${scala.binary.version}</artifactId>
+            <version>${spark.version}</version>
+            <scope>${spark.scope}</scope>
+        </dependency>
+
+        <!-- hive2.x解析hive表中的json格式数据 -->
+        <!--<dependency>
+            <groupId>org.apache.hive.hcatalog</groupId>
+            <artifactId>hive-hcatalog-core</artifactId>
+            <version>${hive.version}</version>
+            <scope>provided</scope>
+        </dependency>-->
 
 
         <!-- todo ==================================== flink ==================================== -->
@@ -233,12 +356,6 @@
             <artifactId>flink-doris-connector-1.14_2.12</artifactId>
             <version>${doris.version}</version>
             <scope>${doris.flink.scope}</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- flink stream -->
@@ -326,7 +443,7 @@
         <!-- flink hbase connector -->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-hbase-2.2_${scala.binary.version}</artifactId>
+            <artifactId>flink-connector-hbase-1.4_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
             <scope>${flink.scope}</scope>
         </dependency>
@@ -336,7 +453,7 @@
             <groupId>com.ververica</groupId>
             <artifactId>flink-connector-mysql-cdc</artifactId>
             <version>2.0.0</version>
-            <scope>provided</scope>
+            <scope>${flink.ext.scope}</scope>
         </dependency>
 
         <!-- flink format -->
@@ -352,134 +469,6 @@
             <version>${flink.version}</version>
             <scope>${flink.ext.scope}</scope>
         </dependency>
-
-
-        <!-- todo ==================================== hadoop ==================================== -->
-        <!-- hadoop client -->
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-client</artifactId>
-            <version>${hadoop.version}</version>
-            <scope>${hadoop.scope}</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-
-        <!-- todo ==================================== hbase ==================================== -->
-        <dependency>
-            <groupId>org.apache.hbase</groupId>
-            <artifactId>hbase-client</artifactId>
-            <version>${hbase.version}</version>
-            <scope>${hbase.scope}</scope>
-        </dependency>
-        <!-- phoenix -->
-        <dependency>
-            <groupId>org.apache.phoenix</groupId>
-            <artifactId>phoenix-core</artifactId>
-            <version>${phoenix.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.glassfish</groupId>
-                    <artifactId>javax.el</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-
-        <!-- todo ==================================== zookeeper ==================================== -->
-        <dependency>
-            <groupId>org.apache.zookeeper</groupId>
-            <artifactId>zookeeper</artifactId>
-            <version>${zookeeper.version}</version>
-            <scope>${zookeeper.scope}</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!-- recipes + framework + client -->
-        <dependency>
-            <groupId>org.apache.curator</groupId>
-            <artifactId>curator-recipes</artifactId>
-            <version>4.3.0</version>
-            <scope>${zookeeper.scope}</scope>
-        </dependency>
-
-
-        <!-- todo ==================================== spark ==================================== -->
-        <!-- hudi -->
-        <dependency>
-            <groupId>org.apache.hudi</groupId>
-            <artifactId>hudi-spark3.1-bundle_${scala.binary.version}</artifactId>
-            <version>${hudi.version}</version>
-            <scope>${hudi.spark.scope}</scope>
-        </dependency>
-
-        <!-- iceberg -->
-        <dependency>
-            <groupId>org.apache.iceberg</groupId>
-            <artifactId>iceberg-spark-runtime-3.1_${scala.binary.version}</artifactId>
-            <version>${iceberg.version}</version>
-            <scope>${iceberg.spark.scope}</scope>
-        </dependency>
-
-        <!-- doris -->
-        <dependency>
-            <groupId>org.apache.doris</groupId>
-            <artifactId>spark-doris-connector-3.1_${scala.binary.version}</artifactId>
-            <version>${doris.version}</version>
-            <scope>${doris.spark.scope}</scope>
-        </dependency>
-
-        <!-- spark SQL -->
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-sql_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
-            <scope>${spark.scope}</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-hive_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
-            <scope>${spark.scope}</scope>
-        </dependency>
-
-        <!-- Spark Streaming -->
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-streaming_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
-            <scope>${spark.scope}</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-streaming-kafka-0-10_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
-            <scope>${spark.scope}</scope>
-        </dependency>
-
-        <!-- hive-2.x解析hive表中的json格式数据 -->
-        <!--<dependency>
-            <groupId>org.apache.hive.hcatalog</groupId>
-            <artifactId>hive-hcatalog-core</artifactId>
-            <version>${hive.version}</version>
-            <scope>provided</scope>
-        </dependency>-->
-
     </dependencies>
 
     <build>
@@ -522,7 +511,7 @@
                         </goals>
                         <configuration>
                             <sourceDirectory>${project.basedir}/src/main/resources/avro</sourceDirectory>
-                            <outputDirectory>${project.basedir}/src/main/java/com/lancer/algorithm/serializer
+                            <outputDirectory>${project.basedir}/src/main/java/com/lumine/algorithm/serializer
                             </outputDirectory>
                         </configuration>
                     </execution>
@@ -541,7 +530,7 @@
                         <configuration>
                             <protocExecutable>C:\Windows\System32\protoc.exe</protocExecutable>
                             <protoSourceRoot>${project.basedir}/src/main/resources/proto</protoSourceRoot>
-                            <outputDirectory>${project.basedir}/src/main/java/com/lancer/algorithm/serializer
+                            <outputDirectory>${project.basedir}/src/main/java/com/lumine/algorithm/serializer
                             </outputDirectory>
                             <!-- 生成文件前是否把目标目录清空，这个最好设置为false，以免误删项目文件 -->
                             <clearOutputDirectory>false</clearOutputDirectory>
