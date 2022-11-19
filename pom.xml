@@ -33,7 +33,7 @@
         <log.scope>compile</log.scope>
         <scala.scope>compile</scala.scope>
         <jedis.scope>provided</jedis.scope>
-        <hadoop.scope>provided</hadoop.scope>
+        <hadoop.scope>compile</hadoop.scope>
         <protobuf.scope>compile</protobuf.scope>
         <parquet.avro.scope>provided</parquet.avro.scope>
         <zookeeper.scope>compile</zookeeper.scope>
@@ -511,7 +511,7 @@
                         </goals>
                         <configuration>
                             <sourceDirectory>${project.basedir}/src/main/resources/avro</sourceDirectory>
-                            <outputDirectory>${project.basedir}/src/main/java/com/lumine/algorithm/serializer
+                            <outputDirectory>${project.basedir}/src/main/java/com/shadow/algorithm/serializer
                             </outputDirectory>
                         </configuration>
                     </execution>
@@ -530,7 +530,7 @@
                         <configuration>
                             <protocExecutable>C:\Windows\System32\protoc.exe</protocExecutable>
                             <protoSourceRoot>${project.basedir}/src/main/resources/proto</protoSourceRoot>
-                            <outputDirectory>${project.basedir}/src/main/java/com/lumine/algorithm/serializer
+                            <outputDirectory>${project.basedir}/src/main/java/com/shadow/algorithm/serializer
                             </outputDirectory>
                             <!-- 生成文件前是否把目标目录清空，这个最好设置为false，以免误删项目文件 -->
                             <clearOutputDirectory>false</clearOutputDirectory>
