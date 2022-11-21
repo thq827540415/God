@@ -20,7 +20,6 @@
         <protobuf.version>2.5.0</protobuf.version>
         <zookeeper.version>3.5.7</zookeeper.version>
         <hbase.version>1.4.9</hbase.version>
-        <phoenix.version>5.1.2</phoenix.version>
         <hive.version>3.1.2</hive.version>
         <kafka.version>2.4.1</kafka.version>
         <spark.version>3.1.2</spark.version>
@@ -40,7 +39,6 @@
         <curator.scope>provided</curator.scope>
         <hbase.scope>compile</hbase.scope>
         <kafka.scope>provided</kafka.scope>
-        <phoenix.scope>provided</phoenix.scope>
         <spark.scope>provided</spark.scope>
         <hudi.spark.scope>provided</hudi.spark.scope>
         <hudi.flink.scope>provided</hudi.flink.scope>
@@ -232,20 +230,6 @@
             <version>${hbase.version}</version>
             <scope>${hbase.scope}</scope>
         </dependency>
-        <!-- phoenix -->
-        <dependency>
-            <groupId>org.apache.phoenix</groupId>
-            <artifactId>phoenix-core</artifactId>
-            <version>${phoenix.version}</version>
-            <scope>${phoenix.scope}</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.glassfish</groupId>
-                    <artifactId>javax.el</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
 
         <!-- todo ==================================== zookeeper ==================================== -->
         <dependency>
@@ -511,7 +495,7 @@
                         </goals>
                         <configuration>
                             <sourceDirectory>${project.basedir}/src/main/resources/avro</sourceDirectory>
-                            <outputDirectory>${project.basedir}/src/main/java/com/shadow/algorithm/serializer
+                            <outputDirectory>${project.basedir}/src/main/java/com/shadow/garden/basic/serializer
                             </outputDirectory>
                         </configuration>
                     </execution>
@@ -530,7 +514,7 @@
                         <configuration>
                             <protocExecutable>C:\Windows\System32\protoc.exe</protocExecutable>
                             <protoSourceRoot>${project.basedir}/src/main/resources/proto</protoSourceRoot>
-                            <outputDirectory>${project.basedir}/src/main/java/com/shadow/algorithm/serializer
+                            <outputDirectory>${project.basedir}/src/main/java/com/shadow/garden/basic/serializer
                             </outputDirectory>
                             <!-- 生成文件前是否把目标目录清空，这个最好设置为false，以免误删项目文件 -->
                             <clearOutputDirectory>false</clearOutputDirectory>

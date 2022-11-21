@@ -13,6 +13,7 @@ public class E02_KafkaConsumer {
     public static void main(String[] args) throws IOException {
         Properties p = new Properties();
         p.load(E02_KafkaConsumer.class.getClassLoader().getResourceAsStream("consumer.properties"));
+        // 对应单个消费者
         @Cleanup KafkaConsumer<Integer, String> consumer = new KafkaConsumer<>(p);
 
         consumer.subscribe(Collections.singletonList("test"));
