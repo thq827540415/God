@@ -11,7 +11,9 @@ public class E05_ReverseLinkedList {
         int value;
         Node next;
 
-        public Node() {}
+        public Node() {
+        }
+
         public Node(int value, Node next) {
             this.value = value;
             this.next = next;
@@ -29,7 +31,7 @@ public class E05_ReverseLinkedList {
         reverse(head);
     }
 
-    public static Node reverse(Node head) {
+    private static Node reverse(Node head) {
         Node last = null;
         while (head != null) {
             Node nextHead = head.next;
