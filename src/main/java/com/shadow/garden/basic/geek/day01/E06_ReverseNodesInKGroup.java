@@ -6,20 +6,6 @@ package com.shadow.garden.basic.geek.day01;
  * @Description k个一组翻转链表 leetcode：25
  */
 public class E06_ReverseNodesInKGroup {
-
-    private static class Node {
-        int value;
-        Node next;
-
-        public Node() {
-        }
-
-        public Node(int value, Node next) {
-            this.value = value;
-            this.next = next;
-        }
-    }
-
     public static void main(String[] args) {
         Node head = new Node(1, null);
         Node p = head;
