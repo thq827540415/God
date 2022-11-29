@@ -15,9 +15,9 @@
 
 1. 术语https://iceberg.apache.org/terms/
 
-![Hive整合Iceberg文件目录结构](imagesive整合Iceberg文件目录结构.png)
+![Hive整合Iceberg文件目录结构](./images/Hive整合Iceberg文件目录结构.png)
 
-![Iceberg查询最新数据](imagesceberg查询最新数据.png)
+![Iceberg查询最新数据](./images/Iceberg查询最新数据.png)
 
 1. data files（数据文件）
    1. 数据文件是Iceberg表真实存储数据的文件，一般是在表的数据存储目录的data目录下，Iceberg每次更新会产生多个数据文件

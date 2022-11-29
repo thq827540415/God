@@ -5,6 +5,17 @@ public class UsualConsts {
 
     public static final String HDFS_URL = "hdfs://bigdata01:9000";
 
+
+
+
+
+
+
+
+
+
+    // ========================================= flink =========================================
+
     /**
      * 设置全局算子的默认并行度 <= maxParallelism
      */

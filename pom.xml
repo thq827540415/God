@@ -24,30 +24,31 @@
         <kafka.version>2.4.1</kafka.version>
         <spark.version>3.1.2</spark.version>
         <hudi.version>0.12.0</hudi.version>
-        <iceberg.version>0.14.1</iceberg.version>
+        <iceberg.version>1.0.0</iceberg.version>
         <doris.version>1.1.0</doris.version>
         <flink.version>1.14.3</flink.version>
 
 
         <log.scope>compile</log.scope>
-        <scala.scope>compile</scala.scope>
+        <scala.scope>provided</scala.scope>
         <jedis.scope>provided</jedis.scope>
         <hadoop.scope>compile</hadoop.scope>
-        <protobuf.scope>compile</protobuf.scope>
+        <protobuf.scope>provided</protobuf.scope>
         <parquet.avro.scope>provided</parquet.avro.scope>
-        <zookeeper.scope>compile</zookeeper.scope>
+        <zookeeper.scope>provided</zookeeper.scope>
         <curator.scope>provided</curator.scope>
-        <hbase.scope>compile</hbase.scope>
+        <hbase.scope>provided</hbase.scope>
         <kafka.scope>provided</kafka.scope>
         <spark.scope>provided</spark.scope>
         <hudi.spark.scope>provided</hudi.spark.scope>
         <hudi.flink.scope>provided</hudi.flink.scope>
         <iceberg.spark.scope>provided</iceberg.spark.scope>
-        <iceberg.flink.scope>provided</iceberg.flink.scope>
+        <iceberg.flink.scope>compile</iceberg.flink.scope>
         <doris.spark.scope>provided</doris.spark.scope>
         <doris.flink.scope>provided</doris.flink.scope>
         <vertx.scope>provided</vertx.scope>
-        <flink.scope>provided</flink.scope>
+        <flink.scope>compile</flink.scope>
+        <flink.hive.scope>compile</flink.hive.scope>
         <flink.ext.scope>provided</flink.ext.scope>
     </properties>
 
@@ -421,7 +422,7 @@
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-sql-connector-hive-3.1.2_2.12</artifactId>
             <version>${flink.version}</version>
-            <scope>${flink.ext.scope}</scope>
+            <scope>${flink.hive.scope}</scope>
         </dependency>
 
         <!-- flink hbase connector -->
@@ -429,7 +430,7 @@
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-hbase-1.4_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
-            <scope>${flink.scope}</scope>
+            <scope>${flink.ext.scope}</scope>
         </dependency>
 
         <!-- flink mysql cdc -->

@@ -5,6 +5,7 @@ import com.shadow.garden.bigdata.util.FlinkEnvUtils;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.apache.flink.api.common.RuntimeExecutionMode;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -22,6 +23,7 @@ import static org.apache.flink.table.api.Expressions.$;
 public class SimpleStreamTable {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment dsEnv = FlinkEnvUtils.getDSEnv();
+        dsEnv.setRuntimeMode(RuntimeExecutionMode.STREAMING);
 
         SingleOutputStreamOperator<Person> source =
                 dsEnv
@@ -49,7 +51,7 @@ public class SimpleStreamTable {
                 new HiveCatalog(
                         "hive",
                         "default",
-                        "/opt/hive-2.3.7/conf"));
+                        null));
 
 
         // 在tableEnv中设置默认的catalog和database
@@ -62,7 +64,7 @@ public class SimpleStreamTable {
 
         // todo 在默认Catalog中注册临时视图和表
         // 1. 注册临时视图
-        tableEnv.createTemporaryView("tempView", source);
+        tableEnv.createTemporaryView("tempView1", source);
         // 2. 创建一张永久表
         // tableEnv.createTable("tempView", TableDescriptor.forConnector("kafka").build());
         // 3. 创建一张临时表

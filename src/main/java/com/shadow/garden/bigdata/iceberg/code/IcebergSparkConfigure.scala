@@ -1,11 +1,11 @@
-package com.shadow.garden.bigdata.iceberg
+package com.shadow.garden.bigdata.iceberg.code
 
-import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.SparkSession
 
 /**
  * 创建的Iceberg表都是外部表
  */
-object IcebergConfigure {
+object IcebergSparkConfigure {
 
   System.setProperty("HADOOP_USER_NAME", "root")
 
