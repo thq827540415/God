@@ -79,24 +79,15 @@ public class IcebergFlinkConfigure {
                         "   'property-version' = '1'\n" +
                         ")");
 
+        // 自动读取classpath中的hive-site.xml
+        // 或者使用hive-conf-dir指定配置文件目录
         tableEnv.executeSql(
-                "create catalog hive_catalog1\n" +
+                "create catalog hive_catalog\n" +
                         "with (\n" +
                         "   'type' = 'iceberg',\n" +
                         "   'catalog-type' = 'hive',\n" +
                         "   'uri' = 'thrift://bigdata03:9083',\n" +
                         "   'warehouse' = 'hdfs://bigdata01:9000/user/hive/warehouse',\n" +
-                        "   'property-version' = '1',\n" +
-                        "   'clients' = '5'\n" +
-                        ")");
-
-        // 自动读取classpath中的hive-site.xml
-        // 或者使用hive-conf-dir指定配置文件目录
-        tableEnv.executeSql(
-                "create catalog hive_catalog2\n" +
-                        "with (\n" +
-                        "   'type' = 'iceberg',\n" +
-                        "   'catalog-type' = 'hive',\n" +
                         "   'property-version' = '1',\n" +
                         "   'clients' = '5'\n" +
                         ")");

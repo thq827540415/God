@@ -1,4 +1,4 @@
-package com.shadow.garden.bigdata.flink.code;
+package com.shadow.garden.bigdata.flink.code.demo;
 
 import com.shadow.garden.bigdata.util.JsonUtils;
 import lombok.AllArgsConstructor;

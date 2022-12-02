@@ -1,4 +1,4 @@
-package com.shadow.garden.bigdata.flink.code;
+package com.shadow.garden.bigdata.flink.code.demo;
 
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.state.ListState;

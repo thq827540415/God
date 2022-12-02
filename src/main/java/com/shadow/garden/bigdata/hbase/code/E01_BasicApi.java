@@ -9,14 +9,14 @@ import java.io.IOException;
 
 @Slf4j
 public class E01_BasicApi {
-    private static final Connection CONN;
+    private static final Connection conn;
 
     static {
         try {
             Configuration conf = HBaseConfiguration.create();
             conf.set("hbase.zookeeper.quorum", "bigdata01,bigdata02,bigdata03");
             conf.set("fs.hdfs.impl", "org.apache.hadoop.hdfs.DistributedFileSystem");
-            CONN = ConnectionFactory.createConnection(conf);
+            conn = ConnectionFactory.createConnection(conf);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -29,7 +29,7 @@ public class E01_BasicApi {
         // delNs();
 
         // dropTable();
-        CONN.close();
+        conn.close();
     }
 
     // todo ================================= namespace ==================================
@@ -38,7 +38,7 @@ public class E01_BasicApi {
      * create_namespace 'ns', {author => 'shadow'}
      */
     private static void createNs() {
-        try (Admin admin = CONN.getAdmin()) {
+        try (Admin admin = conn.getAdmin()) {
             // 自动负载均衡
             // admin.balancer(true);
             NamespaceDescriptor descriptor = NamespaceDescriptor.create("ns")
@@ -55,7 +55,7 @@ public class E01_BasicApi {
      * alter_namespace 'ns', {author => 'garden'}
      */
     private static void alterNs() {
-        try (Admin admin = CONN.getAdmin()) {
+        try (Admin admin = conn.getAdmin()) {
             // 获取单个Namespace
             NamespaceDescriptor ns = admin.getNamespaceDescriptor("ns");
             // 删除某个配置
@@ -75,7 +75,7 @@ public class E01_BasicApi {
      * describe_namespace 'ns'
      */
     private static void getNs() {
-        try (Admin admin = CONN.getAdmin()) {
+        try (Admin admin = conn.getAdmin()) {
             // 获取所有Namespace
             for (NamespaceDescriptor descriptor : admin.listNamespaceDescriptors()) {
                 String nsName = descriptor.getName();
@@ -94,7 +94,7 @@ public class E01_BasicApi {
      * drop_namespace
      */
     private static void delNs() {
-        try (Admin admin = CONN.getAdmin()) {
+        try (Admin admin = conn.getAdmin()) {
             // ns内容为空
             admin.deleteNamespace("ns");
         } catch (IOException e) {
@@ -108,7 +108,7 @@ public class E01_BasicApi {
      * create 'ns:student', 'info'
      */
     private static void createTable() {
-        try (Admin admin = CONN.getAdmin()) {
+        try (Admin admin = conn.getAdmin()) {
 
             TableName student = TableName.valueOf("ns:student");
 
@@ -131,7 +131,7 @@ public class E01_BasicApi {
      * list 'ns:.*'
      */
     private static void listTable() {
-        try (Admin admin = CONN.getAdmin()) {
+        try (Admin admin = conn.getAdmin()) {
             // 获取所有TableDescriptor
             // admin.listTables();
 
@@ -155,7 +155,7 @@ public class E01_BasicApi {
      * describe 'ns:student'
      */
     private static void descTable() {
-        try (Admin admin = CONN.getAdmin()) {
+        try (Admin admin = conn.getAdmin()) {
 
             TableName student = TableName.valueOf("ns:student");
 
@@ -193,7 +193,7 @@ public class E01_BasicApi {
      * disable 'ns:student' -> drop 'ns:student'
      */
     private static void dropTable() {
-        try (Admin admin = CONN.getAdmin()) {
+        try (Admin admin = conn.getAdmin()) {
             TableName student = TableName.valueOf("ns:student");
             if (admin.tableExists(student)) {
                 if (!admin.isTableDisabled(student)) {
@@ -212,7 +212,7 @@ public class E01_BasicApi {
      * get 'ns:t', 'rk', 'c1', 'c2'
      */
     private static void crudTable() {
-        try (Table table = CONN.getTable(TableName.valueOf("ns:student"))) {
+        try (Table table = conn.getTable(TableName.valueOf("ns:student"))) {
             // 一个rowKey对应一个Put对象、Delete对象、Get对象
             // addColumn添加列，addFamily添加列簇
         } catch (IOException e) {
@@ -224,7 +224,7 @@ public class E01_BasicApi {
      * scan 'ns:t', {COLUMNS => ['info', 'c2'], LIMIT => 10, STARTROW => 'rk001'}
      */
     private static void scanTable() {
-        try (Table table = CONN.getTable(TableName.valueOf("ns:student"))) {
+        try (Table table = conn.getTable(TableName.valueOf("ns:student"))) {
             Scan scan = new Scan();
 
             scan.withStartRow("rk001".getBytes());
