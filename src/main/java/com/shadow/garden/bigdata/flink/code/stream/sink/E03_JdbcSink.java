@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.flink.code.stream.sink;
 
-import com.shadow.garden.bigdata.consts.MySQLConsts;
+import com.shadow.garden.bigdata.consts.Consts;
 import com.shadow.garden.bigdata.util.FlinkEnvUtils;
 import com.mysql.cj.jdbc.MysqlXADataSource;
 import lombok.AllArgsConstructor;
@@ -70,10 +70,10 @@ public class E03_JdbcSink {
                         .build(),
                 // JDBC connection parameters
                 new JdbcConnectionOptions.JdbcConnectionOptionsBuilder()
-                        .withDriverName(MySQLConsts.DRIVER)
-                        .withUrl(MySQLConsts.URL)
-                        .withUsername(MySQLConsts.USERNAME)
-                        .withPassword(MySQLConsts.PASSWORD)
+                        .withDriverName(Consts.MYSQL_DRIVER)
+                        .withUrl(Consts.MYSQL_URL)
+                        .withUsername(Consts.MYSQL_USERNAME)
+                        .withPassword(Consts.MYSQL_PASSWORD)
                         .build()
         );
     }
@@ -110,9 +110,9 @@ public class E03_JdbcSink {
                     public XADataSource get() {
                         // XADataSource是支持分布式事务的连接
                         MysqlXADataSource ds = new MysqlXADataSource();
-                        ds.setUrl(MySQLConsts.URL);
-                        ds.setUser(MySQLConsts.USERNAME);
-                        ds.setPassword(MySQLConsts.PASSWORD);
+                        ds.setUrl(Consts.MYSQL_URL);
+                        ds.setUser(Consts.MYSQL_USERNAME);
+                        ds.setPassword(Consts.MYSQL_PASSWORD);
                         return ds;
                     }
                 }

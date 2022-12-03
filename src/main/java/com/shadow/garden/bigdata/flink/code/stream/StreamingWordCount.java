@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.flink.code.stream;
 
-import com.shadow.garden.bigdata.consts.UsualConsts;
+import com.shadow.garden.bigdata.consts.Consts;
 import com.shadow.garden.bigdata.util.FlinkEnvUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -109,7 +109,7 @@ public class StreamingWordCount {
 
 
         // todo Source
-        DataStreamSource<String> source = env.socketTextStream(UsualConsts.NC_HOST, 9999);
+        DataStreamSource<String> source = env.socketTextStream(Consts.NC_HOST, 9999);
 
 
         // todo Transformation

@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.doris.stream.sink;
 
-import com.shadow.garden.bigdata.consts.DorisConsts;
+import com.shadow.garden.bigdata.consts.Consts;
 import com.shadow.garden.bigdata.util.FlinkEnvUtils;
 import org.apache.doris.flink.cfg.DorisExecutionOptions;
 import org.apache.doris.flink.cfg.DorisOptions;
@@ -29,9 +29,9 @@ public class E01_DorisSinkDataStream {
      */
     private static DorisSink<String> generateSinkByString() {
         DorisOptions dorisOptions = DorisOptions.builder()
-                .setFenodes(DorisConsts.FE_STR)
-                .setUsername(DorisConsts.USERNAME)
-                .setPassword(DorisConsts.PASSWORD)
+                .setFenodes(Consts.DORIS_FE_STR)
+                .setUsername(Consts.DORIS_USERNAME)
+                .setPassword(Consts.DORIS_PASSWORD)
                 .setTableIdentifier("example_db.table1")
                 .build();
 

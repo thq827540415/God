@@ -1,7 +1,7 @@
 package com.shadow.garden.bigdata.doris.stream.source;
 
+import com.shadow.garden.bigdata.consts.Consts;
 import com.shadow.garden.bigdata.util.FlinkEnvUtils;
-import com.shadow.garden.bigdata.consts.DorisConsts;
 import org.apache.doris.flink.cfg.DorisOptions;
 import org.apache.doris.flink.cfg.DorisReadOptions;
 import org.apache.doris.flink.deserialization.SimpleListDeserializationSchema;
@@ -17,9 +17,9 @@ public class E01_DorisSourceDataStream {
         StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
 
         DorisOptions dorisOptions = DorisOptions.builder()
-                .setFenodes(DorisConsts.FE_STR)
-                .setUsername(DorisConsts.USERNAME)
-                .setPassword(DorisConsts.PASSWORD)
+                .setFenodes(Consts.DORIS_FE_STR)
+                .setUsername(Consts.DORIS_USERNAME)
+                .setPassword(Consts.DORIS_PASSWORD)
                 .setTableIdentifier("example_db.table1")
                 .build();
 

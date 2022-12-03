@@ -1,7 +1,6 @@
 package com.shadow.garden.bigdata.flink.code.stream.sink;
 
-import com.shadow.garden.bigdata.consts.RedisConsts;
-import com.shadow.garden.bigdata.consts.UsualConsts;
+import com.shadow.garden.bigdata.consts.Consts;
 import com.shadow.garden.bigdata.util.FlinkEnvUtils;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
@@ -26,7 +25,7 @@ public class E04_RedisSink {
         StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
 
         SingleOutputStreamOperator<Tuple2<String, String>> line2Tuple = env
-                .socketTextStream(UsualConsts.NC_HOST, 9999)
+                .socketTextStream(Consts.NC_HOST, 9999)
                 .map(
                         line -> {
                             String[] split = line.split(",");
@@ -37,8 +36,8 @@ public class E04_RedisSink {
                         }));
 
         FlinkJedisPoolConfig redisConf = new FlinkJedisPoolConfig.Builder()
-                .setHost(RedisConsts.HOST)
-                .setPort(RedisConsts.PORT)
+                .setHost(Consts.REDIS_HOST)
+                .setPort(Consts.REDIS_PORT)
                 .setDatabase(0)
                 .build();
 

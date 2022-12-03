@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.flink.code.stream.transformation;
 
-import com.shadow.garden.bigdata.consts.UsualConsts;
+import com.shadow.garden.bigdata.consts.Consts;
 import com.shadow.garden.bigdata.util.FlinkEnvUtils;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.typeinfo.Types;
@@ -24,7 +24,7 @@ public class E03_SideOutputStream {
         StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
 
         // 1. 从socketStream中获取数据源
-        DataStreamSource<String> source = env.socketTextStream(UsualConsts.NC_HOST, 9999);
+        DataStreamSource<String> source = env.socketTextStream(Consts.NC_HOST, 9999);
 
         // 2. 定义测流输出标签
         OutputTag<String> outputTag = new OutputTag<String>("adult") {

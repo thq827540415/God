@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.flink.code.stream.transformation;
 
-import com.shadow.garden.bigdata.consts.UsualConsts;
+import com.shadow.garden.bigdata.consts.Consts;
 import com.shadow.garden.bigdata.util.FlinkEnvUtils;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.common.functions.RuntimeContext;
@@ -18,7 +18,7 @@ public class E01_RichOperaFunction {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
 
-        DataStreamSource<String> source = env.socketTextStream(UsualConsts.NC_HOST, 9999);
+        DataStreamSource<String> source = env.socketTextStream(Consts.NC_HOST, 9999);
 
         SingleOutputStreamOperator<String> res = source.map(new StringMapFunction());
 

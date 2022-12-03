@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.flink.code.stream.transformation;
 
-import com.shadow.garden.bigdata.consts.UsualConsts;
+import com.shadow.garden.bigdata.consts.Consts;
 import com.shadow.garden.bigdata.util.FlinkEnvUtils;
 import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
@@ -39,7 +39,7 @@ public class E08_Window {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
 
-        DataStreamSource<String> source = env.socketTextStream(UsualConsts.NC_HOST, 9999);
+        DataStreamSource<String> source = env.socketTextStream(Consts.NC_HOST, 9999);
 
         doTimeWindow(source);
 

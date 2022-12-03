@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.util;
 
-import com.shadow.garden.bigdata.consts.UsualConsts;
+import com.shadow.garden.bigdata.consts.Consts;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.EnvironmentSettings;
@@ -23,32 +23,32 @@ public class FlinkEnvUtils {
      * 生成DataStream环境
      */
     public static StreamExecutionEnvironment getDSEnv() {
-        if (UsualConsts.WITH_WEB_UI) {
+        if (Consts.FLINK_WITH_WEB_UI) {
             return StreamExecutionEnvironment
                     .createLocalEnvironmentWithWebUI(new Configuration())
-                    .setParallelism(UsualConsts.GLOBAL_OPERATOR_PARALLELISM)
-                    .setMaxParallelism(UsualConsts.GLOBAL_MAX_PARALLELISM);
+                    .setParallelism(Consts.FLINK_GLOBAL_OPERATOR_PARALLELISM)
+                    .setMaxParallelism(Consts.FLIN_GLOBAL_MAX_PARALLELISM);
         }
         return StreamExecutionEnvironment
                 .getExecutionEnvironment(new Configuration())
-                .setParallelism(UsualConsts.GLOBAL_OPERATOR_PARALLELISM)
-                .setMaxParallelism(UsualConsts.GLOBAL_MAX_PARALLELISM);
+                .setParallelism(Consts.FLINK_GLOBAL_OPERATOR_PARALLELISM)
+                .setMaxParallelism(Consts.FLIN_GLOBAL_MAX_PARALLELISM);
     }
 
     /**
      * 基于配置，生成DataStream环境
      */
     public static StreamExecutionEnvironment getDSEnv(Configuration conf) {
-        if (UsualConsts.WITH_WEB_UI) {
+        if (Consts.FLINK_WITH_WEB_UI) {
             return StreamExecutionEnvironment
                     .createLocalEnvironmentWithWebUI(conf)
-                    .setParallelism(UsualConsts.GLOBAL_OPERATOR_PARALLELISM)
-                    .setMaxParallelism(UsualConsts.GLOBAL_MAX_PARALLELISM);
+                    .setParallelism(Consts.FLINK_GLOBAL_OPERATOR_PARALLELISM)
+                    .setMaxParallelism(Consts.FLIN_GLOBAL_MAX_PARALLELISM);
         }
         return StreamExecutionEnvironment
                 .getExecutionEnvironment(conf)
-                .setParallelism(UsualConsts.GLOBAL_OPERATOR_PARALLELISM)
-                .setMaxParallelism(UsualConsts.GLOBAL_MAX_PARALLELISM);
+                .setParallelism(Consts.FLINK_GLOBAL_OPERATOR_PARALLELISM)
+                .setMaxParallelism(Consts.FLIN_GLOBAL_MAX_PARALLELISM);
     }
 
     /**

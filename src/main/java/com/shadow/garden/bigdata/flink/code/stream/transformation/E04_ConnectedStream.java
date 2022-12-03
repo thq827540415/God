@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.flink.code.stream.transformation;
 
-import com.shadow.garden.bigdata.consts.UsualConsts;
+import com.shadow.garden.bigdata.consts.Consts;
 import com.shadow.garden.bigdata.util.FlinkEnvUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.flink.streaming.api.datastream.ConnectedStreams;
@@ -19,9 +19,9 @@ public class E04_ConnectedStream {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
 
-        DataStreamSource<String> s1 = env.socketTextStream(UsualConsts.NC_HOST, 9998);
+        DataStreamSource<String> s1 = env.socketTextStream(Consts.NC_HOST, 9998);
 
-        SingleOutputStreamOperator<Integer> s2 = env.socketTextStream(UsualConsts.NC_HOST, 9999)
+        SingleOutputStreamOperator<Integer> s2 = env.socketTextStream(Consts.NC_HOST, 9999)
                 .filter(NumberUtils::isNumber)
                 .map(Integer::parseInt);
 

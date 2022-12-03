@@ -2,8 +2,7 @@ package com.shadow.garden.bigdata.flink.code.stream.source;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
-import com.shadow.garden.bigdata.consts.MySQLConsts;
-import com.shadow.garden.bigdata.consts.UsualConsts;
+import com.shadow.garden.bigdata.consts.Consts;
 import com.shadow.garden.bigdata.util.FlinkEnvUtils;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -38,7 +37,7 @@ public class E03_JdbcSource {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
 
-        DataStreamSource<String> source = env.socketTextStream(UsualConsts.NC_HOST, 9999);
+        DataStreamSource<String> source = env.socketTextStream(Consts.NC_HOST, 9999);
 
         // 响应结果的顺序和请求的先后顺序不一致
         AsyncDataStream
@@ -68,10 +67,10 @@ public class E03_JdbcSource {
         @Override
         public void open(Configuration parameters) throws Exception {
             JsonObject config = new JsonObject()
-                    .put("url", MySQLConsts.URL)
-                    .put("driver_class", MySQLConsts.DRIVER)
-                    .put("user", MySQLConsts.USERNAME)
-                    .put("password", MySQLConsts.PASSWORD)
+                    .put("url", Consts.MYSQL_URL)
+                    .put("driver_class", Consts.MYSQL_DRIVER)
+                    .put("user", Consts.MYSQL_USERNAME)
+                    .put("password", Consts.MYSQL_PASSWORD)
                     .put("max_pool_size", 10);
 
             pool = JDBCPool.pool(Vertx.vertx(), config);
@@ -127,10 +126,10 @@ public class E03_JdbcSource {
             executorService = Executors.newFixedThreadPool(10);
 
             ds = new DruidDataSource();
-            ds.setDriverClassName(MySQLConsts.DRIVER);
-            ds.setUrl(MySQLConsts.URL);
-            ds.setUsername(MySQLConsts.USERNAME);
-            ds.setPassword(MySQLConsts.PASSWORD);
+            ds.setDriverClassName(Consts.MYSQL_DRIVER);
+            ds.setUrl(Consts.MYSQL_URL);
+            ds.setUsername(Consts.MYSQL_USERNAME);
+            ds.setPassword(Consts.MYSQL_PASSWORD);
             ds.setMaxActive(10);
         }
 

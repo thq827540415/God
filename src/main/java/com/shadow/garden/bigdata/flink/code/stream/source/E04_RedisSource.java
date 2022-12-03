@@ -1,7 +1,6 @@
 package com.shadow.garden.bigdata.flink.code.stream.source;
 
-import com.shadow.garden.bigdata.consts.RedisConsts;
-import com.shadow.garden.bigdata.consts.UsualConsts;
+import com.shadow.garden.bigdata.consts.Consts;
 import com.shadow.garden.bigdata.util.FlinkEnvUtils;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -27,7 +26,7 @@ public class E04_RedisSource {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
 
-        DataStreamSource<String> source = env.socketTextStream(UsualConsts.NC_HOST, 9999);
+        DataStreamSource<String> source = env.socketTextStream(Consts.NC_HOST, 9999);
 
         AsyncDataStream
                 .unorderedWait(
@@ -57,7 +56,7 @@ public class E04_RedisSource {
             redis = RedisAPI.api(client);
 
             // 使用jedis客户端
-            jedis = new Jedis(RedisConsts.HOST, RedisConsts.PORT);
+            jedis = new Jedis(Consts.REDIS_HOST, Consts.REDIS_PORT);
             jedis.select(0);
         }
 

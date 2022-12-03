@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.iceberg.code;
 
-import com.shadow.garden.bigdata.consts.UsualConsts;
+import com.shadow.garden.bigdata.consts.Consts;
 import com.shadow.garden.bigdata.util.FlinkEnvUtils;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
@@ -240,7 +240,7 @@ public class IcebergFlinkConfigure {
             StreamExecutionEnvironment env, TableLoader tableLoader) throws Exception {
         DataStream<RowData> input =
                 env
-                        .socketTextStream(UsualConsts.NC_HOST, 9999)
+                        .socketTextStream(Consts.NC_HOST, 9999)
                         // 3个字段, name、age、dt
                         .map(
                                 line -> {

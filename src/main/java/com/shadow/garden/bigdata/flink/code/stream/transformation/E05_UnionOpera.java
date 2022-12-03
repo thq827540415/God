@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.flink.code.stream.transformation;
 
-import com.shadow.garden.bigdata.consts.UsualConsts;
+import com.shadow.garden.bigdata.consts.Consts;
 import com.shadow.garden.bigdata.util.FlinkEnvUtils;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
@@ -15,8 +15,8 @@ public class E05_UnionOpera {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
 
-        DataStreamSource<String> s1 = env.socketTextStream(UsualConsts.NC_HOST, 9998);
-        DataStreamSource<String> s2 = env.socketTextStream(UsualConsts.NC_HOST, 9999);
+        DataStreamSource<String> s1 = env.socketTextStream(Consts.NC_HOST, 9998);
+        DataStreamSource<String> s2 = env.socketTextStream(Consts.NC_HOST, 9999);
 
         // s1和s2的类型必须一样，多流合并，直接将流合在一起，之后操作都是在合并的这条流上
         DataStream<String> unionStream = s1.union(s2);

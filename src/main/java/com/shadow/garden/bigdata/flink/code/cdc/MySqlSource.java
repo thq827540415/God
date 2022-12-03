@@ -1,7 +1,7 @@
 package com.shadow.garden.bigdata.flink.code.cdc;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.shadow.garden.bigdata.consts.MySQLConsts;
+import com.shadow.garden.bigdata.consts.Consts;
 import com.shadow.garden.bigdata.flink.code.stream.sink.E02_KafkaSink;
 import com.shadow.garden.bigdata.util.FlinkEnvUtils;
 import com.shadow.garden.bigdata.util.JsonUtils;
@@ -36,12 +36,12 @@ public class MySqlSource {
         // env.enableCheckpointing(3000);
 
         DebeziumSourceFunction<String> source = com.ververica.cdc.connectors.mysql.MySqlSource.<String>builder()
-                .hostname(MySQLConsts.HOST)
-                .port(MySQLConsts.PORT)
+                .hostname(Consts.MYSQL_HOST)
+                .port(Consts.MYSQL_PORT)
                 .databaseList("project01")
                 .tableList("project01.cdc_test")
-                .username(MySQLConsts.USERNAME)
-                .password(MySQLConsts.PASSWORD)
+                .username(Consts.MYSQL_USERNAME)
+                .password(Consts.MYSQL_PASSWORD)
                 .deserializer(new CustomDeserializationSchema())
                 .startupOptions(StartupOptions.initial())
                 .build();

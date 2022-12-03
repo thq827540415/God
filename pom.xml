@@ -30,13 +30,12 @@
 
 
         <log.scope>compile</log.scope>
-        <scala.scope>provided</scala.scope>
+        <scala.scope>compile</scala.scope>
         <jedis.scope>provided</jedis.scope>
         <hadoop.scope>compile</hadoop.scope>
         <protobuf.scope>provided</protobuf.scope>
         <parquet.avro.scope>provided</parquet.avro.scope>
-        <zookeeper.scope>provided</zookeeper.scope>
-        <curator.scope>provided</curator.scope>
+        <curator.scope>compile</curator.scope>
         <hbase.scope>provided</hbase.scope>
         <kafka.scope>provided</kafka.scope>
         <spark.scope>provided</spark.scope>
@@ -206,6 +205,14 @@
             <scope>${parquet.avro.scope}</scope>
         </dependency>
 
+        <!-- akka actor -->
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor_2.12</artifactId>
+            <version>2.5.23</version>
+            <scope>${scala.scope}</scope>
+        </dependency>
+
         <!-- junit -->
         <dependency>
             <groupId>junit</groupId>
@@ -237,12 +244,24 @@
             <groupId>org.apache.zookeeper</groupId>
             <artifactId>zookeeper</artifactId>
             <version>${zookeeper.version}</version>
-            <scope>${zookeeper.scope}</scope>
+            <scope>${curator.scope}</scope>
         </dependency>
         <!-- recipes + framework + client -->
         <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-recipes</artifactId>
+            <version>4.3.0</version>
+            <scope>${curator.scope}</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-framework</artifactId>
+            <version>4.3.0</version>
+            <scope>${curator.scope}</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-client</artifactId>
             <version>4.3.0</version>
             <scope>${curator.scope}</scope>
         </dependency>
@@ -349,6 +368,12 @@
             <artifactId>flink-clients_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
             <scope>${flink.scope}</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.flink</groupId>
+                    <artifactId>flink-shaded-zookeeper-3</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>

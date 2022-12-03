@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.flink.code.stream.transformation;
 
-import com.shadow.garden.bigdata.consts.UsualConsts;
+import com.shadow.garden.bigdata.consts.Consts;
 import com.shadow.garden.bigdata.util.FlinkEnvUtils;
 import org.apache.flink.api.common.functions.util.PrintSinkOutputWriter;
 import org.apache.flink.api.common.state.*;
@@ -46,8 +46,8 @@ public class E07_OperatorState {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
 
-        DataStreamSource<String> source1 = env.socketTextStream(UsualConsts.NC_HOST, 9998);
-        DataStreamSource<String> source2 = env.socketTextStream(UsualConsts.NC_HOST, 9999);
+        DataStreamSource<String> source1 = env.socketTextStream(Consts.NC_HOST, 9998);
+        DataStreamSource<String> source2 = env.socketTextStream(Consts.NC_HOST, 9999);
 
         doListStateOfOperatorStateSink(source1);
         // doBroadcastWithMapState(source1, source2);

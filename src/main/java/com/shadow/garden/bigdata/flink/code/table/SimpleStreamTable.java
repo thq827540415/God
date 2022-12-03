@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.flink.code.table;
 
-import com.shadow.garden.bigdata.consts.UsualConsts;
+import com.shadow.garden.bigdata.consts.Consts;
 import com.shadow.garden.bigdata.util.FlinkEnvUtils;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -27,7 +27,7 @@ public class SimpleStreamTable {
 
         SingleOutputStreamOperator<Person> source =
                 dsEnv
-                        .socketTextStream(UsualConsts.NC_HOST, 9999)
+                        .socketTextStream(Consts.NC_HOST, 9999)
                         .map(
                                 line -> {
                                     String[] split = line.split(",");

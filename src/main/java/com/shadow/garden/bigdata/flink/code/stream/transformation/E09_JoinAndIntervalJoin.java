@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.flink.code.stream.transformation;
 
-import com.shadow.garden.bigdata.consts.UsualConsts;
+import com.shadow.garden.bigdata.consts.Consts;
 import com.shadow.garden.bigdata.util.FlinkEnvUtils;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -61,7 +61,7 @@ public class E09_JoinAndIntervalJoin {
         // 1000,o100,2000,done
         // 5000,o101,800,done
         SingleOutputStreamOperator<Order> order = env
-                .socketTextStream(UsualConsts.NC_HOST, 9998)
+                .socketTextStream(Consts.NC_HOST, 9998)
                 .assignTimestampsAndWatermarks(
                         WatermarkStrategy
                                 .<String>forMonotonousTimestamps()
@@ -83,7 +83,7 @@ public class E09_JoinAndIntervalJoin {
         // 3000,o101,pad,800,1
         // 5000,o102,goods,1000,1
         SingleOutputStreamOperator<OrderDetail> orderDetail = env
-                .socketTextStream(UsualConsts.NC_HOST, 9999)
+                .socketTextStream(Consts.NC_HOST, 9999)
                 .assignTimestampsAndWatermarks(
                         WatermarkStrategy
                                 .<String>forMonotonousTimestamps()

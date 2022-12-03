@@ -74,8 +74,5 @@ object TestMainDemo {
     // println(DriverManager.getConnection("jdbc:clickhouse://localhost:8123/default", "default", ""))
 
     println(Timestamp.valueOf("2022-10-26 11:57:05.111").getTime)
-
-
-
   }
 }

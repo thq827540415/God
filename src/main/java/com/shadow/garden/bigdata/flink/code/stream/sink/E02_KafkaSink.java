@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.flink.code.stream.sink;
 
-import com.shadow.garden.bigdata.consts.UsualConsts;
+import com.shadow.garden.bigdata.consts.Consts;
 import com.shadow.garden.bigdata.util.FlinkEnvUtils;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.connector.base.DeliveryGuarantee;
@@ -28,7 +28,7 @@ public class E02_KafkaSink {
         Properties p = new Properties();
         p.load(E02_KafkaSink.class.getClassLoader().getResourceAsStream("producer.properties"));
 
-        DataStreamSource<String> source = env.socketTextStream(UsualConsts.NC_HOST, 9999);
+        DataStreamSource<String> source = env.socketTextStream(Consts.NC_HOST, 9999);
 
         source.addSink(oldGetKafkaSink(p));
         // source.sinkTo(newGetKafkaSink(p));
