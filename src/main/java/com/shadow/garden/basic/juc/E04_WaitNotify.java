@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * 得结合synchronized使用
  */
-public class E01_WaitNotify {
+public class E04_WaitNotify {
 
     private static final Object lock = new Object();
 
@@ -14,12 +14,12 @@ public class E01_WaitNotify {
     }
 
     private static void demo01() throws InterruptedException {
-        new Thread(E01_WaitNotify::block, "wait_1").start();
+        new Thread(E04_WaitNotify::block, "wait_1").start();
 
-        new Thread(E01_WaitNotify::block, "wait_2").start();
+        new Thread(E04_WaitNotify::block, "wait_2").start();
 
         TimeUnit.SECONDS.sleep(3);
-        new Thread(E01_WaitNotify::block, "notify").start();
+        new Thread(E04_WaitNotify::block, "notify").start();
     }
 
     /**

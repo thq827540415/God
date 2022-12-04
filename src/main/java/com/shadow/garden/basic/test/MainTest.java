@@ -1,5 +1,7 @@
 package com.shadow.garden.basic.test;
 
+import com.shadow.garden.basic.demo02.Main;
+
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -59,11 +61,18 @@ public class MainTest {
         }
     }
 
+    int num = 0;
 
-    public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException {
+    synchronized void add() {
+        for (int i = 0; i < 10000; i++) {
+            num++;
+        }
+    }
+
+    public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException, InterruptedException {
         // {"a":1,"b":{"c":2,"d":[3,4]}}
         // question02();
-        Student[] students = new Student[] {
+        /*Student[] students = new Student[] {
                 new Student("zhangSan", 12),
                 new Student("liSi", 15),
                 new Student("wangWu", 11)
@@ -71,7 +80,20 @@ public class MainTest {
         Arrays.sort(students);
         for (Student student : students) {
             System.out.println(student);
-        }
+        }*/
+
+        MainTest mainTest = new MainTest();
+
+        Thread t1 = new Thread(mainTest::add);
+        Thread t2 = new Thread(mainTest::add);
+        t1.start();
+        t2.start();
+
+        t2.join();
+        t2.join();
+
+        System.out.println(mainTest.num);
+
     }
 
     /**

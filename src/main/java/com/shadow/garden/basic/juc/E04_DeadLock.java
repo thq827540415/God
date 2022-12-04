@@ -5,8 +5,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * 非静态同步方法使用this锁
  */
-public class E03_DeadLock implements Runnable {
-
+public class E04_DeadLock implements Runnable {
     int flag = 0;
 
     final Object oneLock = new Object();
@@ -46,7 +45,7 @@ public class E03_DeadLock implements Runnable {
     }
 
     public static void main(String[] args) {
-        E03_DeadLock deadLock = new E03_DeadLock();
+        E04_DeadLock deadLock = new E04_DeadLock();
 
         new Thread(deadLock).start();
         new Thread(deadLock).start();

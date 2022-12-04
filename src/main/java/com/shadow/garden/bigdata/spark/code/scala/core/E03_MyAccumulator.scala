@@ -62,12 +62,17 @@ class CustomAccumulator(map: mutable.HashMap[String, Long]) extends AccumulatorV
   override def reset(): Unit = this.map.clear()
 
   override def add(v: (String, Long)): Unit = {
-    this.map.put(v._1, this.map.getOrElse(v._1, 0) + v._2)
+    /*val key: String = v._1
+    val oldV = this.map.getOrElse(key, 0)
+    val newV: Long = v._2
+    this.map.put(key, oldV + newV)*/
   }
 
   override def merge(other: AccumulatorV2[(String, Long), mutable.HashMap[String, Long]]): Unit = {
     other.value.foreach(kv => {
-      this.map.put(kv._1, this.map.getOrElse(kv._1, 0) + kv._2)
+      /*val key: String = kv._1
+      val value: Long = this.map.getOrElse(key, 0) + kv._2
+      this.map.put(key, value)*/
     })
   }
 
