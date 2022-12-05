@@ -1,7 +1,7 @@
 package com.shadow.garden.bigdata.flink.code.stream.source;
 
-import com.shadow.garden.bigdata.consts.Consts;
-import com.shadow.garden.bigdata.util.FlinkEnvUtils;
+import com.shadow.garden.consts.Consts;
+import com.shadow.garden.util.FlinkEnvUtils;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -49,7 +49,7 @@ public class E04_RedisSource {
         public void open(Configuration parameters) throws Exception {
             // 使用vertx
             RedisOptions redisOptions = new RedisOptions()
-                    .setConnectionString("redis://redis:6379/0")
+                    .setConnectionString(Consts.REDIS_CONN_STR)
                     .setType(RedisClientType.STANDALONE);
 
             Redis client = Redis.createClient(Vertx.vertx(), redisOptions);

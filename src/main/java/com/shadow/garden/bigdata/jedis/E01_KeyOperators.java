@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.jedis;
 
-import com.shadow.garden.bigdata.jedis.util.RedisClientUtil;
+import com.shadow.garden.util.BasicEnvUtils;
 import lombok.extern.slf4j.Slf4j;
 import redis.clients.jedis.Jedis;
 
@@ -9,7 +9,7 @@ public class E01_KeyOperators {
     /**
      * 从JedisPool中获取jedis连接
      */
-    private static final Jedis jedis = RedisClientUtil.getConnection().getResource();
+    private static final Jedis jedis = BasicEnvUtils.getJedisPoolInstance().getResource();
 
     public static void main(String[] args) {
         log.info("{}", jedis);

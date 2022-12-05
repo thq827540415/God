@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.spark.code.scala.core
 
-import com.shadow.garden.bigdata.util.SparkEnvUtil
+import com.shadow.garden.util.SparkEnvUtil
 import org.apache.commons.lang3.time.DateUtils
 import org.apache.spark.SparkConf
 

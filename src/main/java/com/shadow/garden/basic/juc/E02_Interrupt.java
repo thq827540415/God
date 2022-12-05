@@ -1,5 +1,7 @@
 package com.shadow.garden.basic.juc;
 
+import com.shadow.garden.util.CommonUtils;
+
 import java.util.concurrent.TimeUnit;
 
 public class E02_Interrupt {
@@ -7,7 +9,7 @@ public class E02_Interrupt {
     /**
      * 通过一个变量控制线程中断
      */
-    private static void interruptByVariable() throws InterruptedException {
+    private static void interruptByVariable() {
         new Thread(() -> {
             while (true) {
                 if (exit) {
@@ -15,14 +17,14 @@ public class E02_Interrupt {
                 }
             }
         }).start();
-        TimeUnit.SECONDS.sleep(3);
+        CommonUtils.sleep(3, TimeUnit.SECONDS);
         exit = true;
     }
 
     /**
      * 通过线程自带的中断标志控制
      */
-    private static void interruptByInterruptSign() throws InterruptedException {
+    private static void interruptByInterruptSign()  {
         Thread t = new Thread(() -> {
             while (true) {
                 // 可以通过线程实例的isInterrupted()获取线程的中断标志
@@ -37,7 +39,7 @@ public class E02_Interrupt {
             }
         });
         t.start();
-        TimeUnit.SECONDS.sleep(3);
+        CommonUtils.sleep(3, TimeUnit.SECONDS);
         System.out.println(t.isInterrupted());
         t.interrupt();
         System.out.println(t.isInterrupted());
@@ -46,7 +48,7 @@ public class E02_Interrupt {
     /**
      * 中断阻塞状态中的线程
      */
-    private static void interruptByInterruptSign2() throws InterruptedException {
+    private static void interruptByInterruptSign2(){
         Thread t = new Thread(() -> {
             while (true) {
                 try {
@@ -63,11 +65,11 @@ public class E02_Interrupt {
             }
         });
         t.start();
-        TimeUnit.SECONDS.sleep(3);
+        CommonUtils.sleep(3, TimeUnit.SECONDS);
         // 中断sleep中的线程，抛出InterruptedException
         t.interrupt();
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
     }
 }

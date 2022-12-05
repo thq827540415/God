@@ -1,7 +1,7 @@
 package com.shadow.garden.bigdata.flink.code.stream.sink;
 
-import com.shadow.garden.bigdata.consts.Consts;
-import com.shadow.garden.bigdata.util.FlinkEnvUtils;
+import com.shadow.garden.consts.Consts;
+import com.shadow.garden.util.FlinkEnvUtils;
 import com.mysql.cj.jdbc.MysqlXADataSource;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

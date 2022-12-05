@@ -1,7 +1,7 @@
 package com.shadow.garden.bigdata.flink.code.stream.transformation;
 
-import com.shadow.garden.bigdata.consts.Consts;
-import com.shadow.garden.bigdata.util.FlinkEnvUtils;
+import com.shadow.garden.consts.Consts;
+import com.shadow.garden.util.FlinkEnvUtils;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;

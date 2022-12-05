@@ -1,4 +1,4 @@
-package com.shadow.garden.bigdata.util
+package com.shadow.garden.util
 
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession

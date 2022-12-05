@@ -1,4 +1,4 @@
-package com.shadow.garden.bigdata.util;
+package com.shadow.garden.util;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -16,6 +16,10 @@ import java.sql.Timestamp;
 import java.util.List;
 
 public class JsonUtils {
+
+    private JsonUtils() {
+    }
+
     private static final ObjectMapper om = new ObjectMapper();
 
     static {

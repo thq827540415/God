@@ -1,5 +1,6 @@
 package com.shadow.garden.bigdata.zookeeper.curator;
 
+import com.shadow.garden.util.BasicEnvUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.CloseableUtils;
@@ -12,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class E01_CuratorApi {
-    private static final CuratorFramework client = CuratorUtil.getInstance();
+    private static final CuratorFramework client = BasicEnvUtils.getCuratorInstance();
 
     static {
         client.start();

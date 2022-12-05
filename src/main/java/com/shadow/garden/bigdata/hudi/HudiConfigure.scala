@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.hudi
 
-import com.shadow.garden.bigdata.util.SparkEnvUtil
+import com.shadow.garden.util.SparkEnvUtil
 import org.apache.spark.SparkConf
 
 object HudiConfigure {

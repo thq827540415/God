@@ -1,7 +1,7 @@
 package com.shadow.garden.bigdata.flink.code.stream.transformation;
 
-import com.shadow.garden.bigdata.consts.Consts;
-import com.shadow.garden.bigdata.util.FlinkEnvUtils;
+import com.shadow.garden.consts.Consts;
+import com.shadow.garden.util.FlinkEnvUtils;
 import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.typeinfo.Types;

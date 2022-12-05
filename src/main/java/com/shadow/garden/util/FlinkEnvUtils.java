@@ -1,6 +1,6 @@
-package com.shadow.garden.bigdata.util;
+package com.shadow.garden.util;
 
-import com.shadow.garden.bigdata.consts.Consts;
+import com.shadow.garden.consts.Consts;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.EnvironmentSettings;

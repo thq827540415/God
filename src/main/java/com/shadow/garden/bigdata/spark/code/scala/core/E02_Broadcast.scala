@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.spark.code.scala.core
 
-import com.shadow.garden.bigdata.util.SparkEnvUtil
+import com.shadow.garden.util.SparkEnvUtil
 import lombok.Cleanup
 import org.apache.spark.SparkConf
 import org.apache.spark.broadcast.Broadcast

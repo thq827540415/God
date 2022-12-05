@@ -1,13 +1,9 @@
 package com.shadow.garden.bigdata.iceberg.code;
 
-import com.shadow.garden.bigdata.util.FlinkEnvUtils;
+import com.shadow.garden.util.FlinkEnvUtils;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.EnvironmentSettings;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
-import org.apache.iceberg.hive.HiveCatalog;
-import org.apache.iceberg.relocated.com.google.common.collect.ImmutableMap;
-
-import java.util.Map;
 
 public class MainTest {
     public static void main(String[] args) {

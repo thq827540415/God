@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.flink.code.demo;
 
-import com.shadow.garden.bigdata.util.JsonUtils;
+import com.shadow.garden.util.JsonUtils;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;

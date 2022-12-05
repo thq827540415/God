@@ -1,5 +1,7 @@
 package com.shadow.garden.basic.juc;
 
+import com.shadow.garden.util.CommonUtils;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -16,7 +18,7 @@ public class E01_VolatileAndJMM {
     private static boolean flag = true;
     private static volatile boolean innerFlag = true;
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         new Thread(() -> {
             System.out.println("线程" + Thread.currentThread().getName() + " in");
             while (flag) {
@@ -37,7 +39,7 @@ public class E01_VolatileAndJMM {
             }
         }).start();*/
 
-        TimeUnit.SECONDS.sleep(1);
+        CommonUtils.sleep(1, TimeUnit.SECONDS);
         flag = false;
         innerFlag = false;
     }

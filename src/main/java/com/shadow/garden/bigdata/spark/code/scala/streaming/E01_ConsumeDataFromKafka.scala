@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.spark.code.scala.streaming
 
-import com.shadow.garden.bigdata.util.SparkEnvUtil
+import com.shadow.garden.util.SparkEnvUtil
 import org.apache.kafka.clients.consumer.{ConsumerConfig, ConsumerRecord}
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.spark.SparkConf

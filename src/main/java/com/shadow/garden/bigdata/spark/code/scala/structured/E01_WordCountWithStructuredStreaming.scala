@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.spark.code.scala.structured
 
-import com.shadow.garden.bigdata.util.SparkEnvUtil
+import com.shadow.garden.util.SparkEnvUtil
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.Dataset
 import org.apache.spark.sql.streaming.OutputMode

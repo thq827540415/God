@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.spark.code.scala.core
 
-import com.shadow.garden.bigdata.util.{JsonUtils, SparkEnvUtil}
+import com.shadow.garden.util.{JsonUtils, SparkEnvUtil}
 import org.apache.spark.SparkConf
 import org.apache.spark.util.AccumulatorV2
 

@@ -1,19 +1,19 @@
 package com.shadow.garden.bigdata.zookeeper.curator;
 
-import akka.dispatch.sysmsg.Create;
+import com.shadow.garden.util.BasicEnvUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.atomic.AtomicValue;
 import org.apache.curator.framework.recipes.atomic.DistributedAtomicInteger;
 import org.apache.curator.framework.recipes.barriers.DistributedBarrier;
 import org.apache.curator.framework.recipes.barriers.DistributedDoubleBarrier;
-import org.apache.curator.framework.recipes.cache.*;
+import org.apache.curator.framework.recipes.cache.NodeCache;
+import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.leader.LeaderSelector;
 import org.apache.curator.framework.recipes.leader.LeaderSelectorListenerAdapter;
 import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.retry.RetryNTimes;
-import org.apache.zookeeper.CreateMode;
 
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -26,8 +26,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 public class E02_Scenarios {
-
-    private static final CuratorFramework client = CuratorUtil.getInstance();
+    private static final CuratorFramework client = BasicEnvUtils.getCuratorInstance();
 
     static {
         client.start();

@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.flink.code.stream.source;
 
-import com.shadow.garden.bigdata.util.FlinkEnvUtils;
+import com.shadow.garden.util.FlinkEnvUtils;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.source.RichParallelSourceFunction;

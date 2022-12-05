@@ -1,5 +1,6 @@
 package com.shadow.garden.bigdata.hbase.code;
 
+import com.shadow.garden.util.BasicEnvUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.*;
@@ -9,18 +10,7 @@ import java.io.IOException;
 
 @Slf4j
 public class E01_BasicApi {
-    private static final Connection conn;
-
-    static {
-        try {
-            Configuration conf = HBaseConfiguration.create();
-            conf.set("hbase.zookeeper.quorum", "bigdata01,bigdata02,bigdata03");
-            conf.set("fs.hdfs.impl", "org.apache.hadoop.hdfs.DistributedFileSystem");
-            conn = ConnectionFactory.createConnection(conf);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    private static final Connection conn = BasicEnvUtils.getHBaseInstance();
 
     public static void main(String[] args) throws IOException {
         // createNs();

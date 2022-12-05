@@ -61,14 +61,6 @@ public class MainTest {
         }
     }
 
-    int num = 0;
-
-    synchronized void add() {
-        for (int i = 0; i < 10000; i++) {
-            num++;
-        }
-    }
-
     public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException, InterruptedException {
         // {"a":1,"b":{"c":2,"d":[3,4]}}
         // question02();
@@ -81,19 +73,6 @@ public class MainTest {
         for (Student student : students) {
             System.out.println(student);
         }*/
-
-        MainTest mainTest = new MainTest();
-
-        Thread t1 = new Thread(mainTest::add);
-        Thread t2 = new Thread(mainTest::add);
-        t1.start();
-        t2.start();
-
-        t2.join();
-        t2.join();
-
-        System.out.println(mainTest.num);
-
     }
 
     /**
