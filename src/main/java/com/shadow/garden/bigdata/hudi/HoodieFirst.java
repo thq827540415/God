@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.hudi;
 
-import com.shadow.garden.util.FlinkEnvUtils;
+import com.solitude.util.FlinkEnvUtils;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 

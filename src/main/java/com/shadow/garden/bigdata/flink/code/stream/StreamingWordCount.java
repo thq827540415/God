@@ -1,7 +1,7 @@
 package com.shadow.garden.bigdata.flink.code.stream;
 
-import com.shadow.garden.consts.Consts;
-import com.shadow.garden.util.FlinkEnvUtils;
+import com.solitude.consts.Consts;
+import com.solitude.util.FlinkEnvUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.common.ExecutionConfig;

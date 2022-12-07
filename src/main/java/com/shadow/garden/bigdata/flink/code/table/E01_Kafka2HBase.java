@@ -1,7 +1,7 @@
 package com.shadow.garden.bigdata.flink.code.table;
 
 import com.google.common.collect.Lists;
-import com.shadow.garden.util.FlinkEnvUtils;
+import com.solitude.util.FlinkEnvUtils;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.common.state.*;
 import org.apache.flink.api.common.typeinfo.TypeHint;

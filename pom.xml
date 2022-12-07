@@ -521,7 +521,7 @@
                         </goals>
                         <configuration>
                             <sourceDirectory>${project.basedir}/src/main/resources/avro</sourceDirectory>
-                            <outputDirectory>${project.basedir}/src/main/java/com/shadow/garden/basic/serializer
+                            <outputDirectory>${project.basedir}/src/main/java/com/solitude/basic/serializer
                             </outputDirectory>
                         </configuration>
                     </execution>
@@ -540,7 +540,7 @@
                         <configuration>
                             <protocExecutable>C:\Windows\System32\protoc.exe</protocExecutable>
                             <protoSourceRoot>${project.basedir}/src/main/resources/proto</protoSourceRoot>
-                            <outputDirectory>${project.basedir}/src/main/java/com/shadow/garden/basic/serializer
+                            <outputDirectory>${project.basedir}/src/main/java/com/solitude/basic/serializer
                             </outputDirectory>
                             <!-- 生成文件前是否把目标目录清空，这个最好设置为false，以免误删项目文件 -->
                             <clearOutputDirectory>false</clearOutputDirectory>

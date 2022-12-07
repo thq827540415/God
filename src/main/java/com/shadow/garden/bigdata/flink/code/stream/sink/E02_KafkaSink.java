@@ -1,7 +1,7 @@
 package com.shadow.garden.bigdata.flink.code.stream.sink;
 
-import com.shadow.garden.consts.Consts;
-import com.shadow.garden.util.FlinkEnvUtils;
+import com.solitude.consts.Consts;
+import com.solitude.util.FlinkEnvUtils;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.connector.base.DeliveryGuarantee;
 import org.apache.flink.connector.kafka.sink.KafkaRecordSerializationSchema;

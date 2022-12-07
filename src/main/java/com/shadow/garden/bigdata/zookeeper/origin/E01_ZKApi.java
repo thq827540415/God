@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.zookeeper.origin;
 
-import com.shadow.garden.consts.Consts;
+import com.solitude.consts.Consts;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.*;
 

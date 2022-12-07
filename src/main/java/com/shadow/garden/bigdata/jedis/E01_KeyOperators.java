@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.jedis;
 
-import com.shadow.garden.util.BasicEnvUtils;
+import com.solitude.util.BasicEnvUtils;
 import lombok.extern.slf4j.Slf4j;
 import redis.clients.jedis.Jedis;
 

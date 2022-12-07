@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.spark.code.scala.sql
 
-import com.shadow.garden.util.SparkEnvUtil
+import com.solitude.util.SparkEnvUtil
 import org.apache.spark.SparkConf
 
 object E00_WordCountWithSparkSQL {

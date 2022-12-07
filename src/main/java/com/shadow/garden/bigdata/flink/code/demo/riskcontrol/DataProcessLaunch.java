@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.flink.code.demo.riskcontrol;
 
-import com.shadow.garden.util.FlinkEnvUtils;
+import com.solitude.util.FlinkEnvUtils;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 public class DataProcessLaunch {

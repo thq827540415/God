@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.flink.code.stream.source;
 
-import com.shadow.garden.util.FlinkEnvUtils;
+import com.solitude.util.FlinkEnvUtils;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.connector.kafka.source.KafkaSource;

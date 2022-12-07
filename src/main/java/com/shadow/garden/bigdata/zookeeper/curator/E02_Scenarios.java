@@ -1,6 +1,6 @@
 package com.shadow.garden.bigdata.zookeeper.curator;
 
-import com.shadow.garden.util.BasicEnvUtils;
+import com.solitude.util.BasicEnvUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.atomic.AtomicValue;

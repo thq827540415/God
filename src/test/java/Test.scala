@@ -1,5 +1,5 @@
 
-import com.shadow.garden.util.SparkEnvUtil
+import com.solitude.util.SparkEnvUtil
 import org.apache.commons.lang3.time.{DateFormatUtils, DateUtils}
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.expressions.Window

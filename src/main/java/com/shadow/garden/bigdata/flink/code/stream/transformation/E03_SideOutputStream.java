@@ -1,7 +1,7 @@
 package com.shadow.garden.bigdata.flink.code.stream.transformation;
 
-import com.shadow.garden.consts.Consts;
-import com.shadow.garden.util.FlinkEnvUtils;
+import com.solitude.consts.Consts;
+import com.solitude.util.FlinkEnvUtils;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.tuple.Tuple2;

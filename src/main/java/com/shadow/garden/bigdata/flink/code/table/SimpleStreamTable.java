@@ -1,7 +1,7 @@
 package com.shadow.garden.bigdata.flink.code.table;
 
-import com.shadow.garden.consts.Consts;
-import com.shadow.garden.util.FlinkEnvUtils;
+import com.solitude.consts.Consts;
+import com.solitude.util.FlinkEnvUtils;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;

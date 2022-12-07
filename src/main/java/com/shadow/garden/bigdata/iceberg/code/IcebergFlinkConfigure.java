@@ -1,7 +1,7 @@
 package com.shadow.garden.bigdata.iceberg.code;
 
-import com.shadow.garden.consts.Consts;
-import com.shadow.garden.util.FlinkEnvUtils;
+import com.solitude.consts.Consts;
+import com.solitude.util.FlinkEnvUtils;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.streaming.api.datastream.DataStream;

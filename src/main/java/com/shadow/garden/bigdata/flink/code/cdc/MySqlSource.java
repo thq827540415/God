@@ -1,10 +1,10 @@
 package com.shadow.garden.bigdata.flink.code.cdc;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.shadow.garden.consts.Consts;
+import com.solitude.consts.Consts;
 import com.shadow.garden.bigdata.flink.code.stream.sink.E02_KafkaSink;
-import com.shadow.garden.util.FlinkEnvUtils;
-import com.shadow.garden.util.JsonUtils;
+import com.solitude.util.FlinkEnvUtils;
+import com.solitude.util.JsonUtils;
 import com.ververica.cdc.connectors.mysql.table.StartupOptions;
 import com.ververica.cdc.debezium.DebeziumDeserializationSchema;
 import com.ververica.cdc.debezium.DebeziumSourceFunction;

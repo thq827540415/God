@@ -1,8 +1,7 @@
 package com.shadow.garden.bigdata.hbase.code;
 
-import com.shadow.garden.util.BasicEnvUtils;
+import com.solitude.util.BasicEnvUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.*;
 

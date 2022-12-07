@@ -1,7 +1,7 @@
 package com.shadow.garden.bigdata.spark.code.scala.sql
 
-import com.shadow.garden.consts.Consts
-import com.shadow.garden.util.SparkEnvUtil
+import com.solitude.consts.Consts
+import com.solitude.util.SparkEnvUtil
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.catalyst.encoders.RowEncoder
 import org.apache.spark.sql.types.{DataTypes, StructField, StructType}
