@@ -30,24 +30,24 @@
 
 
         <log.scope>compile</log.scope>
-        <scala.scope>compile</scala.scope>
+        <scala.scope>provided</scala.scope>
         <jedis.scope>provided</jedis.scope>
         <hadoop.scope>compile</hadoop.scope>
-        <protobuf.scope>provided</protobuf.scope>
+        <protobuf.scope>compile</protobuf.scope>
         <parquet.avro.scope>provided</parquet.avro.scope>
-        <curator.scope>compile</curator.scope>
+        <curator.scope>provided</curator.scope>
         <hbase.scope>provided</hbase.scope>
         <kafka.scope>provided</kafka.scope>
         <spark.scope>provided</spark.scope>
         <hudi.spark.scope>provided</hudi.spark.scope>
         <hudi.flink.scope>provided</hudi.flink.scope>
         <iceberg.spark.scope>provided</iceberg.spark.scope>
-        <iceberg.flink.scope>compile</iceberg.flink.scope>
+        <iceberg.flink.scope>provided</iceberg.flink.scope>
         <doris.spark.scope>provided</doris.spark.scope>
         <doris.flink.scope>provided</doris.flink.scope>
         <vertx.scope>provided</vertx.scope>
-        <flink.scope>compile</flink.scope>
-        <flink.hive.scope>compile</flink.hive.scope>
+        <flink.scope>provided</flink.scope>
+        <flink.hive.scope>provided</flink.hive.scope>
         <flink.ext.scope>provided</flink.ext.scope>
     </properties>
 
@@ -508,48 +508,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <groupId>org.apache.avro</groupId>
-                <artifactId>avro-maven-plugin</artifactId>
-                <version>1.7.4</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>schema</goal>
-                        </goals>
-                        <configuration>
-                            <sourceDirectory>${project.basedir}/src/main/resources/avro</sourceDirectory>
-                            <outputDirectory>${project.basedir}/src/main/java/com/solitude/basic/serializer
-                            </outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.xolstice.maven.plugins</groupId>
-                <artifactId>protobuf-maven-plugin</artifactId>
-                <version>0.6.1</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                        <configuration>
-                            <protocExecutable>C:\Windows\System32\protoc.exe</protocExecutable>
-                            <protoSourceRoot>${project.basedir}/src/main/resources/proto</protoSourceRoot>
-                            <outputDirectory>${project.basedir}/src/main/java/com/solitude/basic/serializer
-                            </outputDirectory>
-                            <!-- 生成文件前是否把目标目录清空，这个最好设置为false，以免误删项目文件 -->
-                            <clearOutputDirectory>false</clearOutputDirectory>
-                            <tempDirectory>C:\Users\82754\AppData\Local\Temp</tempDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
 
             <!-- 下面是为了使用mvn package命令，如果不加则使用mvn assembly -->
             <plugin>

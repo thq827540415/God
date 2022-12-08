@@ -15,10 +15,10 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Avro schemas are defined with JSON
- * The Schema is stored along with the Avro data in a file
+ * AvroExample schemas are defined with JSON
+ * The Schema is stored along with the AvroExample data in a file
  */
-public class Avro {
+public class AvroExample {
 
     private static final String OUTPUT_PATH = "./output/emp.avro";
 
@@ -33,10 +33,10 @@ public class Avro {
         // 通过API读取xxx.avsc文件
         Schema schema = getSchemaByClasspathFile();
 
-        // todo 3. Serializer the data using the serialization API provided for Avro
+        // todo 3. Serializer the data using the serialization API provided for AvroExample
         writeBySchemeFile(schema);
 
-        // todo 4. Deserializer the data using the deserialization API provided for Avro
+        // todo 4. Deserializer the data using the deserialization API provided for AvroExample
         // （1）通过代码获取.avro文件数据
         readBySchema(schema);
 
@@ -105,6 +105,6 @@ public class Avro {
 
     private static Schema getSchemaByClasspathFile() throws IOException {
         return new Schema.Parser()
-                .parse(Avro.class.getClassLoader().getResourceAsStream("avro/emp.avsc"));
+                .parse(AvroExample.class.getClassLoader().getResourceAsStream("avro/emp.avsc"));
     }
 }

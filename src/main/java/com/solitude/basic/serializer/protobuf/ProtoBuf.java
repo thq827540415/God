@@ -13,6 +13,8 @@ public class ProtoBuf {
 
     private static final String OUTPUT_PATH = "./output/addressbook.data";
 
+
+    /*
     public static void main(String[] args) throws IOException {
         // todo 1. Designing objects
         // todo 2. Describing objects
@@ -50,5 +52,5 @@ public class ProtoBuf {
         @Cleanup FileInputStream fis = new FileInputStream(OUTPUT_PATH);
         AddressBookProtos.Person person = AddressBookProtos.Person.parseFrom(fis);
         System.out.println(person);
-    }
+    }*/
 }

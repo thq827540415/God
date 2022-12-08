@@ -107,8 +107,8 @@ public class E08_Window {
                                         return Long.parseLong(element.split(",")[0]);
                                     }
                                 }))
-                                // 如果超过1分钟还没有收到数据，则时间会自主往前推进
-                                // .withIdleness(Duration.ofSeconds(60)))
+                // 如果超过1分钟还没有收到数据，则时间会自主往前推进
+                // .withIdleness(Duration.ofSeconds(60)))
 
                 .map(
                         line -> {

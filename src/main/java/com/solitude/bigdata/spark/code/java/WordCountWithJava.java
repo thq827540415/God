@@ -21,11 +21,7 @@ public class WordCountWithJava {
                 .setAppName("WordCountWithJava")
                 .setMaster("local");
 
-        SparkSession spark = SparkSession.builder()
-                .config(conf)
-                .getOrCreate();
-
-        JavaSparkContext javaSparkContext = new JavaSparkContext(spark.sparkContext());
+        JavaSparkContext javaSparkContext = new JavaSparkContext(conf);
 
         List<Tuple2<String, Integer>> result = javaSparkContext.parallelize(Arrays.asList("hello world", "hello spark"))
                 .flatMap(s -> Arrays.stream(s.split(" ")).iterator())

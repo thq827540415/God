@@ -180,11 +180,10 @@ public class E99_CompletableFuture {
         long start = System.currentTimeMillis();
         strings
                 .stream()
-                .map(
-                        str -> {
-                            sleep(2);
-                            return str + "123";
-                        })
+                .map(str -> {
+                    sleep(2);
+                    return str + "123";
+                })
                 .collect(Collectors.toList());
         long end = System.currentTimeMillis();
         System.out.println("normal cost " + (end - start) + " ms");
@@ -193,8 +192,8 @@ public class E99_CompletableFuture {
         start = System.currentTimeMillis();
         strings
                 .stream()
-                .map(
-                        str -> CompletableFuture
+                .map(str ->
+                        CompletableFuture
                                 .supplyAsync(() -> {
                                     sleep(2);
                                     return str + "123";
