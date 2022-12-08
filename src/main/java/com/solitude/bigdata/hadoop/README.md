@@ -1,4 +1,4 @@
-### 一、MapReduce源码解析（ On YARN）
+### 一、MapReduce源码解析（ MR on YARN）
 
 1. **Job提交流程（org.apache.hadoop.mapreduce.Job#submit）**：
 
@@ -12,10 +12,8 @@
            connect();
            final JobSubmitter submitter = 
                getJobSubmitter(cluster.getFileSystem(), cluster.getClient());
-           status = ugi.doAs(new PrivilegedExceptionAction<JobStatus>() {
-             					public JobStatus run() throws IOException, InterruptedException, ClassNotFoundException {
-               					return submitter.submitJobInternal(Job.this, cluster);
-             					}
+           status = ugi.doAs((PrivilegedExceptionAction)() -> {
+           	return submitter.submitJobInternal(Job.this, cluster);
            });
            state = JobState.RUNNING;
    	}
