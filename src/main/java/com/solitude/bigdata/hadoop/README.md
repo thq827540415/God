@@ -17,7 +17,7 @@
            final JobSubmitter submitter = 
                getJobSubmitter(cluster.getFileSystem(), cluster.getClient());
            // 提交Job
-   		status = ugi.doAs((PrivilegedExceptionAction) () -> {
+           status = ugi.doAs((PrivilegedExceptionAction) () -> {
                return submitter.submitJobInternal(Job.this, cluster);
            });
            state = JobState.RUNNING;
