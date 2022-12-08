@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.*;
@@ -72,6 +73,64 @@ public class MRWordCount {
         @Override
         public String toString() {
             return this.word + "\t" + this.count;
+        }
+    }
+
+    private static class WCMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
+        Text k = new Text();
+        static final IntWritable v = new IntWritable(1);
+
+        @Override
+        protected void map(LongWritable key, Text value,
+                           Context context) throws IOException, InterruptedException {
+            Arrays.stream(value.toString().split("\\s+"))
+                    .forEach(word -> {
+                        try {
+                            k.set(word);
+                            context.write(k, v);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+        }
+    }
+
+    private static class WCReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
+        final IntWritable v = new IntWritable();
+
+        @Override
+        protected void reduce(Text k, Iterable<IntWritable> values,
+                              Context context) throws IOException, InterruptedException {
+            int sum = 0;
+            for (IntWritable value : values) {
+                sum += value.get();
+            }
+            v.set(sum);
+            context.write(k, v);
+        }
+    }
+
+    private static class WCDriver {
+        /**
+         * 使用hadoop jar提交，需要指定com.solitude.bigdata.hadoop.code.MRWordCount.WCDriver，使用反射获取main方法
+         */
+        public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
+            Job job = Job.getInstance(new Configuration(), "inner wc");
+
+            job.setJarByClass(WCDriver.class);
+
+            job.setMapperClass(WCMapper.class);
+            job.setMapOutputKeyClass(Text.class);
+            job.setMapOutputValueClass(IntWritable.class);
+
+            job.setReducerClass(WCReducer.class);
+            job.setOutputKeyClass(Text.class);
+            job.setOutputValueClass(IntWritable.class);
+
+            FileInputFormat.addInputPath(job, new Path("/word"));
+            FileOutputFormat.setOutputPath(job, new Path("/output"));
+
+            System.exit(job.waitForCompletion(true) ? 0 : 1);
         }
     }
 
@@ -163,6 +222,8 @@ public class MRWordCount {
         job.setOutputKeyClass(Bean.class);
         job.setOutputValueClass(NullWritable.class);
         job.setNumReduceTasks(2);
+        job.setCombinerClass(MyReducer.class);
+        // job.setCombinerKeyGroupingComparatorClass(MyGroupingComparator.class);
 
         job.setPartitionerClass(MyPartitioner.class);
 
