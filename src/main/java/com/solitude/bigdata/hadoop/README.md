@@ -4,23 +4,24 @@
 
    ```java
    public class Job extends JobContextImpl implements JobContext {
+       public Client client;
        ...
        public void submit() throws IOException, InterruptedException, ClassNotFoundException {
            // 确保Job的状态为DEFINE
            ensureState(JobState.DEFINE);
            // 设置使用新的MRAPI
            setUseNewAPI();
-           // 初始化YARN连接
+           // 初始化YARN连接 -> 获取Client对象
            connect();
            // 获取提交器
            final JobSubmitter submitter = 
                getJobSubmitter(cluster.getFileSystem(), cluster.getClient());
            // 提交Job
-           status = ugi.doAs((PrivilegedExceptionAction) () -> {
-           	return submitter.submitJobInternal(Job.this, cluster);
+   		status = ugi.doAs((PrivilegedExceptionAction) () -> {
+               return submitter.submitJobInternal(Job.this, cluster);
            });
            state = JobState.RUNNING;
-   	}
+       }
        ...
    }
    ```
