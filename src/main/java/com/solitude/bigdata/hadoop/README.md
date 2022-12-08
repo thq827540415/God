@@ -153,20 +153,20 @@
 
    2. 获取到YARN的连接对象cluster后，提交Job全过程：
       1. JobSubmitter提交：
-         1. `status = submitter.submitJobInternal(Job.this, cluster)`.
-         2. 此方法内部才是MR的核心部分，定了很多的细节操作，具体见`MapReduce核心流程`。
+         - `status = submitter.submitJobInternal(Job.this, cluster)`.
+         - 此方法内部才是MR的核心部分，定了很多的细节操作，具体见`MapReduce核心流程`。
       2. YARNRunner提交：
-         1. `status = submitClient.submitJob(jobId, submitJobDir.toString(), job.getCredentials())`.
-         2. 其中的submitClient为cluster.getClient() -> YARNRunner对象
+         - `status = submitClient.submitJob(jobId, submitJobDir.toString(), job.getCredentials())`.
+         - 其中的submitClient为cluster.getClient() -> YARNRunner对象
       3. ResourceMgrDelegate提交：
-         1. `ApplicationId applicationId = resMgrDelegate.submitApplication(appContext)`.
-         2. 调用此方法前，会获取创建RM AM的一些必要信息，同时在appContext中封装好ApplicationId等信息：`createApplicationSubmissionContext(conf, jobSubmitDir, ts)`.
+         - `ApplicationId applicationId = resMgrDelegate.submitApplication(appContext)`.
+         - 调用此方法前，会获取创建RM AM的一些必要信息，同时在appContext中封装好ApplicationId等信息：`createApplicationSubmissionContext(conf, jobSubmitDir, ts)`.
       4. YarnClientImpl提交：
-         1. `return client.submitApplication(appContext)`.
-         2. 其中的client为YarnClientImpl，同时返回该Job的ApplicationId（在submitJobInternal方法中就已经申请了ApplicationId了）。
+         - `return client.submitApplication(appContext)`.
+         - 其中的client为YarnClientImpl，同时返回该Job的ApplicationId（在submitJobInternal方法中就已经申请了ApplicationId了）。
       5. ResourceManager的代理对象rmClient提交：
-         1. `rmClient.submitApplication(request)`.
-         2. 不返回任何东西，最终通过ResourceManager的ClientRMService来进行submitApplication()的RPC服务处理。
+         - `rmClient.submitApplication(request)`.
+         - 不返回任何东西，最终通过ResourceManager的ClientRMService来进行submitApplication()的RPC服务处理。
 
 2. **MapReduce核心流程（org.apache.hadoop.mapreduce.JobSubmitter#submitJobInternal）**：
 
@@ -210,7 +210,7 @@
            
            // 最终通过YARNRunner提交Job，并返回Job的状态
            status = submitClient.submitJob(
-             jobId, submitJobDir.toString(), job.getCredentials());
+               jobId, submitJobDir.toString(), job.getCredentials());
            ...
        }
    }
