@@ -230,6 +230,12 @@
             <version>${hadoop.version}</version>
             <scope>${hadoop.scope}</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-yarn-server-tests</artifactId>
+            <version>${hadoop.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- todo ==================================== hbase ==================================== -->
         <dependency>

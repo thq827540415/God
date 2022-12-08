@@ -1,5 +1,3 @@
-package com.solitude.basic.test;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 

@@ -15,6 +15,9 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
  */
 public class FlinkEnvUtils {
 
+    private FlinkEnvUtils(){
+    }
+
     static {
         System.setProperty("HADOOP_USER_NAME", "root");
     }

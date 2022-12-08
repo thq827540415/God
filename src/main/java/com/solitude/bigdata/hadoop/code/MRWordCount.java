@@ -83,6 +83,8 @@ public class MRWordCount {
         @Override
         protected void map(LongWritable key, Text value,
                            Context context) throws IOException, InterruptedException {
+
+            Thread.sleep(Integer.MAX_VALUE);
             Arrays.stream(value.toString().split("\\s+"))
                     .forEach(word -> {
                         try {
@@ -111,11 +113,18 @@ public class MRWordCount {
     }
 
     private static class WCDriver {
+        static {
+            System.setProperty("HADOOP_USER_NAME", "root");
+        }
         /**
          * 使用hadoop jar提交，需要指定com.solitude.bigdata.hadoop.code.MRWordCount.WCDriver，使用反射获取main方法
          */
         public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
             Job job = Job.getInstance(new Configuration(), "inner wc");
+
+            // uber mode指MapTask和ReduceTask不在新的container进程里面跑，而是在AM所在节点的JVM以线程的形式运行。
+            // 在MRAppMaster初始化的时候会判断当前作业是否适用于uber模式
+            job.isUber();
 
             job.setJarByClass(WCDriver.class);
 
@@ -130,7 +139,8 @@ public class MRWordCount {
             FileInputFormat.addInputPath(job, new Path("/word"));
             FileOutputFormat.setOutputPath(job, new Path("/output"));
 
-            System.exit(job.waitForCompletion(true) ? 0 : 1);
+            boolean flag = job.waitForCompletion(true);
+            System.exit(flag ? 0 : 1);
         }
     }
 
