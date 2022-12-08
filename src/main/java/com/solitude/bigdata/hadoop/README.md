@@ -5,28 +5,27 @@
    ```java
    public class Job extends JobContextImpl implements JobContext {
        ...
-       public void submit() 
-            throws IOException, InterruptedException, ClassNotFoundException {
+       public void submit() throws IOException, InterruptedException, ClassNotFoundException {
+           // 确保Job的状态为DEFINE
            ensureState(JobState.DEFINE);
+           // 设置使用新的MRAPI
            setUseNewAPI();
+           // 初始化YARN连接
            connect();
+           // 获取提交器
            final JobSubmitter submitter = 
                getJobSubmitter(cluster.getFileSystem(), cluster.getClient());
-           status = ugi.doAs((PrivilegedExceptionAction)() -> {
+           // 提交Job
+           status = ugi.doAs((PrivilegedExceptionAction) () -> {
            	return submitter.submitJobInternal(Job.this, cluster);
            });
            state = JobState.RUNNING;
    	}
        ...
    }
-   
    ```
 
-   1. 确保Job的状态为DEFINE -> ensureState(JobState.DEFINE)。
-
-   2. 设置使用新的MRApi -> setUseNewAPI()。
-
-   3. 初始化YARN连接 -> connect()：
+   1. 初始化YARN连接 -> connect()：
 
       1. Job内部有一个Cluster cluster的成员变量：
 
@@ -102,7 +101,7 @@
 
       
 
-   4. 放电时
+   2. 放电时
 
       ```java
       
