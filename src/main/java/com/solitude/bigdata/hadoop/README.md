@@ -4,19 +4,17 @@
 
    ```java
    public class Job extends JobContextImpl implements JobContext {
-       public Client client;
-       ...
        public void submit() throws IOException, InterruptedException, ClassNotFoundException {
-           // 确保Job的状态为DEFINE
+           // 1. 确保Job的状态为DEFINE
            ensureState(JobState.DEFINE);
-           // 设置使用新的MRAPI
+           // 2. 设置使用新的MRAPI
            setUseNewAPI();
-           // 初始化YARN连接 -> 获取Client对象
+           // 3. 初始化YARN连接 -> 初始化Cluster对象
            connect();
            // 获取提交器
            final JobSubmitter submitter = 
                getJobSubmitter(cluster.getFileSystem(), cluster.getClient());
-           // 提交Job
+           // 4. 提交Job
            status = ugi.doAs((PrivilegedExceptionAction) () -> {
                return submitter.submitJobInternal(Job.this, cluster);
            });
@@ -26,9 +24,9 @@
    }
    ```
 
-   1. 初始化YARN连接 -> connect()：
+   1. connect方法详解：
 
-      1. Job内部有一个Cluster cluster的成员变量：
+      1. 通过connect方法， 初始化Job中的成员变量cluster：
 
          ```java
          public class Job extends JobContextImpl implements JobContext {
@@ -38,12 +36,8 @@
                    throws IOException, InterruptedException, ClassNotFoundException {
                  if (cluster == null) {
                    cluster = 
-                     ugi.doAs(new PrivilegedExceptionAction<Cluster>() {
-                                public Cluster run()
-                                       throws IOException, InterruptedException, 
-                                              ClassNotFoundException {
-                                  return new Cluster(getConfiguration());
-                                }
+                     ugi.doAs((PrivilegedExceptionAction) () -> {
+                         return new Cluster(getConfiguration());
                      });
                  }
              }
@@ -51,54 +45,70 @@
          }
          ```
 
-      2. Cluster内部有一个ClientProtocol client，实质上是YARNRunner：
+      2. 通过Cluster的构造方法，调用initialize获取YARNRunner对象，伪代码如下：
 
          ```java
          public class Cluster {
              /**
-              * 实质上是org.apache.hadoop.mapred.YarnClientProtocolProvider
+              * ClientProtocol为YARNRunner
               */
-             private ClientProtocolProvider clientProtocolProvider;
              private ClientProtocol client;
-             
              ... 
-             private void initialize(InetSocketAddress jobTrackAddr, Configuration conf)
-               throws IOException {
-                   for (ClientProtocolProvider provider : frameworkLoader) {
-                     ClientProtocol clientProtocol = null; 
-                     try {
-                         clientProtocol = provider.create(conf);
-                       if (clientProtocol != null) {
-                             clientProtocolProvider = provider;
+             private void initialize(InetSocketAddress jobTrackAddr, Configuration conf) throws IOException {
+                 synchronized(frameworkLoader) {
+                     for (ClientProtocolProvider provider : frameworkLoader) {
+                         ClientProtocol clientProtocol = null;
+                         if (jobTrackAddr == null) {
+                             // provider实质上是YarnClientProtocolProvider
+                             clientProtocol = provider.create(conf);
+                         }
+                 		...
+                         if (clientProtocol != null) {
                              client = clientProtocol;
-                             break;
-                       }
-                       else {
-                       }
-                     } catch (Exception e) {
+                         }
+                         ...
                      }
-                   }
                  }
               }
              ...
          }
          
-         
+         /**
+          * 调用provider.create()获取YARNRunner对象。
+          */
          public class YarnClientProtocolProvider extends ClientProtocolProvider {
-         
+             ...
              @Override
              public ClientProtocol create(Configuration conf) throws IOException {
+                 // if ("yarn".equals("mapreduce.framework.name"))
                  if (MRConfig.YARN_FRAMEWORK_NAME.equals(conf.get(MRConfig.FRAMEWORK_NAME))) {
                      return new YARNRunner(conf);
                  }
                  return null;
              }
+             ...
+         }
+         ```
+
+      3. 利用YARNRunner生成ResourceMgrDelegate：
+
+         ```java
+         public class YARNRunner implements ClientProtocol {
+             /**
+              * 用于从MR到Yarn的中间过度
+              */
+             private ResourceMgrDelegate resMgrDelegate;
+             ...
+             public YARNRunner(Configuraion conf) {
+                 this(conf, new ResourceMgrDelegate(new YarnConfiguration(conf)));
+             }
+             ...
          }
          ```
 
          
 
-      3. 发送到
+      4. 放电时
 
       
 
@@ -109,11 +119,11 @@
       1. Job内部有一个Cluster cluster成员变量
       2. Cluster内部有一个YARNRunner client的成员变量 -> 通过YarnClientProtocolProvider创建。
       3. YARNRunner内部有一个ResourceMgrDelegate resMgrDelegate成员变量 -> YARNRunner构造器创建。
-      4. ResourceMgrDelegate内部有一个YarnClientImpl client成员变量，是从MR到Yarn的中间过度。 -> YarnClient.createYarnClient()创建。
+      4. ResourceMgrDelegate内部有一个YarnClientImpl client成员变量，。 -> YarnClient.createYarnClient()创建。
       5. YarnClientImpl内部有一个ApplicationClientProtocol rmClient的成员变量。 -> serviceStart()方法创建。
       ```
 
-   2. Job提交过程 -> submitJobInternal()：
+   3. Job提交过程 -> submitJobInternal()：
       1. 通过JobSubmitter：`JobSubmitter.submitJobInternal(Job.this, cluster)`，此方法内部才是MR的核心部分，定了很多的细节操作。
       2. 通过YARNRunner：`submitClient.submitJob(jobId, submitJobDir.toString(), job.getCredentials());
       3. 通过ResourceMgrDelegate：`resMgrDelegate.submitApplication(appContext)`
