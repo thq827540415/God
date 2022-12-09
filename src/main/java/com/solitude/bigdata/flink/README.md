@@ -129,3 +129,5 @@ Flink SQL客户端集成Hive
 create catalog hive_catalog with ('type' = 'hive', 'hive-conf-dir' = '/opt/hive-3.1.2/conf');
 use catalog hive_catalog;
 load module hive;
+
+![](./images/Flink%20State的内存结构.jpg)

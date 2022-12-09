@@ -105,7 +105,7 @@
          }
          ```
 
-      4. 利用ResourceMgrDelegate生成YarnClientImpl对象 -> 与YARN有关的，详细见YARN源码解析：
+      4. 利用ResourceMgrDelegate生成YarnClientImpl对象 -> 与YARN有关的，详细见`YARN源码解析`：
 
          ```java
          public class ResourceMgrDelegate extends YarnClient {
@@ -114,9 +114,9 @@
              public ResourceMgrDelegate(YarnConfiguration conf) {
                  ...
                  this.client = YarnClient.createYarnClient();
-                 // 调用AbstractService中的init方法
+                 // 调用AbstractService（重要）中的init方法
                  init(conf);
-                 // 调用AbstractService中的start方法
+                 // 调用AbstractService（重要）中的start方法
                  start();
              }
              ...
@@ -167,6 +167,11 @@
       5. ResourceManager的代理对象rmClient提交：
          - `rmClient.submitApplication(request)`.
          - 不返回任何东西，最终通过ResourceManager的ClientRMService来进行submitApplication()的RPC服务处理。
+      6. 向ResourceManager申请Container启动ApplicationMaster：
+         1. 调用MRAppMaster.main()启动ApplicationMaster。
+         2. ApplicationMaster向ResourceManager申请Container启动MapTask和ReduceTask。
+         3. MapTask启动的入口：YarnChild.main() -> taskFinal.run(job, umbilical);其中taskFinal的实现类为MapTask。
+         4. ReduceTask启动的入口：YarnChild.main()。
 
 2. **MapReduce核心流程（org.apache.hadoop.mapreduce.JobSubmitter#submitJobInternal）**：
 
@@ -196,10 +201,11 @@
            // 默认值为：/tmp/hadoop-yarn/staging/user/.staging/jobId
            Path submitJobDir = new Path(jobStagingArea, jobId.toString());
            
-           // todo jar文件，配置文件的上传？
+           // 创建工作目录，同时上传libjars、archives和jobJar等
            copyAndConfigureFiles(job, submitJobDir);
            
          	// 对Job的数据文件进行切片，返回逻辑切片个数，也就是MapTask个数，详见`MapReduce逻辑切片`
+           // 生成切片信息，和切片元数据信息
            int maps = writeSplits(job, submitJobDir);
            
            // 生成job.xml的完整路径名
@@ -219,9 +225,12 @@
 3. **MapReduce逻辑切片（org.apache.hadoop.mapreduce.lib.input.FileInputFormat#getSplits）**：
 
    ```java
+   /**
+    * 调用TextInputFormat的父类FileInputFormat中的getSplits方法
+    */
    public abstract class FileInputFormat<K, V> extends InputForamt<K, V> {
        /**
-        * MapTask读取的基本单位是InputSplit，其中默认为FileSplit
+        * MapTask读取的基本单位是InputSplit？其中默认为FileSplit
         * 其中定义了读取的范围[start, start + length]，和start所在的块的主机
         * 切片的具体操作见`MapTask执行源码详解`
         */
@@ -233,17 +242,17 @@
            // 通过mapreduce.input.fileinputformat.split.maxsize调整
            long maxSize = getMaxSplitSize(job);
            
-           // 其中InputSplit的默认实现为FileSplit
+           // 其中InputSplit的默认实现为FileSplit，存储逻辑切片的结果
            List<InputSplit> splits = new ArrayList<InputSplit>();
            // 获取输入路径下所有文件及文件夹的状态，默认不递归去遍历路径下的文件夹
            // 底层使用fs.globStatus()获取文件状态
-           // FileStatus默认实现为LocatedFileStatus
-           // 不是DistributedFileSystem中的listStatus方法
            List<FileStatus> files = listStatus(job);
+           // FileStatus默认实现为LocatedFileStatus
            for (FileStatus file : files) {
                Path path = file.getPath();
                long length = file.getLen();
                if (length != 0) {
+                   // 获取文件每个数据块的位置
                    BlockLocation[] blkLocations;
                    if (file instanceof LocatedFileStatus) {
                        blkLocations = ((LocatedFileStatus) file).getBlockLocations();
@@ -251,15 +260,16 @@
                        ...
                    }
                    // org.apache.hadoop.mapreduce.lib.input.TextInputFormat#isSplitable
+                   // 可切分是逻辑上的，表示文件的每个块是否可以独立存在（例如：每个块内容不需要元数据即可读取）
                    if (isSplitable(job, path)) {
                        // 获取文件块大小，默认128MB
                        long blockSize = file.getBlockSize();
-                       // 计算每个切片的大小，方法如下
+                       // 计算每个切片的大小，默认为blockSize
                        long splitSize = computeSplitSize(blockSize, minSize, maxSize);
                        
                        long bytesRemaining = length;
-                       // 计算剩余的大小，是否能够组成一个切片，切片大小为：(128 + 12.8)MB
-                       // 其中SPLIT_SLOP为1.1, 同时为了避免产生小文件
+                       // SPLIT_SLOP为1.1
+                       // 如果剩余数据的大小 > (splitSize * 1.1)，则进行逻辑切片
                        while (((double) bytesRemaining) / splitSize > SPLIT_SLOP) {
                            // 获取该块所在的位置
                            int blkIndex = getBlockIndex(blkLocations, length - bytesRemaining);
@@ -269,7 +279,7 @@
                            bytesRemaining -= splitSize;
                        }
                        
-                       // 剩余大小不能达到splitSize，放到一个切片中
+                       // 此时剩余数据的数据量∈[0, (splitSize * 1.1)]，单独形成一个逻辑分片
                        if (bytesRemaining != 0) {
                            int blkIndex = getBlockIndex(blkLocations, length - bytesRemaining);
                            splits.add(makeSplit(path, length - bytesRemaining, bytesRemaining,
@@ -290,7 +300,6 @@
        }
        
        protected long computeSplitSize(long blockSize, long minSize, long maxSize) {
-           // 默认返回blockSize
            return Math.max(minSize, Math.min(maxSize, blockSize));
        }
        ...
@@ -301,7 +310,12 @@
 
    1. 
 
-5. **放电时**
+5. **MapReduce的Shuffle详解**
+
+   1. MapTask的数据写入到ReduceTask的流程即为Shuffle。
+   2. 
+
+6. **other**
 
 ### 二、YARN源码解析
 
