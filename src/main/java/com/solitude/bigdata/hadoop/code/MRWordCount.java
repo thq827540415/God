@@ -2,13 +2,15 @@ package com.solitude.bigdata.hadoop.code;
 
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.*;
-import org.apache.hadoop.mapreduce.*;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Partitioner;
+import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -124,7 +126,7 @@ public class MRWordCount {
 
             // uber mode指MapTask和ReduceTask不在新的container进程里面跑，而是在AM所在节点的JVM以线程的形式运行。
             // 在MRAppMaster初始化的时候会判断当前作业是否适用于uber模式
-            job.isUber();
+            // job.isUber();
 
             job.setJarByClass(WCDriver.class);
 
@@ -136,7 +138,7 @@ public class MRWordCount {
             job.setOutputKeyClass(Text.class);
             job.setOutputValueClass(IntWritable.class);
 
-            FileInputFormat.addInputPath(job, new Path("/word"));
+            FileInputFormat.addInputPath(job, new Path("/input/word.snappy"));
             FileOutputFormat.setOutputPath(job, new Path("/output"));
 
             boolean flag = job.waitForCompletion(true);

@@ -199,7 +199,7 @@
            // todo jar文件，配置文件的上传？
            copyAndConfigureFiles(job, submitJobDir);
            
-         	// 对Job的数据文件进行切片，返回逻辑切片个数，也就是MapTask个数，详见`数据切块`
+         	// 对Job的数据文件进行切片，返回逻辑切片个数，也就是MapTask个数，详见`MapReduce逻辑切片`
            int maps = writeSplits(job, submitJobDir);
            
            // 生成job.xml的完整路径名
@@ -220,17 +220,88 @@
 
    ```java
    public abstract class FileInputFormat<K, V> extends InputForamt<K, V> {
+       /**
+        * MapTask读取的基本单位是InputSplit，其中默认为FileSplit
+        * 其中定义了读取的范围[start, start + length]，和start所在的块的主机
+        * 切片的具体操作见`MapTask执行源码详解`
+        */
        public List<InputSplit> getSplits(JobContext job) throws IOException {
+           // 第一个参数为1
+           // 第二个参数默认为1，通过mapreduce.input.fileinputformat.split.minsize调整
            long minSize = Math.max(getFormatMinSplitSize(), getMinSplitSize(job));
+           // 默认为Long.MAX_VALUE
+           // 通过mapreduce.input.fileinputformat.split.maxsize调整
            long maxSize = getMaxSplitSize(job);
            
-           
+           // 其中InputSplit的默认实现为FileSplit
+           List<InputSplit> splits = new ArrayList<InputSplit>();
+           // 获取输入路径下所有文件及文件夹的状态，默认不递归去遍历路径下的文件夹
+           // 底层使用fs.globStatus()获取文件状态
+           // FileStatus默认实现为LocatedFileStatus
+           // 不是DistributedFileSystem中的listStatus方法
+           List<FileStatus> files = listStatus(job);
+           for (FileStatus file : files) {
+               Path path = file.getPath();
+               long length = file.getLen();
+               if (length != 0) {
+                   BlockLocation[] blkLocations;
+                   if (file instanceof LocatedFileStatus) {
+                       blkLocations = ((LocatedFileStatus) file).getBlockLocations();
+                   } else {
+                       ...
+                   }
+                   // org.apache.hadoop.mapreduce.lib.input.TextInputFormat#isSplitable
+                   if (isSplitable(job, path)) {
+                       // 获取文件块大小，默认128MB
+                       long blockSize = file.getBlockSize();
+                       // 计算每个切片的大小，方法如下
+                       long splitSize = computeSplitSize(blockSize, minSize, maxSize);
+                       
+                       long bytesRemaining = length;
+                       // 计算剩余的大小，是否能够组成一个切片，切片大小为：(128 + 12.8)MB
+                       // 其中SPLIT_SLOP为1.1, 同时为了避免产生小文件
+                       while (((double) bytesRemaining) / splitSize > SPLIT_SLOP) {
+                           // 获取该块所在的位置
+                           int blkIndex = getBlockIndex(blkLocations, length - bytesRemaining);
+                           splits.add(makeSplit(path, length - bytesRemaining, splitSize,
+                                               blkLocations[blkIndex].getHosts(),
+                                               blkLocations[blkIndex].getCachedHosts()));
+                           bytesRemaining -= splitSize;
+                       }
+                       
+                       // 剩余大小不能达到splitSize，放到一个切片中
+                       if (bytesRemaining != 0) {
+                           int blkIndex = getBlockIndex(blkLocations, length - bytesRemaining);
+                           splits.add(makeSplit(path, length - bytesRemaining, bytesRemaining,
+                                               blkLocations[blkIndex].getHosts(),
+                                               blkLocations[blkIndex].getCachedHosts()));
+                       }
+                   } else {
+                       // 不可切分时，只生成一个切片，将该文件使用一个MapTask处理，可能会造成OOM
+                       splits.add(makeSplit(path, 0, length, blkLocations[0].getHosts(),
+                                           blkLocations[0].getCachedHosts()));
+                   }
+               } else {
+                   // 如果文件为空，则创建一个空切片
+                   splits.add(makeSplit(path, 0, length, new String[0]));
+               }
+           }
+           return splits;
+       }
+       
+       protected long computeSplitSize(long blockSize, long minSize, long maxSize) {
+           // 默认返回blockSize
+           return Math.max(minSize, Math.min(maxSize, blockSize));
        }
        ...
    }
    ```
 
-   
+4. **MapTask执行源码详解（org.apache.hadoop.mapred.MapTask#run）**
+
+   1. 
+
+5. **放电时**
 
 ### 二、YARN源码解析
 

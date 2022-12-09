@@ -34,6 +34,7 @@
         <jedis.scope>provided</jedis.scope>
         <hadoop.scope>compile</hadoop.scope>
         <protobuf.scope>compile</protobuf.scope>
+        <snappy.scope>compile</snappy.scope>
         <parquet.avro.scope>provided</parquet.avro.scope>
         <curator.scope>provided</curator.scope>
         <hbase.scope>provided</hbase.scope>
@@ -211,6 +212,13 @@
             <artifactId>akka-actor_2.12</artifactId>
             <version>2.5.23</version>
             <scope>${scala.scope}</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.xerial.snappy</groupId>
+            <artifactId>snappy-java</artifactId>
+            <version>1.1.8.3</version>
+            <scope>${snappy.scope}</scope>
         </dependency>
 
         <!-- junit -->
