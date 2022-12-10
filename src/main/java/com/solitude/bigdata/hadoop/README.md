@@ -1,6 +1,6 @@
 ### 一、YARN源码解析
 
-1. 
+1. YARN中的ApplicationMaster只是一个规范，MR中的规范为MRAppMaster。
 
 ### 二、MapReduce源码解析（ MR on YARN）
 

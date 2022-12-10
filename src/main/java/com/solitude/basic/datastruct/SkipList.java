@@ -2,6 +2,9 @@ package com.solitude.basic.datastruct;
 
 import java.util.*;
 
+/**
+ * 用来作为一种维护有序数据（用户指定如何排序）的集合，在链表的基础上做的改进
+ */
 public class SkipList {
 
     private static class Node {
