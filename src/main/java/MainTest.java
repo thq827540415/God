@@ -1,3 +1,4 @@
+import com.solitude.basic.JavaGrammar;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -12,7 +13,7 @@ import java.util.*;
  */
 public class MainTest {
 
-    public static class Student implements Comparable<Student>{
+    private static class Student implements Comparable<Student> {
         private String name;
         private Integer age;
 
@@ -47,11 +48,11 @@ public class MainTest {
 
         @Override
         public int compareTo(Student o) {
-            return o.getAge() - this.getAge();
+            return this.getAge().compareTo(o.getAge());
         }
     }
 
-    public static class ageComparator implements Comparator<Student>  {
+    private static class AgeComparator implements Comparator<Student> {
         @Override
         public int compare(Student o1, Student o2) {
             return o2.getAge() - o1.getAge();
@@ -128,23 +129,23 @@ public class MainTest {
 
     /**
      * HashMap扩容机制
-     *
+     * <p>
      * 1.7
-     *  1.生成新数组
-     *  2.遍历老数组中的每个位置上的链表上的每个元素
-     *  3.取每个元素的key，并基于新数组长度，计算出每个元素在新数组中的下标
-     *  4.将元素添加到新数组中去
-     *  5.所有元素转移完之后，将新数组赋值给HashMap对象的table属性
-     *
+     * 1.生成新数组
+     * 2.遍历老数组中的每个位置上的链表上的每个元素
+     * 3.取每个元素的key，并基于新数组长度，计算出每个元素在新数组中的下标
+     * 4.将元素添加到新数组中去
+     * 5.所有元素转移完之后，将新数组赋值给HashMap对象的table属性
+     * <p>
      * 1.8
-     *  1.生成新数组
-     *  2.遍历老数组中的每个位置上的链表或红黑树
-     *  3.如果是链表，则直接将链表中的每个元素重新计算下标，并添加到新数组中去
-     *  4.如果是红黑树，则先遍历红黑树，先计算出红黑树中每个元素对应在新数组中的下标位置
-     *      a.统计每个下标位置的元素个数
-     *      b.如果该位置下的元素个数超过了8，则生成一个新的红黑树，并将根节点添加到新数组的对应位置
-     *      c.如果该位置下的元素个数没有超过8，则生成一个链表，并将链表的头节点添加到新数组的对应位置
-     *  5.所有元素转移完之后，将新数组赋值给HashMap对象的table属性
+     * 1.生成新数组
+     * 2.遍历老数组中的每个位置上的链表或红黑树
+     * 3.如果是链表，则直接将链表中的每个元素重新计算下标，并添加到新数组中去
+     * 4.如果是红黑树，则先遍历红黑树，先计算出红黑树中每个元素对应在新数组中的下标位置
+     * a.统计每个下标位置的元素个数
+     * b.如果该位置下的元素个数超过了8，则生成一个新的红黑树，并将根节点添加到新数组的对应位置
+     * c.如果该位置下的元素个数没有超过8，则生成一个链表，并将链表的头节点添加到新数组的对应位置
+     * 5.所有元素转移完之后，将新数组赋值给HashMap对象的table属性
      */
     public static void question04() {
         HashMap<String, String> hashMap = new HashMap<>();

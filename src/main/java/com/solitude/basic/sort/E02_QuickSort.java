@@ -1,5 +1,6 @@
 package com.solitude.basic.sort;
 
+import com.solitude.basic.datastruct.LinkedNode;
 import java.util.Arrays;
 
 public class E02_QuickSort {
@@ -57,9 +58,45 @@ public class E02_QuickSort {
         arr[j] = tmp;
     }
 
+
     public static void main(String[] args) {
         int[] arr = new int[]{21, 3, 8, 12, 1};
         process(arr, 0, arr.length - 1);
         System.out.println(Arrays.toString(arr));
+    }
+
+    // 单链表的快速排序
+    private static class LinkedQuickSort {
+
+        private static <T extends Comparable<T>> void process(LinkedNode<T> start, LinkedNode<T> end) {
+            if (start == null || start.next == end ||start == end) return;
+            LinkedNode<T> provit = partition(start, end);
+            process(start, provit);
+            process(provit.next, end);
+        }
+
+        private static <T extends Comparable<T>> LinkedNode<T> partition(LinkedNode<T> start, LinkedNode<T> end) {
+            // 一个用于定位的指针
+            LinkedNode<T> base = start;
+            // 一个用于跑动的指针
+            LinkedNode<T> cur = start.next;
+            while (cur != end) {
+                if (start.val.compareTo(cur.val) > 0) {
+                    base = base.next;
+                    LinkedNode.swap(base, cur);
+                }
+                cur = cur.next;
+            }
+            LinkedNode.swap(start, base);
+            return base;
+        }
+
+        public static void main(String[] args) {
+            Integer[] ints = {4, 1, 3, 12, 2};
+            LinkedNode<Integer> head = LinkedNode.generate(ints);
+            LinkedNode.print(head);
+            process(head, null);
+            LinkedNode.print(head);
+        }
     }
 }
