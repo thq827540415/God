@@ -19,9 +19,7 @@ import java.io.IOException;
  * The Schema is stored along with the AvroExample data in a file
  */
 public class AvroExample {
-
     private static final String OUTPUT_PATH = "./output/emp.avro";
-
 
     public static void main(String[] args) throws IOException {
         // todo 1. Create Schemas
@@ -31,7 +29,7 @@ public class AvroExample {
 
         // （2）By using parsers libray
         // 通过API读取xxx.avsc文件
-        Schema schema = getSchemaByClasspathFile();
+        Schema schema = getSchemaByFile();
 
         // todo 3. Serializer the data using the serialization API provided for AvroExample
         writeBySchemeFile(schema);
@@ -96,15 +94,9 @@ public class AvroExample {
         }
     }
 
-
     // ======================================= schema ======================================
     private static Schema getSchemaByFile() throws IOException {
         return new Schema.Parser()
-                .parse(new File("D:\\IdeaProjects\\Algorithm\\src\\main\\resources\\avro\\emp.avsc"));
-    }
-
-    private static Schema getSchemaByClasspathFile() throws IOException {
-        return new Schema.Parser()
-                .parse(AvroExample.class.getClassLoader().getResourceAsStream("avro/emp.avsc"));
+                .parse(new File("com/ava/bigdata/common/serializer/avro/emp.avsc"));
     }
 }

@@ -1,4 +1,4 @@
-package com.ava.bigdata.common.akka
+package com.ava.bigdata.common.io.akka
 
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 

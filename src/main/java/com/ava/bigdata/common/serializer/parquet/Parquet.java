@@ -16,7 +16,6 @@ import org.apache.parquet.schema.MessageTypeParser;
 import java.io.IOException;
 
 public class Parquet {
-
     private static void write2Parquet() {
         MessageType schema = MessageTypeParser.parseMessageType(
                 "message Person {\n" +

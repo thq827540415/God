@@ -13,6 +13,7 @@ public class MyClient {
             // 客户端通过这个代理可以调用服务端的方法进行逻辑处理
             BusinessProtocol proxy = RPC.getProxy(
                     BusinessProtocol.class,
+                    // 不同版本的Server和Client之间是不能通信的
                     BusinessProtocol.versionID,
                     new InetSocketAddress("localhost", 6789),
                     new Configuration());

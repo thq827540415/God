@@ -1,5 +1,8 @@
 package com.ava.bigdata.common.rpc;
 
+/**
+ * client请求调用的服务组件
+ */
 public class BusinessImpl implements BusinessProtocol {
     @Override
     public void mkdir(String path) {

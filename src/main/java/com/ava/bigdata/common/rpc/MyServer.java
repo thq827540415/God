@@ -8,9 +8,9 @@ import java.io.IOException;
 public class MyServer {
     public static void main(String[] args) {
         try {
-            // 服务端提供了一个BusinessProtocol协议的BusinessImpl服务实现
             RPC.Server server = new RPC.Builder(new Configuration())
                     .setProtocol(BusinessProtocol.class)
+                    // 该协议对应的服务组件
                     .setInstance(new BusinessImpl())
                     .setBindAddress("localhost")
                     .setPort(6789)

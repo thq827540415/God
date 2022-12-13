@@ -1,12 +1,15 @@
-### 一、YARN源码解析
+### 一、YARN（Yet Another Resource Negotiator）源码解析
 
 YARN中的ApplicationMaster只是一个规范，MR中的规范为MRAppMaster。
 
-1. 
+1. **RPC网络通信**
+   1. 1.x版本中使用Writable协议作为默认RPC协议，而在2.x版本重写了RPC框架，采用Protobuf协议作为默认的通信协议。在YARN中，任何两个需相互通信的组件之间仅有一个RPC协议 ，Client总是主动连接Server的，因此YARN采用的是pull-based通信模型。
+   2. 
+2. **test**
 
 ### 二、MapReduce源码解析（ MR on YARN）
 
-1. **Job提交流程（org.apache.hadoop.mapreduce.Job#submit）**：
+1. **Job提交流程（org.apache.hadoop.mapreduce.Job#submit）**
 
    ```java
    public class Job extends JobContextImpl implements JobContext {
@@ -179,7 +182,7 @@ YARN中的ApplicationMaster只是一个规范，MR中的规范为MRAppMaster。
          3. MapTask启动的入口：YarnChild.main() -> taskFinal.run(job, umbilical);其中taskFinal的实现类为MapTask。
          4. ReduceTask启动的入口：YarnChild.main()。
 
-2. **MapReduce核心流程（org.apache.hadoop.mapreduce.JobSubmitter#submitJobInternal）**：
+2. **MapReduce核心流程（org.apache.hadoop.mapreduce.JobSubmitter#submitJobInternal）**
 
    ```java
    class JobSubmitter {
@@ -228,7 +231,7 @@ YARN中的ApplicationMaster只是一个规范，MR中的规范为MRAppMaster。
    }
    ```
 
-3. **MapReduce逻辑切片（org.apache.hadoop.mapreduce.lib.input.FileInputFormat#getSplits）**：
+3. **MapReduce逻辑切片（org.apache.hadoop.mapreduce.lib.input.FileInputFormat#getSplits）**
 
    ```java
    /**

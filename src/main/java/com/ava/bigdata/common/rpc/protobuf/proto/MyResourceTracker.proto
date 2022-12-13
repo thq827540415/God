@@ -5,6 +5,7 @@ option java_generate_equals_and_hash = true;
 
 import "MyResourceTrackerMessage.proto";
 
+// 用于描述要生成的API接口
 service MyResourceTrackerService {
   rpc registerNodeManager(MyRegisterNodeManagerRequestProto) returns (MyRegisterNodeManagerResponseProto);
 }

@@ -30,7 +30,7 @@
 
 
         <log.scope>compile</log.scope>
-        <scala.scope>provided</scala.scope>
+        <scala.scope>compile</scala.scope>
         <jedis.scope>provided</jedis.scope>
         <hadoop.scope>compile</hadoop.scope>
         <protobuf.scope>compile</protobuf.scope>
@@ -109,6 +109,26 @@
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
             <version>${scala.version}</version>
+            <scope>${scala.scope}</scope>
+        </dependency>
+
+        <!-- akka actor -->
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor_${scala.binary.version}</artifactId>
+            <version>2.5.21</version>
+            <scope>${scala.scope}</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-remote_${scala.binary.version}</artifactId>
+            <version>2.5.21</version>
+            <scope>${scala.scope}</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-protobuf_${scala.binary.version}</artifactId>
+            <version>2.5.21</version>
             <scope>${scala.scope}</scope>
         </dependency>
 
@@ -204,14 +224,6 @@
             <artifactId>parquet-avro</artifactId>
             <version>1.12.2</version>
             <scope>${parquet.avro.scope}</scope>
-        </dependency>
-
-        <!-- akka actor -->
-        <dependency>
-            <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-actor_2.12</artifactId>
-            <version>2.5.23</version>
-            <scope>${scala.scope}</scope>
         </dependency>
 
         <dependency>
