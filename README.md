@@ -1,17 +1,2 @@
 # 学习之旅
-1. 基础部分
-   1. 常见数据结构
-   2. 算法
-   3. JUC
-   4. akka
-   5. avro、protobuf、parquet等
-2. 框架部分
-   1. zookeeper
-   2. hadoop
-   3. hbase
-   4. spark
-   5. flink
-   6. kafka
-   7. iceberg
-   8. doris
-   9. hudi
+# 为了让自己更加强大

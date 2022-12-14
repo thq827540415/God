@@ -3,8 +3,9 @@
 YARN中的ApplicationMaster只是一个规范，MR中的规范为MRAppMaster。
 
 1. **RPC网络通信**
-   1. 1.x版本中使用Writable协议作为默认RPC协议，而在2.x版本重写了RPC框架，采用Protobuf协议作为默认的通信协议。在YARN中，任何两个需相互通信的组件之间仅有一个RPC协议 ，Client总是主动连接Server的，因此YARN采用的是pull-based通信模型。
-   2. 
+   1. 1.x版本中使用Writable协议作为默认RPC协议，而在2.x版本重写了RPC框架，采用Protobuf协议作为默认的通信协议。底层采用JavaNIO进行网络通信。
+   2. 在YARN中，任何两个需相互通信的组件之间仅有一个RPC协议 ，Client总是主动连接Server的，因此YARN采用的是pull-based通信模型。
+   3. 
 2. **test**
 
 ### 二、MapReduce源码解析（ MR on YARN）

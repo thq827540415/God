@@ -67,7 +67,7 @@ public class MyNIO {
             public static void main(String[] args) {
                 try (ServerSocketChannel channel = ServerSocketChannel.open()) {
                     // 绑定对应的端口
-                    channel.bind(new InetSocketAddress("localhost", 9999));
+                    channel.socket().bind(new InetSocketAddress("localhost", 9999));
 
                     // 默认channel是阻塞的
                     channel.configureBlocking(false);
@@ -138,6 +138,9 @@ public class MyNIO {
             public static void main(String[] args) {
                 try (SocketChannel channel =
                              SocketChannel.open(new InetSocketAddress("localhost", 9999))) {
+
+                    // channel.configureBlocking(false);
+
                     // 写出数据
                     channel.write(
                             ByteBuffer.wrap(
