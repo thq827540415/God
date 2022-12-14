@@ -36,6 +36,7 @@ private class Parent extends Actor {
 class Child extends Actor {
   var name = "No name"
   override def postStop(): Unit = {
+    // self.path = akka://ParentChild/user/parent/Jonathan
     println(s"D'oh! They killed me ($name): ${self.path}")
   }
 

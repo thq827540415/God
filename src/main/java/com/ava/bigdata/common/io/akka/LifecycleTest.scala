@@ -29,14 +29,22 @@ private class Kenny extends Actor {
 
   override def preStart(): Unit = println("preStart")
 
-  override def postStop(): Unit = println("postStop")
-
+  /**
+   * 抛出异常被捕获后，调用链：preRestart -> postStop -> postRestart -> preStart
+   * @param reason 出现的异常
+   * @param message 导致异常产生的方法
+   */
   override def preRestart(reason: Throwable, message: Option[Any]): Unit = {
     println("preRestart")
     println(s"MESSAGE: ${message.getOrElse("")}")
     println(s"REASON: ${reason.getMessage}")
     super.preRestart(reason, message)
   }
+
+  /**
+   * 每次actor掉线了，都会调用一次
+   */
+  override def postStop(): Unit = println("postStop")
 
   override def postRestart(reason: Throwable): Unit = {
     println("postRestart")

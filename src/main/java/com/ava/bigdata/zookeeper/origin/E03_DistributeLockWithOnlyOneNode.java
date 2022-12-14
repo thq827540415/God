@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
  * 利用节点的唯一性，实现分布式锁，存在羊群效应，多节点抢占锁，属于非公平锁
  */
 @Slf4j
-public class E01_DistributeLockWithOnlyOneNode {
+public class E03_DistributeLockWithOnlyOneNode {
     private ZooKeeper zkCli;
     private String lockPath;
     private final CountDownLatch cdl = new CountDownLatch(1);
@@ -64,7 +64,7 @@ public class E01_DistributeLockWithOnlyOneNode {
     public static void main(String[] args) {
         for (int i = 0; i < 5; i++) {
             new Thread(() -> {
-                E01_DistributeLockWithOnlyOneNode lock = new E01_DistributeLockWithOnlyOneNode();
+                E03_DistributeLockWithOnlyOneNode lock = new E03_DistributeLockWithOnlyOneNode();
                 try {
                     lock.init();
                     lock.lock();

@@ -121,6 +121,5 @@ public class E01_CuratorApi {
     }
 
     public static void main(String[] args) {
-        createNode();
     }
 }

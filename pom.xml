@@ -125,12 +125,12 @@
             <version>2.5.21</version>
             <scope>${scala.scope}</scope>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-protobuf_${scala.binary.version}</artifactId>
             <version>2.5.21</version>
             <scope>${scala.scope}</scope>
-        </dependency>
+        </dependency>-->
 
         <!-- lombok -->
         <dependency>
@@ -517,6 +517,7 @@
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
 
@@ -544,7 +545,7 @@
                     <archive>
                         <manifest>
                             <!-- 指定打包后的主类的全限定类名 -->
-                            <mainClass></mainClass>
+                            <mainClass/>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -552,6 +553,7 @@
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                 </configuration>
+                <!-- 表示在package时，不用手动指定assembly:single -->
                 <executions>
                     <execution>
                         <id>make-assemble</id>
@@ -596,7 +598,16 @@
                                 </filter>
                             </filters>
                             <transformers>
-                                <!--多个依赖构件中的META-INF/services/org.apache.table.factories.Factory文件不能合并-->
+                                <!-- SpringBoot项目中，为了避免spring.handler和spring.schemas相互覆盖 -->
+                                <!--<transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.handler</resource>
+                                </transformer>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.schemas</resource>
+                                </transformer>-->
+                                <!-- 多个依赖构件中的META-INF/services/org.apache.table.factories.Factory文件不能合并 -->
                                 <!--<transformers>
                                     <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                                 </transformers>-->

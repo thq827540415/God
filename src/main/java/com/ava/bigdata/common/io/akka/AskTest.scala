@@ -15,12 +15,13 @@ import scala.language.postfixOps
 object AskTest extends App {
   val system = ActorSystem("Ask")
   private val myActor = system.actorOf(Props[TestActor], "myActor")
+  // 方式1 使用 ? 阻塞的方式获取结果
   implicit val timeout: Timeout = Timeout(5 seconds)
   private val future: Future[Any] = myActor ? AskNameMessage
-  // 使用阻塞的方式获取结果
   val result = Await.result(future, timeout.duration).asInstanceOf[String]
   println(result)
 
+  // 方式2 使用ask方法
   private val future1: Future[String] = ask(myActor, AskNameMessage).mapTo[String]
   private val result1 = Await.result(future1, 1 second)
   println(result1)
