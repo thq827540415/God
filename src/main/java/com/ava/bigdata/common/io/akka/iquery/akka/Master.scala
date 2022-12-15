@@ -1,4 +1,4 @@
-package com.ava.bigdata.common.io.akka.iquery.demo
+package com.ava.bigdata.common.io.akka.iquery.akka
 
 import akka.actor.{Actor, ActorSystem, Props}
 import com.typesafe.config.ConfigFactory
@@ -23,6 +23,7 @@ object Master {
     val master: ActorSystem = ActorSystem("Master", ConfigFactory.parseString(configStr))
     master.actorOf(Props[Master], "master")
 
+    /*
     val t = new Thread(() => {
       // 定时清理，所有过时的worker
       while (true) {
@@ -33,7 +34,7 @@ object Master {
       }
     }, "master cleaner")
     t.setDaemon(true)
-    t.start()
+    t.start()*/
   }
   def main(args: Array[String]): Unit = {
     start()
@@ -41,11 +42,25 @@ object Master {
 }
 
 private class Master extends Actor {
+  override def preStart(): Unit = {
+    import scala.concurrent.duration._
+    import scala.language.postfixOps
+    import context.dispatcher
+    // 定时清理，所有过时的worker
+    context.system.scheduler.schedule(0 nanos, 500 millis, () => {
+      val curr = System.currentTimeMillis()
+      Master.map.filter(kv => curr - kv._2.ts > 5000).keySet
+        .foreach(Master.map -= _)
+      println(Master.map + " : " + curr)
+    })
+  }
+
   override def receive: Receive = {
     case conn: Connect =>
       println(s"a client connected and workerID: ${conn.workerId}, " +
         s"workerCores: ${conn.workerCores}, workerMemory: ${conn.workerMemory}")
       Master.map.put(conn.workerId, conn)
+
       // 发送消息给Worker
       // 使用sender和self不同，sender知道发送端的ip:port，self不知道
       // val notSender = context.actorSelection("akka.tcp://Worker@localhost:8888/user/worker")

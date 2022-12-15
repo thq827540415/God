@@ -15,6 +15,9 @@ import lombok.ToString;
 import java.sql.Timestamp;
 import java.util.List;
 
+/**
+ * 采用Java版本的jackson和scala版本的jackson -> json4s
+ */
 public class JsonUtils {
 
     private JsonUtils() {

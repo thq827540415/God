@@ -41,7 +41,7 @@ public class E01_ZKApi {
             try {
                 zkCli.close();
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+               e.printStackTrace();
             }
         }
     }
