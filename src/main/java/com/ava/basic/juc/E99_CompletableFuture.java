@@ -1,5 +1,7 @@
 package com.ava.basic.juc;
 
+import com.ava.util.CommonUtils;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
@@ -19,7 +21,13 @@ public class E99_CompletableFuture {
                             sleep(1);
                             return 1;
                         }, executorService)
-                .thenApply(f -> f * 5)
+                // 上一步完成后执行下一步
+                .thenApply(
+                        f -> {
+                            System.out.println("do the compute.");
+                            return f * 5;
+                        })
+                // 上一步完成后执行下一步
                 .thenAccept(f -> System.out.println("This is accept and result = " + f))
                 // 回调函数
                 .whenComplete((ignored, throwable) -> System.out.println("Callback Complete!"))
@@ -207,14 +215,10 @@ public class E99_CompletableFuture {
     }
 
     private static void sleep(int seconds) {
-        try {
-            TimeUnit.SECONDS.sleep(seconds);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        CommonUtils.sleep(seconds, TimeUnit.SECONDS);
     }
 
     public static void main(String[] args) {
-        demo();
+        first();
     }
 }

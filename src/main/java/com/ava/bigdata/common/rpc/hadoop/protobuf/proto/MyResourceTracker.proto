@@ -1,0 +1,13 @@
+// 如果是使用protoc3.x则要修改
+syntax = "proto2";
+option java_package = "com.ava.bigdata.common.rpc.hadoop.protobuf.proto";
+option java_outer_classname = "MyResourceTracker";
+option java_generic_services = true;
+option java_generate_equals_and_hash = true;
+
+import "com/ava/bigdata/common/rpc/hadoop/protobuf/proto/MyResourceTrackerMessage.proto";
+
+// 用于描述要生成的API接口
+service MyResourceTrackerService {
+  rpc registerNodeManager(MyRegisterNodeManagerRequestProto) returns (MyRegisterNodeManagerResponseProto);
+}

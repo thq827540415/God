@@ -415,15 +415,20 @@
         <!-- flink stream -->
         <dependency>
             <groupId>org.apache.flink</groupId>
+            <artifactId>flink-rpc-akka-loader</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
             <artifactId>flink-clients_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
             <scope>${flink.scope}</scope>
-            <exclusions>
+            <!--<exclusions>
                 <exclusion>
                     <groupId>org.apache.flink</groupId>
                     <artifactId>flink-shaded-zookeeper-3</artifactId>
                 </exclusion>
-            </exclusions>
+            </exclusions>-->
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
