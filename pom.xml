@@ -415,8 +415,6 @@
         <!-- flink stream -->
         <dependency>
             <groupId>org.apache.flink</groupId>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
             <artifactId>flink-clients_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
             <scope>${flink.scope}</scope>
