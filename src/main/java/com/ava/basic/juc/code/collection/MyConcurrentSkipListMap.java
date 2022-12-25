@@ -1,4 +1,4 @@
-package com.ava.basic.juc;
+package com.ava.basic.juc.code.collection;
 
 /**
  * 内部使用SkipList实现的，放入的元素会进行排序，排序算法支持两种方式来指定（必选1种）：

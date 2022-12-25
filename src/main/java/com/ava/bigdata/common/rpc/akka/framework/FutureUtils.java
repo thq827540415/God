@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
  * 将Scala里面的Future转化为Java中的Future
  */
 public class FutureUtils {
-    public static <T, U extends T>CompletableFuture<T> toJava(Future<U> scalaFuture) {
+    public static <T, U extends T> CompletableFuture<T> toJava(Future<U> scalaFuture) {
         final CompletableFuture<T> result = new CompletableFuture<>();
 
         scalaFuture.onComplete(new OnComplete<U>() {

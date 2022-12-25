@@ -1,4 +1,4 @@
-package com.ava.basic.juc;
+package com.ava.basic.juc.code.collection;
 
 import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArrayList;

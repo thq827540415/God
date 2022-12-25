@@ -415,9 +415,6 @@
         <!-- flink stream -->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-rpc-akka-loader</artifactId>
-            <version>${flink.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-clients_${scala.binary.version}</artifactId>

@@ -1,4 +1,4 @@
-package com.ava.basic.juc;
+package com.ava.basic.juc.code.async;
 
 import com.ava.util.CommonUtils;
 
@@ -7,7 +7,26 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
-public class E99_CompletableFuture {
+public class MyCompletableFuture {
+
+
+    private static Future<String> aAsyncMethod() {
+
+        CompletableFuture<String> future = new CompletableFuture<>();
+
+        new Thread(() -> {
+            try {
+                CommonUtils.sleep(3, TimeUnit.SECONDS);
+                // future完成时返回值
+                future.complete("complete");
+            } catch (Exception e) {
+                future.completeExceptionally(e);
+            }
+        }).start();
+
+        return future;
+    }
+
 
     /**
      * 小试牛刀
@@ -58,7 +77,10 @@ public class E99_CompletableFuture {
                             sleep(2);
                             return 2;
                         });
-        Integer result = first.applyToEither(second, f -> f + 1).join();
+        // Integer result = first.applyToEither(second, f -> f + 1).join();
+
+        Integer result = (Integer) CompletableFuture.anyOf(first, second).join();
+
         System.out.println(result);
     }
 
@@ -193,10 +215,21 @@ public class E99_CompletableFuture {
                     return str + "123";
                 })
                 .collect(Collectors.toList());
-        long end = System.currentTimeMillis();
-        System.out.println("normal cost " + (end - start) + " ms");
+        System.out.println("normal cost " + (System.currentTimeMillis() - start) + " ms");
+
 
         // 2.
+        start = System.currentTimeMillis();
+        strings
+                .parallelStream()
+                .map(str -> {
+                    sleep(2);
+                    return str + "123";
+                })
+                .collect(Collectors.toList());
+        System.out.println("normal parallel cost " + (System.currentTimeMillis() - start) + " ms");
+
+        // 3.
         start = System.currentTimeMillis();
         strings
                 .stream()
@@ -210,15 +243,14 @@ public class E99_CompletableFuture {
                 .stream()
                 .map(CompletableFuture::join)
                 .collect(Collectors.toList());
-        end = System.currentTimeMillis();
-        System.out.println("completable cost " + (end - start) + " ms");
+        System.out.println("completable cost " + (System.currentTimeMillis() - start) + " ms");
     }
 
     private static void sleep(int seconds) {
         CommonUtils.sleep(seconds, TimeUnit.SECONDS);
     }
 
-    public static void main(String[] args) {
-        first();
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        second();
     }
 }

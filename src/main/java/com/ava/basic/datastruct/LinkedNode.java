@@ -4,6 +4,12 @@ public class LinkedNode<T> {
     public T val;
     public LinkedNode<T> next;
 
+    static class Node<V> {
+        V val;
+        Node<V> next;
+    }
+
+
     public LinkedNode() {
     }
 
@@ -19,6 +25,10 @@ public class LinkedNode<T> {
             p = p.next;
         }
         return head.next;
+    }
+
+    public static <T> LinkedNode<T> add(T val) {
+        return null;
     }
 
     public static void print(LinkedNode<?> head) {

@@ -1,4 +1,4 @@
-package com.ava.basic.juc;
+package com.ava.basic.juc.code.locks;
 
 /**
  * synchronized提供了一种独占的加锁方式，获取和释放锁由JVM实现

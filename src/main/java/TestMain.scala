@@ -16,7 +16,7 @@ import scala.collection.mutable.{ListBuffer, Seq}
  * @Date 2022/8/4 23:53
  * @Description
  */
-object TestMainDemo {
+object TestMain {
   def main(args: Array[String]): Unit = {
     // -372811216
     println(MathUtils.bitMix("abc".hashCode ^ "ns".hashCode))

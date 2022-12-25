@@ -1,4 +1,4 @@
-package com.ava.basic.juc;
+package com.ava.basic.juc.code.blockqueue;
 
 import com.ava.util.CommonUtils;
 import lombok.AllArgsConstructor;
@@ -6,27 +6,31 @@ import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 如果队列满的，那么将阻塞该线程，暂停添加数据
  * 如果队列空的，那么将阻塞该线程，暂停取出数据
  * <p>
- * 重点掌握4种常用的阻塞队列ArrayBlockingQueue、LinkedBlockingQueue、PriorityBlockingQueue和SynchronousQueue
- * <p>
  * put(e)、take()一直阻塞
+ * <p>
  * add(e)、remove() 会抛异常
+ * <p>
  * offer(e)、poll() 返回特殊值
+ * <p>
  * offer(e, timeout, unit)、poll(timeout, unit) 超时阻塞
+ * <p>
  * 如果是无界阻塞队列，队列不可能会出现满的情况，所以使用put或offer方法永远不会被阻塞
  */
-public class E03_BlockingQueue {
-    // public interface BlockingQueue<E> extends Queue<E>{}
+public class BlockingQueueExplainInDetail {
 
     private static volatile boolean flag = true;
 
     /**
      * 1. 一个用数组实现的有界阻塞队列。
-     * 2. 线程阻塞的实现是通过ReentrantLock来完成的。
+     * <p>
+     * 2. 线程阻塞的实现是通过{@link ReentrantLock}来完成的。
+     * <p>
      * 3. 数据的插入与取出共用同一个锁，因此ArrayBlockingQueue并不能同时进行生产、消费。
      */
     private static void arrayBlockingQueue() {
@@ -60,8 +64,11 @@ public class E03_BlockingQueue {
 
     /**
      * 1. 一个用单链表组成的有界/无界阻塞队列。
+     * <p>
      * 2. 不指定容量大小时，一旦数据生产速度大于消费速度，系统内存将可能被消耗殆尽。
+     * <p>
      * 3. 用于阻塞生产者、消费者的锁是两个（锁分离），因此生产和消费是可以同时进行的。
+     * <p>
      * 4. Executors.newFixedThreadPool使用了这个队列。
      */
     private static void linkedBlockingQueue() {
@@ -72,7 +79,9 @@ public class E03_BlockingQueue {
 
     /**
      * 1. 一个支持优先级排序的无界阻塞队列。
+     * <p>
      * 2. 内部使用数组存储数据，会自动进行扩容。
+     * <p>
      * 3. 元素实现Comparable接口或者初始化队列时指定Comparator
      */
     private static void priorityBlockingQueue() {
@@ -107,8 +116,11 @@ public class E03_BlockingQueue {
 
     /**
      * 1. 一个不存储元素的同步阻塞队列，与其他阻塞队列不同，SynchronousQueue没有容量。
+     * <p>
      * 2. 每一个put操作必须要等待一个take操作，否则不能继续添加元素，反之亦然。
+     * <p>
      * 3. Executors.newCachedThreadPool()中用到了这个队列。
+     * <p>
      * 4. SynchronousQueue的吞吐量高于LinkedBlockingQueue和ArrayBlockingQueue
      */
     private static void synchronousQueue() {
@@ -137,6 +149,7 @@ public class E03_BlockingQueue {
 
     /**
      * 1. 一个使用PriorityQueue实现的，支持延时获取元素的无界阻塞队列。
+     * <p>
      * 2. 队列中的元素必须实现Delayed接口。
      */
     private static void delayQueue() {
@@ -196,6 +209,7 @@ public class E03_BlockingQueue {
 
     /**
      * 1. 一个由链表组成的无界阻塞TransferQueue队列。
+     * <p>
      * 2. 相对于其他阻塞队列，多了tryTransfer和transfer方法。
      */
     private static void linkedTransferQueue() {

@@ -1,4 +1,4 @@
-package com.ava.basic.juc;
+package com.ava.basic.juc.code.basic;
 
 
 import com.ava.util.CommonUtils;
@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * juc中的大部分类都是依赖于Unsafe来实现的，如CAS、线程挂起、线程恢复等功能。
  * 用于直接访问系统内存资源、自主管理内存资源等。
  */
-public class E87_Unsafe {
+public class CAS {
     private static Unsafe unsafe;
 
     static {

@@ -3,6 +3,7 @@ package com.ava.basic.datastruct.graph;
 import java.util.List;
 
 public interface Graph<V> {
+
     // return the number of vertices in the graph
     int getSize();
 
@@ -31,4 +32,11 @@ public interface Graph<V> {
     boolean addVertex(V vertex);
 
     // add an edge to the graph
+    void addEdge(int u, int v);
+
+    // remove a vertex v from the graph, return true if successful
+    boolean remove(V v);
+
+    // remove an edge(u, v) from the graph, return true if successful
+    boolean remove(int u, int v);
 }

@@ -1,4 +1,4 @@
-package com.ava.basic.juc;
+package com.ava.basic.juc.code;
 
 import java.util.concurrent.TimeUnit;
 

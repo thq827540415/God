@@ -6,7 +6,9 @@ import java.util.Arrays;
 public class E01_ThreeSimpleSorts {
 
     /**
-     * 每次选择一个最小/大数
+     * 每次选择一个最小/大数，与第i位交换位置
+     * <p>
+     * 运行时间和输入无关
      */
     private static void selectSort(int[] arr) {
         for (int i = 0; i < arr.length; i++) {
