@@ -15,10 +15,6 @@ import java.util.concurrent.TimeUnit;
 public class E01_CuratorApi {
     private static final CuratorFramework client = BasicEnvUtils.getCuratorInstance();
 
-    static {
-        client.start();
-    }
-
     /**
      * create path [data]
      */

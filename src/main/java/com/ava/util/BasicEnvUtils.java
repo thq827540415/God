@@ -55,6 +55,10 @@ public class BasicEnvUtils {
                 // 所有操作都在/base下执行
                 .namespace("base")
                 .build();
+
+        static {
+            CLIENT.start();
+        }
     }
 
     private static class HBaseBuilder {

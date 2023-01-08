@@ -36,16 +36,7 @@ public class FlinkEnvUtils {
      * 生成DataStream环境
      */
     public static StreamExecutionEnvironment getDSEnv() {
-        if (WITH_WEB_UI) {
-            return StreamExecutionEnvironment
-                    .createLocalEnvironmentWithWebUI(new Configuration())
-                    .setParallelism(GLOBAL_OPERATOR_PARALLELISM)
-                    .setMaxParallelism(GLOBAL_MAX_PARALLELISM);
-        }
-        return StreamExecutionEnvironment
-                .getExecutionEnvironment(new Configuration())
-                .setParallelism(GLOBAL_OPERATOR_PARALLELISM)
-                .setMaxParallelism(GLOBAL_MAX_PARALLELISM);
+        return getDSEnv(new Configuration());
     }
 
     /**

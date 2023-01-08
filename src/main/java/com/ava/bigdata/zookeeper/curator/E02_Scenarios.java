@@ -28,10 +28,6 @@ import java.util.concurrent.TimeUnit;
 public class E02_Scenarios {
     private static final CuratorFramework client = BasicEnvUtils.getCuratorInstance();
 
-    static {
-        client.start();
-    }
-
     public static void main(String[] args) {
         eventWatcher();
     }

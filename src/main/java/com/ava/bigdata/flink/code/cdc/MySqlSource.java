@@ -2,7 +2,6 @@ package com.ava.bigdata.flink.code.cdc;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ava.consts.MysqlConstants;
-import com.ava.bigdata.flink.code.stream.sink.E02_KafkaSink;
 import com.ava.util.FlinkEnvUtils;
 import com.ava.util.JsonUtils;
 import com.ververica.cdc.connectors.mysql.table.StartupOptions;
@@ -27,7 +26,7 @@ import java.util.Properties;
 /**
  * @Author lancer
  * @Date 2022/4/18 20:08
- * @Description
+ * @Description 增量同步，断点续传，无锁读取，全量 + 增量，分布式，数据转换能力强
  */
 public class MySqlSource {
     public static void main(String[] args) throws Exception {
@@ -47,7 +46,7 @@ public class MySqlSource {
                 .build();
 
         Properties p = new Properties();
-        p.load(E02_KafkaSink.class.getClassLoader().getResourceAsStream("producer.properties"));
+        p.load(MySqlSource.class.getClassLoader().getResourceAsStream("producer.properties"));
 
         KafkaSerializationSchema<String> serializationSchema = (element, timestamp) ->
                 new ProducerRecord<>(

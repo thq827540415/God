@@ -30,25 +30,6 @@ import java.sql.Timestamp;
 /**
  * 需要额外导入的依赖
  * 自动生成构造，toString等
- * <dependency>
- * <groupId>org.projectlombok</groupId>
- * <artifactId>lombok</artifactId>
- * <version>1.18.22</version>
- * <optional>true</optional>
- * </dependency>
- * 解析JSON
- * <dependency>
- * <groupId>com.alibaba</groupId>
- * <artifactId>fastjson</artifactId>
- * <version>1.2.75</version>
- * </dependency>
- * 使用java
- * <dependency>
- * <groupId>org.apache.flink</groupId>
- * <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
- * <version>${flink.version}</version>
- * <scope>${flink.scope}</scope>
- * </dependency>
  */
 public class Example {
 

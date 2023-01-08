@@ -20,7 +20,7 @@ import java.sql.SQLException;
  * @Date 2022/6/15 20:31
  * @Description 往MySQL中写数据
  */
-public class E03_JdbcSink {
+public class JdbcSink {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = FlinkEnvUtils.getDSEnv();
 
@@ -31,7 +31,7 @@ public class E03_JdbcSink {
                 // .addSink(getJdbcSink());
                 .addSink(getJdbcExactlyOnceSink());
 
-        env.execute(E03_JdbcSink.class.getSimpleName());
+        env.execute(JdbcSink.class.getSimpleName());
     }
 
     @ToString
@@ -47,7 +47,7 @@ public class E03_JdbcSink {
      * 底层采用传统的JDBC方式写入数据executeBatch()
      */
     private static SinkFunction<Person> getJdbcSink() {
-        return JdbcSink.sink(
+        return org.apache.flink.connector.jdbc.JdbcSink.sink(
                 // 指定需要执行的语句 -- insert or update
                 // 为保证幂等性，需要创建主键表，再insert into person values(?, ?) duplicated key update name = ?, age = ?
                 "insert into person(name, age) values(?, ?)",
@@ -83,7 +83,7 @@ public class E03_JdbcSink {
      *      因为XADataSource是支持分布式事务的接口
      */
     private static SinkFunction<Person> getJdbcExactlyOnceSink() {
-        return JdbcSink.exactlyOnceSink(
+        return org.apache.flink.connector.jdbc.JdbcSink.exactlyOnceSink(
                 "insert into person(name, age) values(?, ?)",
                 new JdbcStatementBuilder<Person>() {
                     @Override

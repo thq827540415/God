@@ -1,4 +1,4 @@
-package com.ava.bigdata.kafka.code;
+package com.ava.bigdata.kafka.code.consumer;
 
 import lombok.Cleanup;
 import org.apache.kafka.clients.consumer.ConsumerRecords;

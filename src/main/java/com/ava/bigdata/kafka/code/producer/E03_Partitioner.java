@@ -20,7 +20,7 @@ public class E03_Partitioner {
     /**
      * 更改DefaultPartitioner
      */
-    public static class MyParititioner implements Partitioner {
+    public static class MyPartitioner implements Partitioner {
 
         private final AtomicInteger counter = new AtomicInteger(0);
 

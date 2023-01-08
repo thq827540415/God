@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 public class MyCompletableFuture {
 
-
     private static Future<String> aAsyncMethod() {
 
         CompletableFuture<String> future = new CompletableFuture<>();
@@ -32,32 +31,49 @@ public class MyCompletableFuture {
      * 小试牛刀
      */
     private static void first() {
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        // ExecutorService executorService = Executors.newFixedThreadPool(2);
+        ExecutorService executorService = Executors.newCachedThreadPool();
         CompletableFuture
                 .supplyAsync(
                         () -> {
-                            System.out.println("Current Thread is daemon ? => " + Thread.currentThread().isDaemon());
-                            sleep(1);
+                            info("Current Thread is daemon ? => " + Thread.currentThread().isDaemon());
+                            CommonUtils.sleep(100, TimeUnit.MILLISECONDS);
                             return 1;
+                        }, executorService)
+                // 上面执行完后，再起一个异步任务
+                .thenCompose(
+                        f -> CompletableFuture
+                                .supplyAsync(
+                                        () -> {
+                                            info("do the compose. f = " + f);
+                                            CommonUtils.sleep(100, TimeUnit.MILLISECONDS);
+                                            return 2;
+                                        }, executorService))
+                // 等价于上面
+                .thenApplyAsync(
+                        f -> {
+                            info("the same as compose. f = " + f);
+                            CommonUtils.sleep(100, TimeUnit.MILLISECONDS);
+                            return 3;
                         }, executorService)
                 // 上一步完成后执行下一步
                 .thenApply(
                         f -> {
-                            System.out.println("do the compute.");
+                            info("do the compute.");
                             return f * 5;
                         })
                 // 上一步完成后执行下一步
-                .thenAccept(f -> System.out.println("This is accept and result = " + f))
+                .thenAccept(f -> info("This is accept and result = " + f))
                 // 回调函数
-                .whenComplete((ignored, throwable) -> System.out.println("Callback Complete!"))
+                .whenComplete((ignored, throwable) -> info("Callback Complete!"))
                 .exceptionally(
                         f -> {
                             f.printStackTrace();
                             return null;
                         });
 
-        System.out.println("Current thread is main");
-        executorService.shutdown();
+        info("Current thread is main");
+        // executorService.shutdown();
     }
 
     /**
@@ -89,38 +105,33 @@ public class MyCompletableFuture {
      * thenCombine(BiFunction)、thenAcceptBoth(BiConsumer)、runAfterBoth(Runnable)
      */
     private static void third() {
-        Integer result = CompletableFuture
+        CompletableFuture<Integer> cf1 = CompletableFuture
                 .supplyAsync(
                         () -> {
                             System.out.println(Thread.currentThread().getName() + "\t" + "come in");
                             sleep(3);
                             return 3;
-                        })
+                        });
+        CompletableFuture<Integer> cf2 = CompletableFuture
+                .supplyAsync(
+                        () -> {
+                            System.out.println(Thread.currentThread().getName() + "\t" + "come in");
+                            sleep(2);
+                            return 2;
+                        });
+
+        Integer result = cf1
                 .thenCombine(
-                        CompletableFuture
-                                .supplyAsync(
-                                        () -> {
-                                            System.out.println(Thread.currentThread().getName() + "\t" + "come in");
-                                            sleep(2);
-                                            return 2;
-                                        }),
+                        cf2,
                         (x, y) -> {
-                            System.out.println(Thread.currentThread().getName() + "\t" + "come int");
-                            return x + y;
-                        })
-                .thenCombine(
-                        CompletableFuture
-                                .supplyAsync(
-                                        () -> {
-                                            System.out.println(Thread.currentThread().getName() + "\t" + "come int");
-                                            sleep(1);
-                                            return 1;
-                                        }),
-                        (x, y) -> {
-                            System.out.println(Thread.currentThread().getName() + "\t" + "come int");
-                            return x + y;
+                            System.out.println(Thread.currentThread().getName() + "\t" + "come in");
+                            return x * y;
                         })
                 .join();
+
+
+        // 三者都执行完后，开始往下执行
+        // CompletableFuture.allOf(cf1, cf2).join();
         System.out.println(result);
     }
 
@@ -250,7 +261,11 @@ public class MyCompletableFuture {
         CommonUtils.sleep(seconds, TimeUnit.SECONDS);
     }
 
+    private static void info(String msg) {
+        System.out.println(Thread.currentThread().getName() + " | " + msg);
+    }
+
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        second();
+        first();
     }
 }

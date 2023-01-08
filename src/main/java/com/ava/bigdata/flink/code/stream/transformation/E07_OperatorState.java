@@ -33,7 +33,7 @@ import java.util.Objects;
 /**
  * 每个subtask中持有一份独立的状态，当失败恢复后，并行度改变了，则状态会在Task中的subtask之间均匀分配
  * 通常用于Source或Sink算子中，用来保存流入数据的偏移量或对输出数据做缓存，以保证Flink应用的Exactly-Once语义
- * OperatorState: 实现CheckpointedFunction，在initializeState方法中初始化状态；Kafka Connector就是使用了OperatorState
+ * OperatorState: 实现CheckpointedFunction，在initializeState方法中初始化状态；FlinkKafka Connector就是使用了OperatorState
  * 1. ListState
  * （1）在系统重启后，ListState快照数据分配采用轮询模式，每个subtask平均分配list数据
  * （2）若getUnionListState()，则快照数据分配采用广播模式，每个subtask持有一份完整的list数据

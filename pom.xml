@@ -32,23 +32,22 @@
         <log.scope>compile</log.scope>
         <scala.scope>compile</scala.scope>
         <jedis.scope>provided</jedis.scope>
-        <netty.scope>provided</netty.scope>
-        <hadoop.scope>provided</hadoop.scope>
+        <netty.scope>compile</netty.scope>
+        <hadoop.scope>compile</hadoop.scope>
         <protobuf.scope>provided</protobuf.scope>
         <snappy.scope>provided</snappy.scope>
         <parquet.avro.scope>provided</parquet.avro.scope>
         <curator.scope>provided</curator.scope>
         <hbase.scope>provided</hbase.scope>
         <kafka.scope>provided</kafka.scope>
-        <spark.scope>provided</spark.scope>
+        <spark.scope>compile</spark.scope>
         <hudi.spark.scope>provided</hudi.spark.scope>
         <hudi.flink.scope>provided</hudi.flink.scope>
         <iceberg.spark.scope>provided</iceberg.spark.scope>
         <iceberg.flink.scope>provided</iceberg.flink.scope>
         <doris.spark.scope>provided</doris.spark.scope>
         <doris.flink.scope>provided</doris.flink.scope>
-        <vertx.scope>provided</vertx.scope>
-        <flink.scope>provided</flink.scope>
+        <flink.scope>compile</flink.scope>
         <flink.hive.scope>provided</flink.hive.scope>
         <flink.ext.scope>provided</flink.ext.scope>
     </properties>
@@ -169,7 +168,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>2.13.3</version>
+            <version>2.10.5</version>
         </dependency>
 
         <dependency>
@@ -185,22 +184,6 @@
             <artifactId>clickhouse-jdbc</artifactId>
             <version>0.3.0</version>
             <scope>provided</scope>
-        </dependency>
-
-        <!-- vertx-jdbc -->
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-jdbc-client</artifactId>
-            <version>4.1.8</version>
-            <scope>${vertx.scope}</scope>
-        </dependency>
-
-        <!-- vertx-redis -->
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-redis-client</artifactId>
-            <version>4.1.8</version>
-            <scope>${vertx.scope}</scope>
         </dependency>
 
         <!-- mysql connector -->

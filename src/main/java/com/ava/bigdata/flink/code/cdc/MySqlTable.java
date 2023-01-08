@@ -8,7 +8,7 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.types.Row;
 
 /**
- * @Author com.com.lancer
+ * @Author shadow
  * @Date 2022/4/18 23:01
  * @Description
  */
@@ -19,19 +19,19 @@ public class MySqlTable {
         StreamTableEnvironment tblEnv = StreamTableEnvironment.create(env);
 
         tblEnv.executeSql(
-                "create table cdc_test_flink (" +
-                        "id int," +
-                        "name string" +
-                        ") with (" +
-                        "'connector' = 'mysql-cdc'," +
-                        "'hostname' = 'bigdata03'," +
-                        "'port' = '3306'," +
-                        "'username' = 'root'," +
-                        "'password' = '123456'," +
-                        "'database-name' = 'project'," +
-                        "'table-name' = 'cdc_test'," +
-                        "'scan.startup.mode' = 'latest-offset'," +
-                        "'scan.incremental.snapshot.enabled' = 'false'" +
+                "create table cdc_test_flink (\n" +
+                        "   id int,\n" +
+                        "   name string\n" +
+                        ") with (\n" +
+                        "   'connector' = 'mysql-cdc',\n" +
+                        "   'hostname' = 'bigdata03',\n" +
+                        "   'port' = '3306',\n" +
+                        "   'username' = 'root',\n" +
+                        "   'password' = '123456',\n" +
+                        "   'database-name' = 'project',\n" +
+                        "   'table-name' = 'cdc_test',\n" +
+                        "   'scan.startup.mode' = 'latest-offset',\n" +
+                        "   'scan.incremental.snapshot.enabled' = 'false'" +
                         ")");
 
         Table table = tblEnv.sqlQuery("select * from cdc_test_flink");

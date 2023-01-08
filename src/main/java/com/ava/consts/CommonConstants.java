@@ -12,7 +12,7 @@ public class CommonConstants {
     // ========================================== ZK ==========================================
     public static final String ZK_CONN_STR = "bigdata01:2181,bigdata02:2181,bigdata03:2181";
 
-    // ========================================= Kafka =========================================
+    // ========================================= FlinkKafka =========================================
     public static final String KAFKA_BOOTSTRAP_SERVERS_OR_BROKER_LIST =
             "bigdata01:9092,bigdata02:9092,bigdata03:9092";
 
