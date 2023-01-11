@@ -101,11 +101,10 @@ System.out.println(a.getClass() == b.getClass()); // true
    3. S0和S1分别也叫做from和to
    
    4. 新生代和老年代
-   
-      1. 存储在JVM中的Java对象分为两类
+      1. 堆区进一步细分，可以分为YoungGen和OldGen
+      2. 存储在JVM中的Java对象分为两类
          1. 生命周期短的瞬时对象，这类对象的创建和消亡都非常迅速；这种对象放在YoungGen中
          2. 生命周期非常长，极端情况下和JVM的生命周期保持一致，一个JVM对应一个Runtime类；这种对象放在OldGen中
-      2. 堆区进一步细分，可以分为YoungGen和OldGen
       3. 其中年轻代又可分为Eden区、Survivor0（from）和Survivor1（to）
       4. ![堆区内存结构](./images/堆区内存结构.png)
       4. 几乎所有的Java对象都是在Eden区被new出来的（大对象直接分配到OldGen）
@@ -129,13 +128,12 @@ System.out.println(a.getClass() == b.getClass()); // true
       1. `-Xms（-XX:InitialHeapSize）`表示堆起始内存
       2. `-Xmx（-XX:MaxHeapSize）`表示堆最大内存
    2. 一旦超过-Xmx设定的值，就会OOM
-   3. 通常会将-Xms和-Xmx配置相同的值，目的是为了能够在java垃圾回收机制清理完堆区后不需要重新分隔计算堆区的大小，从而提高性能。因为在GC完后，堆区会根据需要进行扩容或者缩容，最大小值设置成一样就不会出现这种情况
+   3. 通常会将-Xms和-Xmx配置相同的值，因为JVM运行时，请求流量的不确定性，可能会导致堆内存空间不断调整，增加服务器压力，为了能够在GC完后，堆区不需要重新分隔计算堆区的大小，避免调整堆大小时带来的压力，进而提高性能。
    4. 默认最小值：最少不少于8M，`if (物理内存 >= 1G) 最小值 = 物理内存 * (1 / 64)`
    5. 默认最大值：if(物理内存 < 192M) 最大值 = 物理内存 * (1 / 2)；`if(物理内存 >= 1G) 最大值 = 物理内存 * (1 / 4)`
    6. 设置新生代与老年代的比例
       1. 配置新生代与老年代在堆中的占比
          1. 默认`-XX:NewRatio=2` ，表示新生代占1，老年代占2
-         2. 可以修改-XX:NewRatio=4，表示新生代占1，老年代占4
       2. 可以使用选项`-Xmn`设置新生代最大内存大小（一般使用默认值就可以了）
       2. 上面两个不同时使用
       3. ![YoungGen和OldGen内存分配图](./images/YoungGen和OldGen内存分配图.png)
@@ -146,10 +144,12 @@ System.out.println(a.getClass() == b.getClass()); // true
       1. 在发生Minor GC之前，JVM会检查老年代最大可用的连续空间是否大于新生代所有对象的总空间
          1. 如果大于，则此次Minor GC是安全的
          2. 如果小于，则虚拟机会查看-XX:HandlePromotionFailure设置值是否允许担保失败
-         3. 如果HandlePromotionFailure=true，那么会继续检查老年代最大可用连续空间是否大于历次晋升到老年代的对象的平均大小，如果大于，则尝试进行一次Minor GC，但这次Minor GC依然是有风险的；如果小于或HandlePromotionFailure=false，则改为进行一次Full GC
+            1. 如果HandlePromotionFailure=true，那么会继续检查老年代最大可用连续空间是否大于历次晋升到老年代的对象的平均大小，如果大于，则尝试进行一次Minor GC，但这次Minor GC依然是有风险的；如果小于或HandlePromotionFailure=false，则改为进行一次Full GC
       2. JDK6 Update 24之后的规则变为只要老年代的连续空间大于新生代对象总大小或者历次晋升的平均大小，就会进行Minor GC，否则将进行Full GC
 
 5. Minor GC、Major GC和Full GC
+   
+   ![](./images/对象分配空间流程.png)
 
    1. JVM进行GC时，大部分时候回收的都是指新生代
    2. GC按照回收区域分为两种
@@ -185,7 +185,11 @@ System.out.println(a.getClass() == b.getClass()); // true
 
 ### 八、方法区
 
-1. 
+1. 包含`常量池`、`方法元信息`、`类元信息`。
+
+2. JDK7版本中的方法区为永久代`PermGen`，JDK8中的方法区为元空间`Metaspace`。
+   1. JDK7及之前的版本中，Hotspot还有Perm区，在启动时就确定了大小，难以进行调优，并且只有FGC时会移动类元信息。
+   2. JDK8的元空间已经在本地内存中进行分配，并且`PermGen`中的所有内容中`字符串常量`移动到堆内存中，其他内容：类元信息、字段、静态属性、方法、常量等都移动到元空间内。
 
 ### 九、垃圾回收
 

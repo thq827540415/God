@@ -7,7 +7,7 @@
    1. 优点：资源充分共享， 提升资源利用率；Job在Flink Session集群中管理，运维简单。
    2. 缺点：资源隔离相对较差；非Native类型部署，TM不易拓展，Slot计算资源伸缩性较差。
    3. 开启Session： `${FLINK_HOME}/bin/yarn-session.sh -jm 1024m -tm 4096m`。
-   4. 提交任务到Session：`bin/flink run -t -yarn-session -Dyarn.application.id=application_id /path/jar`、` bin/flink run -yid appliation_id /path/jar`或`bin/flink run /path/jar -> 读取/tmp/.yarn-properties-root文件`。
+   4. 提交任务到Session：`bin/flink run -t yarn-session -Dyarn.application.id=application_id /path/jar`、` bin/flink run -yid appliation_id /path/jar`或`bin/flink run /path/jar -> 读取/tmp/.yarn-properties-root文件`。
    5. attach到Session：`bin/yarn-session.sh -id application_id`。
    6. 停止Session：`echo "stop" | bin/yarn-session.sh -id application_id`。
 2. Per-job Mode（Deprecated in Flink1.15）
@@ -18,7 +18,7 @@
    1. 原理：客户端无需将Dependencies上传到JM，JM和TM会从HDFS上获取jar包；JobGraph在JM中生成，客户端压力降低。
    2. 优点：有效降低带宽和客户端负载；Application实现资源隔离，Application中实现资源共享。
    3. 缺点：功能太新，还未经过生产验证，仅支持Yarn和Kubunetes。
-   4. 提交任务：`bin/flink run-application -t yarn-application -Djobmanager.memory.process.size=2048m -Dtaskmanager.memory.process.size=4096m -Dyarn.provided.lib.dirs="hdfs://bigdata01:9000/flink-1.13.5/lib /path/jar"`。
+   4. 提交任务：`bin/flink run-application -t yarn-application -Djobmanager.memory.process.size=2048mb -Dtaskmanager.memory.process.size=4096mb -Dyarn.provided.lib.dirs="hdfs://bigdata01:9000/flink-1.14.3/lib /path/jar"`。
 
 
 
@@ -42,7 +42,13 @@
 
 
 
+## Flink调优
 
+1. 资源调优
+   1. 
+2. checkpoint调优
+3. 大状态
+4. Job优化
 
 
 
