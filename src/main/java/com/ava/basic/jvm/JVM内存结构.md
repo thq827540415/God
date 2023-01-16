@@ -6,7 +6,7 @@
 
 1. **方法区（Method Area）**
 
-   1. 存储已被虚拟机加载的`类型信息`、`常量`、`静态变量`、即时编译器编译后的`代码缓存`等数据。
+   1. 存储已被虚拟机加载的`类型信息(类名、访问修饰符等)`、`常量`、`静态变量`、即时编译器编译后的`代码缓存`等数据。
    2. 方法区逻辑上是堆空间的一部分，为了和堆区分开来，方法区也叫做“非堆”non-heap，会产生OOM（java.lang.OutOfMemoryError: PermGen space）。
    3. JDK7及之前的HotSpot版本中，方法区实现为永久代`PermGen`，JDK8中的方法区实现为元空间`Metaspace`：
       1. 永久代仅仅是HotSpot虚拟机的设计团队选择把收集器的分代设计拓展至方法区，使用永久代来实现方法区而已，这样使得HotSpot的垃圾收集器能够像管理Java堆一样管理这部分内存。
@@ -41,24 +41,30 @@
          3. 其中YoungGen又可分为Eden区、Suvivor0（from）和Suvivor1（to）
          4. 绝大部分Java对象的销毁都是在YoungGen进行
 
-   3. 内存分配原则
+   3. ***内存分配原则***
 
-      1. 针对不同年龄段的对象分配原则如下所示：
-         1. 优先分配到Eden区
-         2. 大对象直接分配到OldGen（尽量避免程序中出现过多的大对象）
-         3. 长期存活的对象分配到老年代
-         4. 动态对象年龄判断
-            1. 如果Survivor区中相同年龄的所有对象大小总和大约Survivor空间的一半，年龄大于或等于该年龄的对象可以直接进入老年代，无须等到`-XX:MaxTenuringThreshold`中要求的年龄，默认15
-            2. to满了，全部进入老年代
-         5. 空间分配担保策略
-            1. `-XX:HandlePromotionFailure`，值为true或false
-            2. 在发生Minor/Young GC之前，JVM会检查OldGen最大可用连续空间是否大于YoungGen所有对象的总空间：
-               1. 如果大于，则此次Young GC是安全的。
-               2. 如果小于，则虚拟机会查看`-XX:HandlePromotionFailure`的值是否允许担保失败：
-                  1. true，那么会继续检查OldGen最大可用连续空间是否大于历次晋升到老年代的对象的平均大小：
-                     1. 如果大于，则尝试进行一次Young GC，但此次GC是有风险的
-                     2. 如果小于，则进行一次Full GC
-                  2. false，进行一次Full GC
+      1. 对象优先在Eden分配
+         1. 大多数情况下，对象在新生代Eden区中分配，当Eden没有足够空间进行分配时，JVM将进行一次Minor GC。
+         2. 进行Minor GC的时候，如果发现Eden区中的对象无法全部放入Survivor空间，则通过分配担保机制提前转移到老年代去。
+      2. 大对象直接进入老年代
+         1. 大对象在分配空间时，容易导致提前触发垃圾回收，且当复制大对象时，意味着高额的内存复制开销，故应该尽量避免程序中出现过多的大对象。
+         2. `-XX:PretenureSizeThreshold`：指定大于该设置值的对象直接在老年代分配，这样做的目的是避免在Eden及两个survivor区之间来回复制，产生大量的内存复制操作。
+      3. 长期存活的对象分配到老年代
+         1. HotSpot多数收集器都采用了分代收集来管理堆内存，JVM给每个对象在对象头中定义了一个`对象年龄计数器`。
+         2. 对象通常在Eden区诞生，如果经过第一次Minor GC后仍存活，并且能被Survivor容纳，该对象会被移动到Survivor空间中，并且将其对象年龄设为1岁。
+         3. 对象在Survivor区每熬过一次Minor GC，年龄就增加1岁，当年龄增加到`-XX:MaxTenuringThreshold`时，就会被晋升到老年代中，默认为15。
+      4. 动态对象年龄判定
+         1. HotSpot并不是永远要求对象的年龄必须达到`-XX:MaxTenuringThreshold`才能晋升老年代，如果Survivor空间中相同年龄的所有对象大小总和大于Survivor空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无须等到`-XX:MaxTenuringThreshold`中要求的年龄。
+         2. to满了，也全部进入老年代。
+      5. 空间分配担保（JDK6 Update 2之后）
+         1. 在发生Minor GC之前，JVM必须先检查老年代最大可用的连续空间是否大于新生代所有对象总空间：
+            1. 如果成立，那么这一次Minor GC可以确保是安全的。
+            2. 如果不成立，则JVM会查看`-XX:+/-HandlePromotionFailure`的值是否允许担保失败：
+               1. 如果允许，那么会继续检查老年代最大可用连续空间是否大于历次晋升到老年代的对象的平均大小：
+                  1. 如果大于，将尝试进行一次Minor GC，尽管这次Minor GC是有风险的。
+                  2. 如果小于，则改为一次Full GC。
+               2. 如果不允许，则进行一次Full GC。
+         2. JDK6 Update 24之后的规则变为：去除掉`-XX:HandlePromotionFailure`的影响，只要老年代的连续空间大于新生代对象总大小或历次晋升的平均大小，就会进行Minor GC，否则将进行Full GC。
 
    4. 堆内存参数设置（一般堆内存设置为2GB）
 
@@ -79,6 +85,7 @@
       3. 设置YoungGen中Eden和Survivor的比例
 
          1. `-XX:SurvivorRatio=8`，这是缺省值，表示Eden占8，Survivor0和Survivor1比例为1:1，共占2
+         2. 只有Eden和from为YoungGen可用的内存。
 
 ### 2. 线程私有
 
@@ -97,8 +104,9 @@
          2. OldGen收集（Major GC）
             1. 目前只有CMS会有单独收集老年代的行为
             2. 很多时候Major GC会和Full GC混淆使用，需要具体分辨是老年代回收还是整堆回收
-         3. 混合收集（Mixed GC）：整个新生代和部分老年代
-            1. 目前只有G1会有这种行为
+         3. 混合收集（Mixed GC）
+            1. 目标是收集整个新生代和部分老年代
+            2. 目前只有G1会有这种行为
       2. 整堆收集（Full GC）：整个Java堆和方法区的垃圾回收。
    3. Young GC触发机制
       1. 当Eden区满了后会触发YGC，Survivor满不会触发GC
@@ -119,11 +127,12 @@
 
    1. 参数配置
 
-      1. `-XX:+PrintGC`：开启GC日志
+      1. `-XX:+PrintGC`或`-verbose:gc`：开启GC日志
       2. `-XX:+PrintGCDetails`：创建更详细的GC日志
       3. `-XX:+PrintGCTimeStamps`或`-XX:+PrintGCDateStamps`：用于分析GC之间的时间间隔
       4. `-Xloggc:filename`：指定将GC日志输出到具体文件，默认为标准输出
       5. `-XX:NumberOfGCLogfiles`及`-XX:UseGCLogfileRotation`：控制日志文件循环，默认为0
+      6. `-XX:+PrintTenuringDistribution`：显示年龄
 
    2. YGC日志：
 
@@ -132,5 +141,26 @@
    3. Full GC日志：
 
       ![](./images/Full GC日志案例.png)
+
+4. 垃圾回收算法
+
+   1. 垃圾判别阶段算法：
+      1. 引用计数算法：
+         1. 原理：每个对象保存一个整型的引用计数器属性，用于记录对象被引用的情况
+         2. 优点：实现简单，垃圾对象便于辨识，判定效率高，回收没有延迟性
+         3. 缺点：无法处理循环引用的情况，所以在Java垃圾回收器中没有使用这类算法
+      2. 可达性分析算法：
+         1. 原理：以GC Roots为起始点，按照从上至下的方式搜索被根对象集合所连接的目标对象是否可达
+         2. 优点：实现简单，执行高效，有效的解决循环引用的问题，防止内存泄漏
+         3. GC Roots有哪些？
+            1. 在虚拟机栈（栈帧中的本地变量表）中引用的对象，譬如各个线程被调用的方法堆栈中使用到的参数、局部变量、临时变量等。
+            2. 在方法区中类静态属性引用的对象，譬如Java类的引用类型 静态变量。
+            3. 在方法区中常量引用的对象，譬如字符串常量池（String Table）里的引用。
+            4. 在本地方法栈中JNI（即Native方法）引用的对象。
+            5. JVM内部的引用，如基本数据类型对应的Class对象，一些常驻的异常对象，还有系统类加载器。
+            6. 所有被同步锁（synchronized关键字）持有的对象。
+   2. 垃圾清除阶段算法：
+
+5. 垃圾回收器
 
 ## 三、JVM调优
