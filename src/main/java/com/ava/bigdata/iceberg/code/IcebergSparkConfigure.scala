@@ -43,7 +43,7 @@ object IcebergSparkConfigure {
       // ⭐SparkSessionCatalog给Spark内置的Catalog（spark_catalog）添加访问iceberg表的支持
       // ⭐即给Spark内置的catalog包装(wrap)一下，让其拥有访问hive中iceberg表的能力
       // ⭐所有的操作将会优先使用包装过的spark_catalog
-      // SparkSessionCatalog还存在诸多弊端，推荐使用SparkCatalog。比如访问表的元数据信息时，只能用DataFrame
+      // SparkSessionCatalog还存在诸多弊端，比如访问表的元数据信息时，只能用DataFrame，推荐使用SparkCatalog。
       .config("spark.sql.catalog.spark_catalog", "org.apache.iceberg.spark.SparkSessionCatalog")
       .config("spark.sql.catalog.spark_catalog.type", "hive")
       .master("local")

@@ -224,6 +224,12 @@
             <scope>${netty.scope}</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.yomahub</groupId>
+            <artifactId>liteflow-core</artifactId>
+            <version>2.9.6</version>
+        </dependency>
+
         <!-- junit -->
         <dependency>
             <groupId>junit</groupId>
