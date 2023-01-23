@@ -24,7 +24,7 @@ public class FlinkEnvUtils {
 
     /**
      * 单个算子的最大并行度
-     * the number of key groups，如果job恢复前后maxParallelism不一致，则不能恢复
+     * <p>the number of key groups，如果job恢复前后maxParallelism不一致，则不能恢复
      * <p>
      * KeyGroupRangeAssignment#computeDefaultMaxParallelism(int) -> default value：127 ~ 32768
      */

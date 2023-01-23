@@ -7,7 +7,12 @@ package com.ava.basic.jvm.code.demo01;
  */
 public class YoungOldAreaTest {
     public static void main(String[] args) {
-        // 20m
-        byte[] buffer = new byte[1024 * 1024 * 20];
+        // YoungGen : OldGen = 2 -> YoungGen = 60 * 1 / 3 = 20m, OldGen = 60 - 20 = 40m
+        // 往堆中分2次放入共20m
+        byte[] buffer1 = new byte[1024 * 1024 * 10];
+        // YoungGen内存不够了，只能直接放入OldGen中
+        byte[] buffer2 = new byte[1024 * 1024 * 10];
+        // System.gc()尽量不用于生产环境
+        // System.gc();
     }
 }

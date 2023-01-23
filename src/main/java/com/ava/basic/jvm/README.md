@@ -101,11 +101,10 @@ System.out.println(a.getClass() == b.getClass()); // true
    3. S0和S1分别也叫做from和to
    
    4. 新生代和老年代
-   
-      1. 存储在JVM中的Java对象分为两类
+      1. 堆区进一步细分，可以分为YoungGen和OldGen
+      2. 存储在JVM中的Java对象分为两类
          1. 生命周期短的瞬时对象，这类对象的创建和消亡都非常迅速；这种对象放在YoungGen中
          2. 生命周期非常长，极端情况下和JVM的生命周期保持一致，一个JVM对应一个Runtime类；这种对象放在OldGen中
-      2. 堆区进一步细分，可以分为YoungGen和OldGen
       3. 其中年轻代又可分为Eden区、Survivor0（from）和Survivor1（to）
       4. ![堆区内存结构](./images/堆区内存结构.png)
       4. 几乎所有的Java对象都是在Eden区被new出来的（大对象直接分配到OldGen）
@@ -129,13 +128,12 @@ System.out.println(a.getClass() == b.getClass()); // true
       1. `-Xms（-XX:InitialHeapSize）`表示堆起始内存
       2. `-Xmx（-XX:MaxHeapSize）`表示堆最大内存
    2. 一旦超过-Xmx设定的值，就会OOM
-   3. 通常会将-Xms和-Xmx配置相同的值，目的是为了能够在java垃圾回收机制清理完堆区后不需要重新分隔计算堆区的大小，从而提高性能。因为在GC完后，堆区会根据需要进行扩容或者缩容，最大小值设置成一样就不会出现这种情况
+   3. 通常会将-Xms和-Xmx配置相同的值，因为JVM运行时，请求流量的不确定性，可能会导致堆内存空间不断调整，增加服务器压力，为了能够在GC完后，堆区不需要重新分隔计算堆区的大小，避免调整堆大小时带来的压力，进而提高性能。
    4. 默认最小值：最少不少于8M，`if (物理内存 >= 1G) 最小值 = 物理内存 * (1 / 64)`
    5. 默认最大值：if(物理内存 < 192M) 最大值 = 物理内存 * (1 / 2)；`if(物理内存 >= 1G) 最大值 = 物理内存 * (1 / 4)`
    6. 设置新生代与老年代的比例
       1. 配置新生代与老年代在堆中的占比
          1. 默认`-XX:NewRatio=2` ，表示新生代占1，老年代占2
-         2. 可以修改-XX:NewRatio=4，表示新生代占1，老年代占4
       2. 可以使用选项`-Xmn`设置新生代最大内存大小（一般使用默认值就可以了）
       2. 上面两个不同时使用
       3. ![YoungGen和OldGen内存分配图](./images/YoungGen和OldGen内存分配图.png)
@@ -146,10 +144,12 @@ System.out.println(a.getClass() == b.getClass()); // true
       1. 在发生Minor GC之前，JVM会检查老年代最大可用的连续空间是否大于新生代所有对象的总空间
          1. 如果大于，则此次Minor GC是安全的
          2. 如果小于，则虚拟机会查看-XX:HandlePromotionFailure设置值是否允许担保失败
-         3. 如果HandlePromotionFailure=true，那么会继续检查老年代最大可用连续空间是否大于历次晋升到老年代的对象的平均大小，如果大于，则尝试进行一次Minor GC，但这次Minor GC依然是有风险的；如果小于或HandlePromotionFailure=false，则改为进行一次Full GC
+            1. 如果HandlePromotionFailure=true，那么会继续检查老年代最大可用连续空间是否大于历次晋升到老年代的对象的平均大小，如果大于，则尝试进行一次Minor GC，但这次Minor GC依然是有风险的；如果小于或HandlePromotionFailure=false，则改为进行一次Full GC
       2. JDK6 Update 24之后的规则变为只要老年代的连续空间大于新生代对象总大小或者历次晋升的平均大小，就会进行Minor GC，否则将进行Full GC
 
 5. Minor GC、Major GC和Full GC
+   
+   ![](./images/对象分配空间流程.png)
 
    1. JVM进行GC时，大部分时候回收的都是指新生代
    2. GC按照回收区域分为两种
@@ -185,7 +185,11 @@ System.out.println(a.getClass() == b.getClass()); // true
 
 ### 八、方法区
 
-1. 
+1. 包含`常量池`、`方法元信息`、`类元信息`。
+
+2. JDK7版本中的方法区为永久代`PermGen`，JDK8中的方法区为元空间`Metaspace`。
+   1. JDK7及之前的版本中，Hotspot还有Perm区，在启动时就确定了大小，难以进行调优，并且只有FGC时会移动类元信息。
+   2. JDK8的元空间已经在本地内存中进行分配，并且`PermGen`中的所有内容中`字符串常量`移动到堆内存中，其他内容：类元信息、字段、静态属性、方法、常量等都移动到元空间内。
 
 ### 九、垃圾回收
 
@@ -250,16 +254,16 @@ System.out.println(a.getClass() == b.getClass()); // true
             3. Compact阶段的开销与存活对象的数据成正比
          5. ![三种回收算法对比](./images/三种回收算法对比.png)
          6. 新生代用复制算法，老年代用标记压缩
-      4. 增量收集算法
+      5. 增量收集算法
          1. 如果一次性将所有的垃圾进行处理，需要造成系统长时间的停顿，那么就可以让垃圾收集线程和应用程序线程交替执行。每次，垃圾收集线程只收集一小片区域的内存空间，接着切换到应用程序线程。依次反复，直到垃圾收集完成
          2. 增量收集算法的基础仍是传统的标记清除和复制算法。增量收集算法通过对线程间冲突的妥善处理，允许垃圾收集线程以分阶段的方式完成标记、清理或复制工作
          3. 缺点
             1. 使用这种方式，由于在垃圾回收过程中，间断性地还执行了应用程序代码，所以能减少系统的停顿时间。但是，因为线程切换和上下文转换的消耗，会使得垃圾回收的总体成本上升，造成系统吞吐量的下降
-      4. 分区算法（针对G1）
+      6. 分区算法（针对G1）
          1. 分代算法将按照对象的生命周期长短划分成两个部分，分区算法将整个堆空间划分成连续的不同小区间
          2. 每一个小区间都独立使用，独立回收。这种算法的好处是可以控制一次回收多少个小区间
          3. 一般来说，在相同条件下，堆空间越大，一次GC时所需要的时间就越长，有关GC产生的停顿也越长。为了更好地控制GC产生的停顿时间，将一块大的内存区域分割成多个小块，根据目标的停顿时间，每次合理地回收若干个小空间，而不是整个堆空间，从而减少一次GC所产生的停顿
-   
+
 2. 垃圾回收器
    1. 分类
       1. 串行vs并行（按线程数分）
@@ -274,48 +278,48 @@ System.out.println(a.getClass() == b.getClass()); // true
          2. 非压缩式，GC不进行这步操作
             1. 再分配对象空间使用：空闲列表
       4. 年轻代vs老年代（按工作内存空间划分）
-      
-   1. GC评估指标
-      
+
+   2. GC评估指标
+
       1. 吞吐量：程序的运行时间 / CPU运行时间
          $$
          吞吐量=\frac{运行用户代码时间}{运行用户代码时间 + 运行垃圾收集时间}
          $$
-      
+
       2. 暂停时间：执行垃圾收集时，程序的工作线程被暂停的时间
-      
+
       3. 内存占用：Java堆区所占的内存大小
-      
+
       4. 一款优秀的收集器，通常最多同时满足其中的两项
-      
+
       5. 吞吐量越大越好，暂停时间越少越好。选择吞吐量优先，或者是低延迟优先
-      
+
       5. ![吞吐量和低延迟](./images/吞吐量和低延迟.png)
-      
+
    3. 查看默认GC
-   
+
       1. `-XX:+PrintCommandLineFlags`：查看命令行相关参数（包含使用的GC）
       2. 使用命令行指令`jinfo -flag (UseParallelGC -> 相关垃圾回收器参数) 进程ID` 
-   
+
    4. 7种经典GC组合关系
-   
+
       1. ![GC组合关系](./images/GC组合关系.png)
       2. CMS GC作为并发GC，当其挂掉后，由Serial Old GC顶替上去
       2. 红色虚线：JDK8将这两种搭配声明为废弃，并在JDK9中完全取消了这些组合的支持
       2. 绿色虚线：JDK14弃用了这一对组合
       2. 青色虚线：JDK14中删除CMS垃圾回收器
-   
+
    5. Serial GC：串行回收
-   
+
       1. Serial收集器采用复制算法、串行回收和STW机制的方式执行内存回收
       2. Serial Old收集器采用标记压缩算法、串行回收和STW机制执行内存回收
       3. Serial和Serial Old是运行在Client模式下默认的新生代和老年代的垃圾回收器
       4. ![SerialGC和SerialOldGC](./images/SerialGC和SerialOldGC.png)
-      4. 与其他收集器的单线程情况下比简单而高效。适用于单核CPU的情景下，但对于强交互式的引用而言，不适合，在Java Web应用中，是不会采用串行垃圾收集器的
-      4. 使用`-XX:UseSerialGC`指定年轻代和老年代都使用串行收集器
-   
+      5. 与其他收集器的单线程情况下比简单而高效。适用于单核CPU的情景下，但对于强交互式的引用而言，不适合，在Java Web应用中，是不会采用串行垃圾收集器的
+      6. 使用`-XX:+UseSerialGC`指定年轻代和老年代都使用串行收集器
+
    6. ParNew GC：并行回收
-   
+
       1. 可以说是Serial收集器的多线程版本，只能处理新生代，是很多JVM运行在Server模式下新生代的默认垃圾收集器
       2. ParNew和Serial除了ParNew采用并行回收外，两者之间几乎没有任何区别
       3. ParNew收集器采用复制算法、并行回收和STW机制执行回收
@@ -323,25 +327,25 @@ System.out.println(a.getClass() == b.getClass()); // true
       4. 对于新生代，回收次数频繁，使用并行方式高效；对于老年代，回收次数少，使用串行方式节省资源（可以省去切换线程的资源）；若指定新生代使用ParNewGC，老年代默认使用SerialOldGC；若指定老年代使用CMSGC，新生代默认使用ParNewGC
       4. ParNewGC在多CPU的环境下，可以充分利用资源，更快速地完成垃圾收集，提升程序的吞吐量；在单CPU的环境下，效率没有Serial收集器高
       4. 使用`-XX:UseParNewGC`指定年轻代使用并行收集器；使用`-XX:ParallelGCThreads`限制线程数量，默认开启和CPU数相同的线程数
-   
+
    7. Parallel GC：吞吐量优先
-   
+
       1. Parallel Scavenge收集器采用复制算法、并行回收和STW机制
-      2. Parallel Old收集器采用标记压缩算法、并行会后和STW机制
+      2. Parallel Old收集器采用标记压缩算法、并行回收和STW机制
       3. 和ParNew收集器不同，Parallel Scavenge收集器目标是达到一个可控制的吞吐量；自适应调节策略（默认SurvivorRatio为8，自适应时会改变比例大小，比如说6）也是与ParNew的一个重要区别
       4. ![Parallel ScavengeGC和ParallelOldGC](./images/Parallel ScavengeGC和ParallelOldGC.png)
-      4. `-XX:+UseParallelGC`和`-XX:+UseParallelOldGC`相互激活
-      4. `-XX:ParallelGCThreads`设置年轻代并行收集器的线程数，最好与CPU数相等，若CPU数量小于8，其值就等于CPU数，若CPU数量大于8，其值等于3 + [5 * CPU_Cout] / 8
-      4. `-XX:MaxGCPauseMillis`设置STW的时间，尽可能把停顿时间控制在参数范围以内，该参数需要谨慎设置
-      4. `-XX:GCTimeRatio`垃圾收集时间占总时间的比例（1 / （N  + 1）），取值范围（0，100）默认是99，也就是垃圾回收时间不超过1%，与前一个参数有矛盾性。暂停时间越长，Radio参数就容易超过设定的比例
-      4. `-XX:+UseAdaptiveSizePolicy`设置Parallel Scavenge收集器具有自适应调节策略，在这种模式下，年轻代的大小、Eden和Survivor的比例、晋升老年代的对象年龄等参数会被自动调整，以达到在堆大小、吞吐量和停顿时间之间的平衡点。在手动调优比较困难的情况下，可以直接使用这种自适应的方式
-      
+      5. `-XX:+UseParallelGC`和`-XX:+UseParallelOldGC`相互激活
+      6. `-XX:ParallelGCThreads`设置年轻代并行收集器的线程数，最好与CPU数相等，若CPU数量小于8，其值就等于CPU数，若CPU数量大于8，其值等于3 + [5 * CPU_Count] / 8
+      7. `-XX:MaxGCPauseMillis`设置STW的时间，尽可能把停顿时间控制在参数范围以内，该参数需要谨慎设置
+      8. `-XX:GCTimeRatio`垃圾收集时间占总时间的比例（1 / （N  + 1）），取值范围（0，100）默认是99，也就是垃圾回收时间不超过1%，与前一个参数有矛盾性。暂停时间越长，Radio参数就容易超过设定的比例
+      9. `-XX:+UseAdaptiveSizePolicy`设置Parallel Scavenge收集器具有自适应调节策略，在这种模式下，年轻代的大小、Eden和Survivor的比例、晋升老年代的对象年龄等参数会被自动调整，以达到在堆大小、吞吐量和停顿时间之间的平衡点。在手动调优比较困难的情况下，可以直接使用这种自适应的方式
+
    8. CMS：低延迟
-   
+
       1. 刚发的
-   
+
    9. G1 GC：区域化分代式
-   
+
       1. G1是一个并行回收器，它把堆内存分割为很多不相关的区域（Region）（物理上不连续的）。使用不同的Region来表示Eden、Survivor0、Survivor1，老年代等；有计划地避免在整个Java堆中进行全区域的垃圾收集。G1跟踪各个Region里面的垃圾堆积的价值大小（回收所获得的空间大小以及回收所需时间的经验值），在后台维护一个优先列表，每次根据允许的收集时间，优先回收价值最大的Region；是JDK9的默认垃圾回收器
       2. 是兼顾并发和并行的，也有分代收集的特性
       3. Region之间是复制算法，但整体上实际可看作是标记压缩算法。当Java堆非常大的时候，G1的优势更加明显
@@ -359,7 +363,7 @@ System.out.println(a.getClass() == b.getClass()); // true
          2. 设置堆的最大内存
          3. 设置最大的停顿时间
       7. G1提供了三种垃圾回收模式：YoungGC、Mixed GC和Full GC，在不同的条件下被触发
-   
+
 3. 内存泄漏和内存溢出
    1. 内存溢出
       1. 垃圾回收已经跟不上内存消耗的速度
@@ -383,7 +387,7 @@ System.out.println(a.getClass() == b.getClass()); // true
          1. 一旦把对象引用放入缓存中，就很容易遗忘。可以使用WeakHashMap代表缓存，此种Map的特点是，当除了自身有对key的引用外，此key没有其他引用，那么此map会自动丢弃此值。若是频繁使用的缓存，可以改为软引用
       8. 监听器和回调
          1. 如果客户端在你实现的API中注册回调，却没有显示的取消，那么就会积聚。需要确保回调立即被当作垃圾回收的最佳方法是，只保存它的弱引用，例如将他们保存成为WeakHashMap中的键
-   
+
 4. 5种引用
    1. 强引用：不回收
    2. 软引用：内存不足即回收（SoftReference实现），高速缓存就有用到软引用
