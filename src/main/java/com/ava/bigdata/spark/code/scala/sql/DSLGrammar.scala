@@ -22,7 +22,7 @@ object DSLGrammar {
       StructField("name", DataTypes.StringType)
     ))
 
-    val df = spark.read.schema(schema).csv("file:///Users/lancer/IdeaProjects/Spark/Spark-core/data/stu/input/b.txt")
+    val df = spark.read.schema(schema).csv("./data/stu/input/b.txt")
 
     /**
      * 使用别名
@@ -109,8 +109,9 @@ object DSLGrammar {
       })
       .toDF("id", "action")
 
-    // 通过api进行join, 默认使用的是笛卡尔积
+    // 通过api进行join, 不指定连接条件就是使用的是笛卡尔积
     df1.join(df2).show(100, truncate = false)
+    // cross join表示cartesian，笛卡尔积
     df1.crossJoin(df2).show(100, truncate = false)
 
     // 通过id字段进行join，前提是两张表都得有该join字段，右表的连接字段不会存在于结果表中

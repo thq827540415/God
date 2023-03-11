@@ -17,35 +17,36 @@ object E04_SequenceData {
     // 在Hive中，使用date_sub(dt, rk)实现减去rk天
     // SparkSQL使用的是HiveSQL的语法
     val sql =
-      """
-        |with tmp as (
-        | select guid, dt, row_number() over(partition by guid order by dt) rk
-        | from sequence
-        |)
-        |
-        |select
-        | guid,
-        | min(dt) as start_dt,
-        | max(dt) as end_dt,
-        | count(1) as num
-        |from t
-        |group by date_sub(dt, rk), guid
-        |having count(1) >= 3
-        |""".stripMargin
+    """
+      |with tmp as (
+      | select guid, dt, row_number() over(partition by guid order by dt) rk
+      | from sequence
+      |)
+      |
+      |select
+      |     guid,
+      |     min(dt) as start_dt,
+      |     max(dt) as end_dt,
+      |     count(1) as num
+      |from t
+      |group by date_sub(dt, rk), guid
+      |having count(1) >= 3
+      |""".stripMargin
 
-    val source = sc.parallelize(Seq(
-      "guid01,2018-02-28",
-      "guid01,2018-03-01",
-      "guid01,2018-03-02",
-      "guid01,2018-03-05",
-      "guid01,2018-03-04",
-      "guid01,2018-03-06",
-      "guid01,2018-03-07",
-      "guid02,2018-03-01",
-      "guid02,2018-03-02",
-      "guid02,2018-03-03",
-      "guid02,2018-03-06"
-    ))
+    val source = sc.parallelize(
+      Seq(
+        "guid01,2018-02-28",
+        "guid01,2018-03-01",
+        "guid01,2018-03-02",
+        "guid01,2018-03-05",
+        "guid01,2018-03-04",
+        "guid01,2018-03-06",
+        "guid01,2018-03-07",
+        "guid02,2018-03-01",
+        "guid02,2018-03-02",
+        "guid02,2018-03-03",
+        "guid02,2018-03-06"
+      ))
 
     source
       .map(line => { // 先将数据切分

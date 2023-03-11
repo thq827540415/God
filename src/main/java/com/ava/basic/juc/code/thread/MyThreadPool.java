@@ -1,4 +1,4 @@
-package com.ava.basic.juc.code.executor;
+package com.ava.basic.juc.code.thread;
 
 import com.ava.util.CommonUtils;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +21,7 @@ public class MyThreadPool {
      * 对于CPU密集型应用，应尽可能少的线程数，如配置cores + 1个线程的线程池。
      * 对于IO密集型应用，不能让CPU闲着，应尽可能多的线程数，如配置cores * 2个线程的线程池。
      * <p>
-     * Ncpu为CPU的数量，Ucpu为CPU的使用率，W / C为等待时间与计算时间的比例
+     * N cpu为CPU的数量，Ucpu为CPU的使用率，W / C为等待时间与计算时间的比例
      * 最优线程池大小：NThreads = NCpu * UCpu * (1 + WaitTime / ComputeTime)
      */
     private static void threadpoolExecutor() {

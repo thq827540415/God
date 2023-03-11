@@ -1,6 +1,18 @@
+## 一、Hadoop RPC详解
+
+底层采用了JavaNIO、Java动态代理以及protobuf。
+
+Server端为了提高性能，采用了JavaNIO提供的基于Reactor设计模式的事件驱动I/O模型。
+
+ResourceManager中每个用于外部通信的Service对应一个RpcServer，每个Server只对应一个Protocol。
+
+NameNode只对应一个RpcServer，该Server对应多个Protocol。
+
+
+
 ### 一、YARN（Yet Another Resource Negotiator）源码解析
 
-YARN中的ApplicationMaster只是一个规范，MR中的规范为MRAppMaster。
+YARN中的ApplicationMaster只是一个规范，MR中的规范为MRAppMaster，Spark中的规范为ApplicationMaster，Flink中的规范为YarnJobClusterEntryPoint。
 
 1. **RPC网络通信**
    1. 1.x版本中使用Writable协议作为默认RPC协议，而在2.x版本重写了RPC框架，采用Protobuf协议作为默认的通信协议。底层采用JavaNIO进行网络通信。

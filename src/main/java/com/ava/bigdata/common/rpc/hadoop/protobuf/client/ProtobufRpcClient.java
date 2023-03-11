@@ -1,45 +1,56 @@
 package com.ava.bigdata.common.rpc.hadoop.protobuf.client;
 
-import com.ava.bigdata.common.rpc.hadoop.protobuf.MyResourceTrackerPB;
 import com.ava.bigdata.common.rpc.hadoop.protobuf.proto.MyResourceTrackerMessage;
 import com.google.protobuf.ServiceException;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.ipc.ProtobufRpcEngine;
-import org.apache.hadoop.ipc.RPC;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
 public class ProtobufRpcClient {
-    public static void main(String[] args) {
-        Configuration conf = new Configuration();
 
-        // ProtobufRpcEngine和WritableRpcEngine，如果不设置，默认为WritableRpcEngine
-        RPC.setProtocolEngine(conf, MyResourceTrackerPB.class, ProtobufRpcEngine.class);
+    static class RpcClient {
 
-        try {
-            // 获取代理对象，其中包含了一个org.apache.hadoop.ipc.Client客户端
-            MyResourceTrackerPB protocolProxy = RPC.getProxy(
-                    MyResourceTrackerPB.class,
-                    1,
-                    new InetSocketAddress("localhost", 9999),
-                    conf);
+        // ClientSideProxy
+        private final MyResourceTracker client;
 
-            // 构建请求对象
+        public RpcClient(Configuration conf) throws Exception {
+            client = MyProxyFactory.createProxy(conf, MyResourceTracker.class);
+        }
+
+        /**
+         * 构建请求对象
+         */
+        MyResourceTrackerMessage.MyRegisterNodeManagerResponseProto registerNodeManager(
+                String hostname,
+                int cpu,
+                int memory
+        ) throws ServiceException {
+
             MyResourceTrackerMessage.MyRegisterNodeManagerRequestProto request =
                     MyResourceTrackerMessage.MyRegisterNodeManagerRequestProto
                             .newBuilder()
-                            .setHostname("bigdata02")
-                            .setCpu(64)
-                            .setMemory(128)
+                            .setHostname(hostname)
+                            .setCpu(cpu)
+                            .setMemory(memory)
                             .build();
 
-            MyResourceTrackerMessage.MyRegisterNodeManagerResponseProto response =
-                    protocolProxy.registerNodeManager(null, request);
-
-            System.out.println("响应结果" + response.getFlag());
-        } catch (IOException | ServiceException e) {
-            e.printStackTrace();
+            return client.registerNodeManager(request);
         }
+    }
+
+    public static void main(String[] args) throws Exception {
+        Configuration conf = new Configuration();
+        RpcClient client1 = new RpcClient(conf);
+        RpcClient client2 = new RpcClient(conf);
+
+        // 调用协议方法，向服务端发送RPC请求
+        MyResourceTrackerMessage.MyRegisterNodeManagerResponseProto response1 =
+                client1.registerNodeManager("node01", 64, 128);
+
+        MyResourceTrackerMessage.MyRegisterNodeManagerResponseProto response2 =
+                client2.registerNodeManager("node02", 322, 64);
+
+        System.out.format("响应结果: node01 -> %s, node02 -> %s\n", response1.getFlag(), response2.getFlag());
     }
 }

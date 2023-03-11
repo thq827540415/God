@@ -1,4 +1,4 @@
-package com.ava.basic.juc.code.executor;
+package com.ava.basic.juc.code.thread;
 
 import com.ava.util.CommonUtils;
 

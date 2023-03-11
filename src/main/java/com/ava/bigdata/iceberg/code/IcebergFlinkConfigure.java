@@ -27,7 +27,7 @@ import java.time.Duration;
 import java.util.Map;
 
 /**
- *
+ * 使用Flink操作Iceberg
  */
 public class IcebergFlinkConfigure {
     public static void main(String[] args) throws Exception {

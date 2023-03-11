@@ -21,7 +21,6 @@ public class WordCount {
         System.setProperty("HADOOP_USER_NAME", "root");
     }
 
-
     private static class WCMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
         Text k = new Text();
         static final IntWritable v = new IntWritable(1);

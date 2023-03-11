@@ -93,9 +93,10 @@ public class E01_Kafka2HBase {
         }
 
         class OperatorStateByMap extends RichMapFunction<String, String>
-            implements CheckpointedFunction {
+                implements CheckpointedFunction {
 
             private transient ListState<Map<String, Integer>> listState;
+
             @Override
             public String map(String value) throws Exception {
                 List<Map<String, Integer>> list = Lists.newArrayList(listState.get());

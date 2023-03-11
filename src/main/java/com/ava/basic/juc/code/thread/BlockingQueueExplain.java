@@ -1,4 +1,4 @@
-package com.ava.basic.juc.code.blockqueue;
+package com.ava.basic.juc.code.thread;
 
 import com.ava.util.CommonUtils;
 import lombok.AllArgsConstructor;
@@ -14,15 +14,15 @@ import java.util.concurrent.locks.ReentrantLock;
  * <p>
  * put(e)、take()一直阻塞
  * <p>
- * add(e)、remove() 会抛异常
+ * add(e)、remove() 会直接抛异常
  * <p>
- * offer(e)、poll() 返回特殊值
+ * offer(e)、poll() 直接返回特殊值：offer -> false/true; poll -> null/具体的值
  * <p>
  * offer(e, timeout, unit)、poll(timeout, unit) 超时阻塞
  * <p>
  * 如果是无界阻塞队列，队列不可能会出现满的情况，所以使用put或offer方法永远不会被阻塞
  */
-public class BlockingQueueExplainInDetail {
+public class BlockingQueueExplain {
 
     private static volatile boolean flag = true;
 

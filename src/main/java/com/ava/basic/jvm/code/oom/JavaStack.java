@@ -26,7 +26,7 @@ public class JavaStack {
     public static void main(String[] args) {
         JavaStack oom = new JavaStack();
         try {
-            oom.test01();
+            oom.test02();
         } catch (Throwable e) {
             System.out.println("stack length: " + oom.stackLength);
             throw e;

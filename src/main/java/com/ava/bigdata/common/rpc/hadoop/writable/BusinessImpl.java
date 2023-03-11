@@ -1,4 +1,4 @@
-package com.ava.bigdata.common.rpc.hadoop;
+package com.ava.bigdata.common.rpc.hadoop.writable;
 
 /**
  * client请求调用的服务组件

@@ -1,4 +1,4 @@
-package com.ava.bigdata.common.rpc.hadoop;
+package com.ava.bigdata.common.rpc.hadoop.writable;
 
 /**
  * 服务端的定义的协议，协议就是一个interface

@@ -30,6 +30,9 @@ public class FlinkEnvUtils {
      */
     private static final int GLOBAL_MAX_PARALLELISM = 4;
 
+    /**
+     * 提交的时候关闭
+     */
     private static final boolean WITH_WEB_UI = true;
 
     /**

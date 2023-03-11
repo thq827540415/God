@@ -29,25 +29,25 @@
         <flink.version>1.14.3</flink.version>
 
 
-        <log.scope>compile</log.scope>
-        <scala.scope>compile</scala.scope>
+        <log.scope>provided</log.scope>
+        <scala.scope>provided</scala.scope>
         <jedis.scope>provided</jedis.scope>
-        <netty.scope>compile</netty.scope>
-        <hadoop.scope>compile</hadoop.scope>
+        <netty.scope>provided</netty.scope>
+        <hadoop.scope>provided</hadoop.scope>
         <protobuf.scope>provided</protobuf.scope>
         <snappy.scope>provided</snappy.scope>
         <parquet.avro.scope>provided</parquet.avro.scope>
         <curator.scope>provided</curator.scope>
         <hbase.scope>provided</hbase.scope>
         <kafka.scope>provided</kafka.scope>
-        <spark.scope>compile</spark.scope>
+        <spark.scope>provided</spark.scope>
         <hudi.spark.scope>provided</hudi.spark.scope>
         <hudi.flink.scope>provided</hudi.flink.scope>
         <iceberg.spark.scope>provided</iceberg.spark.scope>
         <iceberg.flink.scope>provided</iceberg.flink.scope>
         <doris.spark.scope>provided</doris.spark.scope>
         <doris.flink.scope>provided</doris.flink.scope>
-        <flink.scope>compile</flink.scope>
+        <flink.scope>provided</flink.scope>
         <flink.hive.scope>provided</flink.hive.scope>
         <flink.ext.scope>provided</flink.ext.scope>
     </properties>
@@ -367,6 +367,15 @@
             <scope>${spark.scope}</scope>
         </dependency>
 
+        <!-- read source code -->
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-yarn_${scala.binary.version}</artifactId>
+            <version>${spark.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+
         <!-- hive2.x解析hive表中的json格式数据 -->
         <!--<dependency>
             <groupId>org.apache.hive.hcatalog</groupId>
@@ -518,6 +527,20 @@
             <version>${flink.version}</version>
             <scope>${flink.ext.scope}</scope>
         </dependency>
+
+        <!-- just for reading source code -->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-yarn_${scala.binary.version}</artifactId>
+            <version>${flink.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-kubernetes_${scala.binary.version}</artifactId>
+            <version>${flink.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -621,6 +644,7 @@
                                     <resource>META-INF/spring.schemas</resource>
                                 </transformer>-->
                                 <!-- 多个依赖构件中的META-INF/services/org.apache.table.factories.Factory文件不能合并 -->
+                                <!-- JDK的服务发现机制是基于META-INF/services目录的，如果同一接口存在多个实现需要合并 -->
                                 <!--<transformers>
                                     <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                                 </transformers>-->

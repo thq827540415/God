@@ -1,4 +1,4 @@
-package com.ava.bigdata.common.rpc.hadoop;
+package com.ava.bigdata.common.rpc.hadoop.writable;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.ipc.RPC;

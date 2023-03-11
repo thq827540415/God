@@ -2,7 +2,7 @@ package com.ava.bigdata.spark.code.scala.core
 
 import com.ava.util.SparkEnvUtil
 import lombok.Cleanup
-import org.apache.spark.SparkConf
+import org.apache.spark.{SparkConf, SparkFiles}
 import org.apache.spark.broadcast.Broadcast
 
 import scala.collection.immutable.HashMap
@@ -27,6 +27,10 @@ object E02_Broadcast {
       .mapPartitions(iter => {
         // 广播过来的小表数据
         val smallTable = bc.value
+
+        // 获取sc.addFile("path")发送的缓存文件
+        // SparkFiles.get("path")
+
 
         // 两表进行关联
         iter.map(

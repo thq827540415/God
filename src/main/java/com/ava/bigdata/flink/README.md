@@ -18,7 +18,7 @@
    1. 原理：客户端无需将Dependencies上传到JM，JM和TM会从HDFS上获取jar包；JobGraph在JM中生成，客户端压力降低。
    2. 优点：有效降低带宽和客户端负载；Application实现资源隔离，Application中实现资源共享。
    3. 缺点：功能太新，还未经过生产验证，仅支持Yarn和Kubunetes。
-   4. 提交任务：`bin/flink run-application -t yarn-application -Djobmanager.memory.process.size=2048mb -Dtaskmanager.memory.process.size=4096mb -Dyarn.provided.lib.dirs="hdfs://bigdata01:9000/flink-1.14.3/lib /path/jar"`。
+   4. 提交任务：`bin/flink run-application -t yarn-application -Djobmanager.memory.process.size=2048mb -Dtaskmanager.memory.process.size=4096mb -Dyarn.provided.lib.dirs="hdfs://bigdata01:9000/libs/flink/lib;hdfs://bigdata01:9000/libs/flink/plugins" -c main_class jars`。
 
 
 
@@ -130,10 +130,9 @@ Sink端：幂等写入、2PC事务提交、2PC预写日志提交、HDFS文件
 
 
 
-
 Flink SQL客户端集成Hive
 create catalog hive_catalog with ('type' = 'hive', 'hive-conf-dir' = '/opt/hive-3.1.2/conf');
 use catalog hive_catalog;
 load module hive;
 
-![](./images/Flink%20State的内存结构.jpg)
+![](./images/State的内存结构.jpg)

@@ -1,4 +1,4 @@
-package com.ava.bigdata.common.rpc.hadoop;
+package com.ava.bigdata.common.rpc.hadoop.writable;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.ipc.RPC;
@@ -10,7 +10,7 @@ public class MyServer {
         try {
             RPC.Server server = new RPC.Builder(new Configuration())
                     .setProtocol(BusinessProtocol.class)
-                    // 该协议对应的服务组件
+                    // 该协议对应的服务组件，即对应的具体实现
                     .setInstance(new BusinessImpl())
                     .setBindAddress("localhost")
                     .setPort(6789)

@@ -1,0 +1,19 @@
+# 采用ClusterIP + Ingress的方式暴露Web UI
+apiVersion: "networking.k8s.io/v1"
+kind: "Ingress"
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+  name: "customized-cluster-id-ingress"
+  namespace: "flink"
+spec:
+  rules:
+    - host: "customized-cluster-id.flink.xxxx.com"
+      http:
+        paths:
+          - backend:
+              service:
+                name: "customized-cluster-id-rest"
+                port:
+                  - number: 8081
+            pathType: "/"

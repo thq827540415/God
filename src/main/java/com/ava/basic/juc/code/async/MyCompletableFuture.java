@@ -108,14 +108,14 @@ public class MyCompletableFuture {
         CompletableFuture<Integer> cf1 = CompletableFuture
                 .supplyAsync(
                         () -> {
-                            System.out.println(Thread.currentThread().getName() + "\t" + "come in");
+                            info("cf1 come in");
                             sleep(3);
                             return 3;
                         });
         CompletableFuture<Integer> cf2 = CompletableFuture
                 .supplyAsync(
                         () -> {
-                            System.out.println(Thread.currentThread().getName() + "\t" + "come in");
+                            info("cf2 come in");
                             sleep(2);
                             return 2;
                         });
@@ -124,13 +124,12 @@ public class MyCompletableFuture {
                 .thenCombine(
                         cf2,
                         (x, y) -> {
-                            System.out.println(Thread.currentThread().getName() + "\t" + "come in");
+                            info("combine logic come in");
                             return x * y;
                         })
                 .join();
 
-
-        // 三者都执行完后，开始往下执行
+        // join会等到两者都执行完后，才开始往下执行
         // CompletableFuture.allOf(cf1, cf2).join();
         System.out.println(result);
     }
@@ -168,7 +167,6 @@ public class MyCompletableFuture {
                             f.printStackTrace();
                             return null;
                         });
-
 
         executorService.shutdown();
     }
@@ -217,7 +215,7 @@ public class MyCompletableFuture {
     private static void demo() {
         List<String> strings = Arrays.asList("abc", "def", "ghi");
 
-        // 1.
+        // 1. stream
         long start = System.currentTimeMillis();
         strings
                 .stream()
@@ -229,7 +227,7 @@ public class MyCompletableFuture {
         System.out.println("normal cost " + (System.currentTimeMillis() - start) + " ms");
 
 
-        // 2.
+        // 2. 并行流
         start = System.currentTimeMillis();
         strings
                 .parallelStream()
@@ -240,18 +238,16 @@ public class MyCompletableFuture {
                 .collect(Collectors.toList());
         System.out.println("normal parallel cost " + (System.currentTimeMillis() - start) + " ms");
 
-        // 3.
+        // 3. CF
         start = System.currentTimeMillis();
-        strings
-                .stream()
+            strings.stream()
                 .map(str ->
                         CompletableFuture
                                 .supplyAsync(() -> {
                                     sleep(2);
                                     return str + "123";
                                 }))
-                .collect(Collectors.toList())
-                .stream()
+                .collect(Collectors.toList()).stream()
                 .map(CompletableFuture::join)
                 .collect(Collectors.toList());
         System.out.println("completable cost " + (System.currentTimeMillis() - start) + " ms");
@@ -266,6 +262,6 @@ public class MyCompletableFuture {
     }
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        first();
+        third();
     }
 }

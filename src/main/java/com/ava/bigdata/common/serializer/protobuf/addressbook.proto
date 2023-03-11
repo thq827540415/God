@@ -4,7 +4,7 @@ package protobuf;
 option java_package = "com.ava.bigdata.common.serializer.protobuf";
 // 指定主类名
 option java_outer_classname = "AddressBookProtos";
-// 为false表示message中定义的实体类和主类一起放在一个大类中 -> 默认
+// 为false表示message中定义的实体类和主类一起放在一个大类中(默认)，否则创建出多个.java文件
 option java_multiple_files = false;
 // 基础定义，类似于java中的实体类
 // Prefer optional fields than required
