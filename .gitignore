@@ -1,7 +1,11 @@
 # Project exclude paths
-/target/
 /.idea/
+/God.iml
+/target/
 /dependency-reduced-pom.xml
 /spark-warehouse/
 /python/python.iml
 /output/
+/Flink/target/
+/Spark/target/
+/common/target/

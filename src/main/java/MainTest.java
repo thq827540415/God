@@ -67,6 +67,7 @@ public class MainTest {
         for (Student student : students) {
             System.out.println(student);
         }*/
+        System.out.println("Hello World!");
     }
 
     /**

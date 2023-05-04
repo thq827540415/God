@@ -1,0 +1,12 @@
+jobmanager.rpc.address: localhost
+jobmanager.rpc.port: 6123
+
+# restart-strategy: fixed-delay
+# restart-strategy.fixed-delay..attempts: 3
+# restart-strategy.fixed-delay.delay: 5 s
+
+
+restart-strategy: failure-rate
+restart-strategy.failure-rate.delay: 5 s
+restart-strategy.failure-rate.failure-rate-interval: 5 min
+restart-strategy.failure-rate.max-failures-per-interval: 3
