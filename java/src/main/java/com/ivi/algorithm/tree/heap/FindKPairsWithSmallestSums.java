@@ -32,6 +32,5 @@ public class FindKPairsWithSmallestSums {
     }
 
     public static void main(String[] args) {
-        InputStream
     }
 }
