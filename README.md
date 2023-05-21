@@ -101,7 +101,7 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-		participant a as Actor
+		actor a as Actor
     participant cu as ClientUtils
     participant sce as StreamContextEnvironment
     participant see as StreamExecutionEnvironment
