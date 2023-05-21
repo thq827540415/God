@@ -12,7 +12,7 @@ public static StreamExecutionEnvironment getExecutionEnvironment(Configuration c
 }
 ```
 
-该方法使用了StreamExecutionEnvironment类中的两个静态私有字段：`contextEnvironmentFactory`和`threadLocalContextEnvironmentFactory`。而对这两个字段的赋值操作方法也在StreamExecutionEnvironment类中：
+&ensp;&ensp;&ensp;&ensp;该方法使用了StreamExecutionEnvironment类中的两个静态私有字段：`contextEnvironmentFactory`和`threadLocalContextEnvironmentFactory`。而对这两个字段的赋值操作方法也在StreamExecutionEnvironment类中：
 
 ```java
 // 这两个字段值的都是在打包的程序提交时赋值的，对于每个直接运行的用户代码不会做任何修改
